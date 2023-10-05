@@ -38,7 +38,111 @@
 		<div class="main-wrapper">
 		
 			<!-- Header -->
-			{% include 'includes/header.html' %}
+			{% load static %}
+<!--Header -->
+<header class="header">
+    <nav class="navbar navbar-expand-lg header-nav">
+        <div class="navbar-header">
+            <a id="mobile_btn" href="javascript:void(0);">
+                <span class="bar-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </a>
+            <a href="index-2.html" class="navbar-brand logo">
+                <img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+            </a>
+        </div>
+        <div class="main-menu-wrapper">
+            <div class="menu-header">
+                <a href="index-2.html" class="menu-logo">
+                    <img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+                </a>
+                <a id="menu_close" class="menu-close" href="javascript:void(0);">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <ul class="main-nav">
+                
+                <!--<li class="has-submenu">
+                    <a href="#">Doctors <i class="fas fa-chevron-down"></i></a>
+                    <ul class="submenu">
+                        <li><a href="doctor-dashboard.html">Doctor Dashboard</a></li>
+                        <li><a href="appointments.html">Appointments</a></li>
+                        <li><a href="schedule-timings.html">Schedule Timing</a></li>
+                        <li><a href="my-patients.html">Patients List</a></li>
+                        <li><a href="patient-profile.html">Patients Profile</a></li>
+                        <li><a href="chat-doctor.html">Chat</a></li>
+                        <li><a href="invoices.html">Invoices</a></li>
+                        <li><a href="doctor-profile-settings.html">Profile Settings</a></li>
+                        <li><a href="reviews.html">Reviews</a></li>
+                        <li><a href="doctor-register.html">Doctor Register</a></li>
+                    </ul>
+                </li>	
+                <li class="has-submenu">
+                    <a href="#">Patients <i class="fas fa-chevron-down"></i></a>
+                    <ul class="submenu">
+                        <li><a href="search.html">Search Doctor</a></li>
+                        <li><a href="doctor-profile.html">Doctor Profile</a></li>
+                        <li><a href="booking.html">Booking</a></li>
+                        <li><a href="checkout.html">Checkout</a></li>
+                        <li><a href="booking-success.html">Booking Success</a></li>
+                        <li><a href="patient-dashboard.html">Patient Dashboard</a></li>
+                        <li><a href="favourites.html">Favourites</a></li>
+                        <li><a href="chat.html">Chat</a></li>
+                        <li><a href="profile-settings.html">Profile Settings</a></li>
+                        <li><a href="change-password.html">Change Password</a></li>
+                    </ul>
+                </li>	
+                <li class="has-submenu">
+                    <a href="#">Pages <i class="fas fa-chevron-down"></i></a>
+                    <ul class="submenu">
+                        <li><a href="voice-call.html">Voice Call</a></li>
+                        <li><a href="video-call.html">Video Call</a></li>
+                        <li><a href="search.html">Search Doctors</a></li>
+                        <li><a href="calendar.html">Calendar</a></li>
+                        <li><a href="components.html">Components</a></li>
+                        <li class="has-submenu">
+                            <a href="invoices.html">Invoices</a>
+                            <ul class="submenu">
+                                <li><a href="invoices.html">Invoices</a></li>
+                                <li><a href="invoice-view.html">Invoice View</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="blank-page.html">Starter Page</a></li>
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="register.html">Register</a></li>
+                        <li><a href="forgot-password.html">Forgot Password</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="admin/index.html" target="_blank">Admin</a>
+                </li>
+                <li class="login-link">
+                    <a href="login.html">Login / Signup</a>
+                </li>-->
+            </ul>		 
+        </div>		 
+        <ul class="nav header-navbar-rht">
+            <li class="nav-item contact-item">
+                <div class="header-contact-img">
+                    <i class="far fa-hospital"></i>							
+                </div>
+                <div class="header-contact-detail">
+                    <p class="contact-header">Contact</p>
+                    <p class="contact-info-header"> +1 315 369 5943</p>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link header-login" href="{% url 'signin' %}">login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link header-register" href="{% url 'register' %}">Register</a>
+            </li>
+        </ul>
+    </nav>
+</header>
 			<!-- /Header -->
 			
 			<!-- Home Banner -->
@@ -50,7 +154,7 @@
 						</div>
                          
 						<!-- Search -->
-						<div class="search-box">
+						<!--<div class="search-box">
 							<form action="templateshub.net">
 								<div class="form-group search-location">
 									<input type="text" class="form-control" placeholder="Search Location">
@@ -62,7 +166,7 @@
 								</div>
 								<button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i> <span>Search</span></button>
 							</form>
-						</div>
+						</div>-->
 						<!-- /Search -->
 						
 					</div>
@@ -147,19 +251,20 @@
 						<div class="col-lg-4">
 							<div class="section-header ">
 								<h2>Book Our Doctor</h2>
-								<p>Lorem Ipsum is simply dummy text </p>
 							</div>
 							<div class="about-content">
-								<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum.</p>
-								<p>web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes</p>					
-								<a href="javascript:;">Read More..</a>
+								<p>" MediMingle " aims to revolutionize the healthcare industry by offering a user-centric, efficient, and secure platform that bridges the gap between patients and 
+									doctors. We stands as a testament to modern healthcare innovation, 
+									offering a personalized approach to healthcare services in an increasingly digital 
+									world</p>
+								<!--<a href="javascript:;"></a>-->
 							</div>
 						</div>
 						<div class="col-lg-8">
 							<div class="doctor-slider slider">
 							
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-01.jpg'%}">
@@ -203,11 +308,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- /Doctor Widget -->
 						
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-02.jpg'%}">
@@ -251,11 +356,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- /Doctor Widget -->
 						
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-03.jpg'%}">
@@ -299,11 +404,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- /Doctor Widget -->
 						
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-04.jpg'%}">
@@ -347,11 +452,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-05.jpg'%}">
@@ -395,11 +500,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-06.jpg'%}">
@@ -443,11 +548,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-07.jpg'%}">
@@ -491,11 +596,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								<!--<div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-08.jpg'%}">
@@ -539,7 +644,7 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div>-->
 								<!-- Doctor Widget -->
 								
 							</div>
@@ -563,11 +668,11 @@
 								<!-- Footer Widget -->
 								<div class="footer-widget footer-about">
 									<div class="footer-logo">
-										<img src="{% static '/assets/img/footer-logo.png'%}" alt="logo">
+										<img src="{% static '/assets/img/logo.png'%}" alt="logo">
 									</div>
 									<div class="footer-about-content">
-										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-										<div class="social-icon">
+										<p>Make Heathcare Better Together</p>
+										<!--<div class="social-icon">
 											<ul>
 												<li>
 													<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
@@ -585,7 +690,7 @@
 													<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
 												</li>
 											</ul>
-										</div>
+										</div>-->
 									</div>
 								</div>
 								<!-- /Footer Widget -->
@@ -595,7 +700,7 @@
 							<div class="col-lg-3 col-md-6">
 							
 								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
+								<!--<div class="footer-widget footer-menu">
 									<h2 class="footer-title">For Patients</h2>
 									<ul>
 										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
@@ -604,7 +709,7 @@
 										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
 										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
 									</ul>
-								</div>
+								</div>-->
 								<!-- /Footer Widget -->
 								
 							</div>
@@ -612,7 +717,7 @@
 							<div class="col-lg-3 col-md-6">
 							
 								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
+								<!--<div class="footer-widget footer-menu">
 									<h2 class="footer-title">For Doctors</h2>
 									<ul>
 										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
@@ -621,7 +726,7 @@
 										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
 										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
 									</ul>
-								</div>
+								</div>-->
 								<!-- /Footer Widget -->
 								
 							</div>
@@ -642,7 +747,7 @@
 										</p>
 										<p class="mb-0">
 											<i class="fas fa-envelope"></i>
-											doccure@example.com
+											medimingle@gmail.com.com
 										</p>
 									</div>
 								</div>
@@ -664,7 +769,7 @@
 							<div class="row">
 								<div class="col-md-6 col-lg-6">
 									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
+										<p class="mb-0"><a href="templateshub.net">MediMingle</a></p>
 									</div>
 								</div>
 								<div class="col-md-6 col-lg-6">

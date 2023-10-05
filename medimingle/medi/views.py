@@ -11,13 +11,14 @@ def index(request):
 def register(request):
     if request.method =="POST":
         username=request.POST['username']
-        #name=request.POST['name']
+        first_name=request.POST['first_name']
+        last_name=request.POST['last_name']
         email=request.POST['email']
         password=request.POST['password']
-        user=tbl_user(username=username,email=email)
+        user=tbl_user(username=username,first_name=first_name,last_name=last_name,email=email)
         user.set_password(password)
         user.save();
-        messages.success(request, 'You are now registered and can log in')
+        #messages.success(request, 'You are now registered and can log in')
         return redirect('signin')
     else:
        return render(request,'register.html')
@@ -42,7 +43,7 @@ def patient_login(request):
         if user is not None:
             #print(user)
             login(request, user)
-            return redirect('patient_dashboard')
+            return redirect('homepage')
         else:
             #messages.info(request,"Invalid Login")
             return redirect('signin')
@@ -59,3 +60,6 @@ def patient_dashboard(request):
 
 def doctor_register(request):
     return render(request,'doctor_register.html')
+
+def homepage(request):
+    return render(request,'homepage.html')

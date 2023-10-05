@@ -5,14 +5,10 @@
 <!-- doccure/register.html  30 Nov 2019 04:12:20 GMT -->
 <head>
 	<style>
-		.error-message {
-			color: red;
-		}
-
-		.valid-input {
-			border: 2px solid green;
-		}
-	</style>
+        .error {
+            color: red;
+        }
+    </style>
 		<meta charset="utf-8">
 		<title>MediMingle</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -36,7 +32,7 @@
 			<script src="{% static '/assets/js/respond.min.js'%}"></script>
 		<![endif]-->
 	
-</head>
+	</head>
 	<body class="account-page">
 
 		<!-- Main Wrapper -->
@@ -162,133 +158,31 @@
 										</div>
 										
 										<!-- Register Form -->
-
-										
-									
-										<form method="POST" id="registration-form">
+										<form method="POST">
 											{% csrf_token %}
 											<div class="form-group form-focus">
 												<input type="text" class="form-control floating" name="username" id="username">
 												<label class="focus-label">Username</label>
-												<span class="error-message" id="username-error"></span>
 											</div>
 											<div class="form-group form-focus">
 												<input type="text" class="form-control floating" name="first_name" id="first_name">
 												<label class="focus-label">First Name</label>
-												<span class="error-message" id="first_name-error"></span>
 											</div>
-											<div class="form-group form-focus">
+										    <div class="form-group form-focus">
 												<input type="text" class="form-control floating" name="last_name" id="last_name">
-												<label class="focus-label">Last Name</label>
-												<span class="error-message" id="last_name-error"></span>
+												<label class="focus-label">last Name</label>
 											</div>
 											<div class="form-group form-focus">
 												<input type="text" class="form-control floating" name="email" id="email">
 												<label class="focus-label">Email</label>
-												<span class="error-message" id="email-error"></span>
 											</div>
 											<div class="form-group form-focus">
 												<input type="password" class="form-control floating" name="password" id="password">
 												<label class="focus-label">Create Password</label>
-												<span class="error-message" id="password-error"></span>
 											</div>
 											<button class="btn btn-primary btn-block btn-lg login-btn" type="submit">Signup</button>
 										</form>
-
-										<script>
-											const form = document.getElementById('registration-form');
-											const usernameInput = document.getElementById('username');
-											const firstNameInput = document.getElementById('first_name');
-											const lastNameInput = document.getElementById('last_name');
-											const emailInput = document.getElementById('email');
-											const passwordInput = document.getElementById('password');
-											const usernameError = document.getElementById('username-error');
-											const firstNameError = document.getElementById('first_name-error');
-											const lastNameError = document.getElementById('last_name-error');
-											const emailError = document.getElementById('email-error');
-											const passwordError = document.getElementById('password-error');
-
-											// Function to validate the username field
-											function validateUsername() {
-												const username = usernameInput.value;
-												const regex = /^[a-zA-Z][a-zA-Z0-9_]{7,29}$/;
-												if (!regex.test(username)) {
-													usernameError.textContent = 'Invalid username. Must start with a letter, contain only letters, numbers, and underscores, and be between 8 and 30 characters.';
-													usernameInput.classList.remove('valid-input');
-												} else {
-													usernameError.textContent = '';
-													usernameInput.classList.add('valid-input');
-												}
-											}
-
-											// Function to validate the first name field
-											function validateFirstName() {
-												const firstName = firstNameInput.value;
-												const regex = /^[a-zA-Z]{1,30}$/;
-												if (!regex.test(firstName)) {
-													firstNameError.textContent = 'Invalid first name. Must contain only letters and be up to 30 characters.';
-													firstNameInput.classList.remove('valid-input');
-												} else {
-													firstNameError.textContent = '';
-													firstNameInput.classList.add('valid-input');
-												}
-											}
-
-											// Function to validate the last name field
-											function validateLastName() {
-												const lastName = lastNameInput.value;
-												const regex = /^[a-zA-Z]{1,30}$/;
-												if (!regex.test(lastName)) {
-													lastNameError.textContent = 'Invalid last name. Must contain only letters and be up to 30 characters.';
-													lastNameInput.classList.remove('valid-input');
-												} else {
-													lastNameError.textContent = '';
-													lastNameInput.classList.add('valid-input');
-												}
-											}
-
-											// Function to validate the email field
-											function validateEmail() {
-												const email = emailInput.value;
-												if (email.trim() === '') {
-													emailError.textContent = 'Email is required.';
-													emailInput.classList.remove('valid-input');
-												} else {
-													emailError.textContent = '';
-													emailInput.classList.add('valid-input');
-												}
-											}
-
-											// Function to validate the password field
-											function validatePassword() {
-												const password = passwordInput.value;
-												const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-												if (!regex.test(password)) {
-													passwordError.textContent = 'Invalid password. Must be at least 8 characters, contain at least one letter, one digit, and one special character.';
-													passwordInput.classList.remove('valid-input');
-												} else {
-													passwordError.textContent = '';
-													passwordInput.classList.add('valid-input');
-												}
-											}
-
-											// Add event listeners for real-time validation
-											usernameInput.addEventListener('input', validateUsername);
-											firstNameInput.addEventListener('input', validateFirstName);
-											lastNameInput.addEventListener('input', validateLastName);
-											emailInput.addEventListener('input', validateEmail);
-											passwordInput.addEventListener('input', validatePassword);
-
-											// Prevent the form from submitting if there are validation errors
-											form.addEventListener('submit', function (event) {
-												if (!usernameInput.classList.contains('valid-input') || !firstNameInput.classList.contains('valid-input') || !lastNameInput.classList.contains('valid-input') || !emailInput.classList.contains('valid-input') || !passwordInput.classList.contains('valid-input')) {
-													event.preventDefault();
-													alert('Please fix the validation errors before submitting the form.');
-												}
-											});
-										</script>
-							
-
+										
 										<!-- /Register Form -->
 										
 									</div>
