@@ -4,6 +4,11 @@
 	
 <!-- doccure/register.html  30 Nov 2019 04:12:20 GMT -->
 <head>
+	<style>
+        .error {
+            color: red;
+        }
+    </style>
 		<meta charset="utf-8">
 		<title>MediMingle</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -153,56 +158,37 @@
 									</div>
 									<div class="col-md-12 col-lg-6 login-right">
 										<div class="login-header">
-											<h3>Patient Register <a href="doctor-register.html">Are you a Doctor?</a></h3>
+											<h3>Patient Register <a href="{% url 'doctor_register' %}">Are you a Doctor?</a></h3>
 										</div>
 										
 										<!-- Register Form -->
-										<form action="{% url 'register'%}" method="POST">
+										<form method="POST">
+											{% csrf_token %}
 											<div class="form-group form-focus">
-												<input type="text" class="form-control floating" name="firstname">
-												<label class="focus-label">First Name</label>
+												<input type="text" class="form-control floating" name="username" id="username">
+												<label class="focus-label">Username</label>
 											</div>
+										
+											<!--<div class="form-group form-focus">
+												<input type="text" class="form-control floating" name="name" id="name">
+												<label class="focus-label">Name</label>
+											</div>-->
+										
 											<div class="form-group form-focus">
-												<input type="text" class="form-control floating" name="lastname">
-												<label class="focus-label">Last Name</label>
-											</div>
-											<div class="form-group form-focus">
-												<input type="text" class="form-control floating" name="email">
+												<input type="text" class="form-control floating" name="email" id="email">
 												<label class="focus-label">Email</label>
 											</div>
+										
 											<div class="form-group form-focus">
-												<input type="text" class="form-control floating" name="phone">
-												<label class="focus-label">Mobile Number</label>
-											</div>
-											<div class="form-group form-focus">
-												<input type="password" class="form-control floating" name="password">
+												<input type="password" class="form-control floating" name="password" id="password">
 												<label class="focus-label">Create Password</label>
 											</div>
-											<div class="form-group form-focus">
-												<label class="focus-label">Doctor/Patient</label>
-												<select class="form-control floating" name="user_type">
-													<option selected="true" disabled="disabled">Select</option>
-													<option value="doctor">Doctor</option>
-													<option value="patient">Patient</option>
-												</select>
-											</div>
-											<div class="text-right">
-												<a class="forgot-link" href="{% url 'login' %}">Already have an account?</a>
-											</div>
+										
+											
+										
 											<button class="btn btn-primary btn-block btn-lg login-btn" type="submit">Signup</button>
-											
-												<span class="or-line"></span>
-												<!--<span class="span-or">or</span>-->
-											
-											<div class="row form-row social-login">
-												<div class="col-6">
-													<a href="#" class="btn btn-facebook btn-block"><i class="fab fa-facebook-f mr-1"></i> Login</a>
-												</div>
-												<div class="col-6">
-													<a href="#" class="btn btn-google btn-block"><i class="fab fa-google mr-1"></i> Login</a>
-												</div>
-											</div>
 										</form>
+										
 										<!-- /Register Form -->
 										
 									</div>

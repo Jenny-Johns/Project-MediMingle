@@ -1,70 +1,61 @@
 from django.shortcuts import render,redirect
-from django.contrib.auth.models import User,auth
-
+from django.contrib.auth.models import auth
+from django.contrib.auth import login,authenticate
+from .models import tbl_user
 from django.contrib import messages
-from .forms import UserRegistrationForm
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+
 # Create your views here.
 def index(request):
     return render(request,'index.html')
+    
+def register(request):
+    if request.method =="POST":
+        username=request.POST['username']
+        #name=request.POST['name']
+        email=request.POST['email']
+        password=request.POST['password']
+        user=tbl_user(username=username,email=email)
+        user.set_password(password)
+        user.save();
+        messages.success(request, 'You are now registered and can log in')
+        return redirect('signin')
+    else:
+       return render(request,'register.html')
+        #user_type=request.POST['user_type']
+        #username = email.split("@")[0]
+        
+        #user.user_type = user_type
+        
+        #login(request, username)
+        
+        #return redirect("login.html")
+    
+    
+# views.py
 
-#def login(request):
-    #return render(request,'login.html')
 
-def login(request):
+def patient_login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        user = auth.authenticate(email=email, password = password)
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password = password)
         if user is not None:
-            auth.login(request, user)
-            return redirect('/')
+            #print(user)
+            login(request, user)
+            return redirect('patient_dashboard')
         else:
-            messages.info(request,"Invalid Login")
-            return redirect('login')
+            #messages.info(request,"Invalid Login")
+            return redirect('signin')
 
-    return render(request, 'users/login.html')
+    return render(request, 'signin.html')
 
 def logout(request):
     auth.logout(request)
     return redirect('/')
-        
-        #if user is not None:
-            #auth.login(request, user)
-           # current_user = Account.objects.get(id=request.user.id)
-            
-
-    
-def register(request):
-    if request.method =="POST":
-        firstname=request.POST['firstname']
-        lastname=request.POST['lastname']
-        email=request.POST['email']
-        phone=request.POST['phone']
-        password=request.POST['password']
-        user_type=request.POST['user_type']
-        user=User.objects.create_user(firstname=firstname,lastname=lastname,email=email,password=password)
-        user.user_type = user_type
-        user.phone=phone
-        user.save();
-        messages.success(request, 'You are now registered and can log in')
-        return redirect('login')
-        #return redirect("login.html")
-    else:
-        return render(request,'register.html')
-        
-# views.py
-
-
-
 
 
 def patient_dashboard(request):
-    current_user = request.user
-    context = {
-        'patient':current_user
-    }
-    return render(request,'users/patient_dashboard.html', context)    
+    return render(request,'patient_dashboard.html')    
 
-
+def doctor_register(request):
+    return render(request,'doctor_register.html')
