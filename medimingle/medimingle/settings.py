@@ -32,14 +32,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
+    'medi',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'medi',
+    'django.contrib.sites',
+    'social_django',
+    
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'medimingle.urls'
@@ -65,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends'
             ],
         },
     },
@@ -130,3 +137,32 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL='medi.tbl_user'
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Your Admin Title",
+    "site_header": "Your Admin Header",
+    "welcome_sign": "Welcome to Your Custom Admin",
+    "show_sidebar": True,  # Set to False to hide the sidebar menu
+    "changeform_format": "vertical_tabs",  # Change the form layout
+}
+
+SITE_ID=1
+
+
+# settings.py
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    
+)
+
+LOGIN_URL = 'homepage'
+LOGIN_REDIRECT = 'home'
+LOGOUT_URL ='logout'
+LOGOUT_REDIRECT_URL ='signin'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ="216331157514-131glm4fcf6813vq14g1ujehv47i20ms.apps.googleusercontent.com"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ="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"

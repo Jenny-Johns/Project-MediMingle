@@ -7,11 +7,17 @@
 	<style>
 		.error-message {
 			color: red;
+			font-size: 10px;
 		}
 
 		.valid-input {
-			border: 2px solid green;
+			border: 2px solid lightblue !important;
 		}
+		
+		.invalid-input {
+			border: 2px solid red !important;
+		}
+		
 	</style>
 		<meta charset="utf-8">
 		<title>MediMingle</title>
@@ -38,7 +44,7 @@
 	
 </head>
 	<body class="account-page">
-
+        
 		<!-- Main Wrapper -->
 		<div class="main-wrapper">
 		
@@ -158,7 +164,7 @@
 									</div>
 									<div class="col-md-12 col-lg-6 login-right">
 										<div class="login-header">
-											<h3>Patient Register <a href="{% url 'doctor_register' %}">Are you a Doctor?</a></h3>
+											<h3 align=center>Registration<a href="{% url 'doctor_register' %}"></a></h3>
 										</div>
 										
 										<!-- Register Form -->
@@ -192,7 +198,22 @@
 												<label class="focus-label">Create Password</label>
 												<span class="error-message" id="password-error"></span>
 											</div>
+											<div class="form-group form-focus">
+												<label class="focus-label">User Type</label>
+												<select class="form-control" name="user_type" id="user_type">
+													<option value="patient">Patient</option>
+													<option value="doctor">Doctor</option>
+												</select>
+											</div>
 											<button class="btn btn-primary btn-block btn-lg login-btn" type="submit">Signup</button>
+											<span class="or-line"></span>
+											<span class="or-line"></span>
+											<div class="row form-row social-login">
+												<div class="col-6">
+													<a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-google btn-block"><i class="fab fa-google mr-1"></i> Google Login</a>
+												</div>
+											</div>
+											
 										</form>
 
 										<script>
@@ -211,15 +232,30 @@
 											// Function to validate the username field
 											function validateUsername() {
 												const username = usernameInput.value;
-												const regex = /^[a-zA-Z][a-zA-Z0-9_]{7,29}$/;
-												if (!regex.test(username)) {
-													usernameError.textContent = 'Invalid username. Must start with a letter, contain only letters, numbers, and underscores, and be between 8 and 30 characters.';
+											
+												// Check if the username contains spaces
+												if (/\s/.test(username)) {
+													usernameError.textContent = 'Invalid username. Username cannot contain spaces.';
+													usernameInput.classList.remove('valid-input');
+												} else if (/^\d/.test(username)) {
+													usernameError.textContent = 'Username cannot start with numbers.';
+													usernameInput.classList.remove('valid-input');
+												} else if (username.length < 8) {
+													usernameError.textContent = 'Username should contain 8 characters.';
 													usernameInput.classList.remove('valid-input');
 												} else {
-													usernameError.textContent = '';
-													usernameInput.classList.add('valid-input');
+													// Check if the username contains invalid characters
+													const regex = /^[a-zA-Z][a-zA-Z0-9_]{7,29}$/;
+													if (!regex.test(username)) {
+														usernameError.textContent = 'Invalid username. Must contain only letters, numbers, and underscores and be between 8 and 30 characters.';
+														usernameInput.classList.remove('valid-input');
+													} else {
+														usernameError.textContent = '';
+														usernameInput.classList.add('valid-input');
+													}
 												}
 											}
+											
 
 											// Function to validate the first name field
 											function validateFirstName() {
@@ -250,27 +286,51 @@
 											// Function to validate the email field
 											function validateEmail() {
 												const email = emailInput.value;
+												const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+												const invalidEmailFormatRegex = /[.]{2,}|[^a-zA-Z0-9.@_-]/;
+											
 												if (email.trim() === '') {
 													emailError.textContent = 'Email is required.';
+													emailInput.classList.remove('valid-input');
+												} else if (!emailRegex.test(email) || invalidEmailFormatRegex.test(email)) {
+													emailError.textContent = 'Invalid email format.';
 													emailInput.classList.remove('valid-input');
 												} else {
 													emailError.textContent = '';
 													emailInput.classList.add('valid-input');
 												}
 											}
-
+											
+											
 											// Function to validate the password field
 											function validatePassword() {
 												const password = passwordInput.value;
-												const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-												if (!regex.test(password)) {
-													passwordError.textContent = 'Invalid password. Must be at least 8 characters, contain at least one letter, one digit, and one special character.';
-													passwordInput.classList.remove('valid-input');
+												const noLeadingSpace = !(/^\s/.test(password)); // Check for leading space
+												const lengthCheck = password.length >= 8;
+												const letterCheck = /[a-zA-Z]/.test(password);
+												const digitCheck = /\d/.test(password);
+												const specialCharCheck = /[@$!%*?&]/.test(password);
+												
+											    if (!noLeadingSpace) {
+													passwordError.textContent = 'Password cannot start with a space.';
+												} else if (!letterCheck) {
+													passwordError.textContent = 'Password must contain at least one letter.';
+												} else if (!digitCheck) {
+													passwordError.textContent = 'Password must contain at least one digit.';
+												} else if (!specialCharCheck) {
+													passwordError.textContent = 'Password must contain at least one special character.';
+												} else if (!lengthCheck) {
+													passwordError.textContent = 'Password must be at least 8 characters long.';
 												} else {
 													passwordError.textContent = '';
 													passwordInput.classList.add('valid-input');
 												}
+											
+												if (!lengthCheck || !letterCheck || !digitCheck || !specialCharCheck || !noLeadingSpace) {
+													passwordInput.classList.remove('valid-input');
+												}
 											}
+											
 
 											// Add event listeners for real-time validation
 											usernameInput.addEventListener('input', validateUsername);
@@ -388,11 +448,11 @@
 									<div class="footer-contact-info">
 										<div class="footer-address">
 											<span><i class="fas fa-map-marker-alt"></i></span>
-											<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
+											<p> <br> </p>
 										</div>
 										<p>
 											<i class="fas fa-phone-alt"></i>
-											+1 315 369 5943
+											7306741729
 										</p>
 										<p class="mb-0">
 											<i class="fas fa-envelope"></i>
@@ -426,8 +486,8 @@
 									<!-- Copyright Menu -->
 									<div class="copyright-menu">
 										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
+											<li><a href="term-condition.html"></a></li>
+											<li><a href="privacy-policy.html"></a></li>
 										</ul>
 									</div>
 									<!-- /Copyright Menu -->
