@@ -5,6 +5,3 @@ class MediConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'medi'
     
-    def ready(self):
-        import medi.signals
-    
