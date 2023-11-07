@@ -68,7 +68,7 @@
 				
 				<!-- Header Right Menu -->
 				<ul class="nav user-menu">
-					<h6>{{username}}</h6>
+					<h6>{{user.username}}</h6>
 					<!-- Notifications -->
 					<li class="nav-item dropdown noti-dropdown">
 						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
@@ -130,13 +130,13 @@
 									<img src="assets/img/profiles/avatar-01.jpg" alt="User Image" class="avatar-img rounded-circle">
 								</div>
 								<div class="user-text">
-									<h6>{{username}}</h6>
+									<h6>{{user.username}}</h6>
 									<p class="text-muted mb-0">Administrator</p>
 								</div>
 							</div>
 							<a class="dropdown-item" href="profile.html">My Profile</a>
 							<a class="dropdown-item" href="settings.html">Settings</a>
-							<a class="dropdown-item" href="{% url 'signin' %}">Logout</a>
+							<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
 						</div>
 					</li>
 					<!-- /User Menu -->

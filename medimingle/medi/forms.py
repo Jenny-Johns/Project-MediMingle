@@ -43,3 +43,19 @@ class UserRegistrationForm(forms.Form):
         if not any(char.isalpha() for char in password):
             raise ValidationError("Password must contain at least one alphabet character.")
         return password
+
+
+
+# forms.py
+from django import forms
+from .models import Patient,tbl_user
+
+class UserProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ['city','country','pin','gender','profile_image','blood_group','address']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = tbl_user
+        fields = ['first_name','last_name','email','phone_number']

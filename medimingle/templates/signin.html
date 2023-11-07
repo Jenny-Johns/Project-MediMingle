@@ -89,7 +89,11 @@
 			<!-- Page Content -->
 			<div class="content">
 				<div class="container-fluid">
-					
+					{% if messages %}
+						{% for message in messages %}
+							<h5 style="color: #09e5ab;">{{message}}</h5>
+						{% endfor %}
+					{% endif%}
 					<div class="row">
 						<div class="col-md-8 offset-md-2">
 							
