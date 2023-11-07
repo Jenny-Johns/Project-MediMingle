@@ -37,22 +37,7 @@ def register(request):
     else:
        return render(request,'register.html')
         
-    
-    
-# views.py
-# views.py
-
-
-
-
-
-# views.py
-
-
-
-
-
-
+ 
 
 @never_cache
 def user_login(request):
@@ -89,10 +74,20 @@ def logout(request):
 
 
 def patient_dashboard(request):
-    return render(request,'patient_dashboard.html')
+    doc = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
+    context={
+        "doc":doc
+    }
+    return render(request,'patient_dashboard.html',context)
 
 def doctor_dashboard(request):
-    return render(request,'doctor_dashboard.html')    
+    pat=tbl_user.objects.filter(user_type='patient').exclude(is_superuser=True)
+    pat_count=pat.count()
+    context={
+        "pat":pat,
+        "pat_count":pat_count
+    }
+    return render(request,'doctor_dashboard.html',context)    
 
 def homepage(request):
     return render(request,'homepage.html')
@@ -159,3 +154,6 @@ def doctor_list(request):
         "doc":doc
     }
     return render(request,'doctor_list.html',context)
+
+def login_view(request):
+    return render(request,'login_view.html')

@@ -18,6 +18,7 @@ urlpatterns = [
     path('adminpage/',views.adminpage,name='adminpage'),
     path('patient_list',views.patient_list,name='patient_list'),
     path('doctor_list',views.doctor_list,name='doctor_list'),
+    path('login_view',views.login_view,name='login_view'),
    # path('admin_login/',views.admin_login,name='admin_login'),
 
 

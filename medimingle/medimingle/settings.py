@@ -40,9 +40,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'medi',
     'social_django',
+    
 
 ]
 
+
+"""'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+        'allauth.account.middleware.AccountMiddleware',
+            'allauth.account.auth_backends.AuthenticationBackend',
+
+"""
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -145,6 +155,8 @@ AUTHENTICATION_BACKENDS = (
     
 )
 
+# settings.py
+MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
 
 LOGIN_URL = 'homepage'
@@ -161,3 +173,11 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_AGE = 600
 LOGIN_URL='login'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'medimingle@gmail.com'
+EMAIL_HOST_PASSWORD = 'mediminglejenny@123'
