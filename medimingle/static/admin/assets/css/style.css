@@ -86,6 +86,7 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px white inset !important;
 }
+
 .form-control {
     border: 1px solid #ddd;
     box-shadow: none;
@@ -293,6 +294,14 @@ table.table td h2 span {
 }
 #delete_modal .modal-content {
 	text-align: center;
+}
+.delete-button {
+    background-color: red;
+    color: white; /* Text color */
+    border: none; /* Remove button border */
+    padding: 5px 10px; /* Adjust padding as needed */
+    border-radius: 3px; /* Rounded corners */
+    cursor: pointer; /* Add pointer cursor on hover */
 }
 /*-----------------
 	3. Helper Class
