@@ -1,6 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from.import views
 
 urlpatterns = [
@@ -9,7 +10,8 @@ urlpatterns = [
     path('register/',views.register,name='register'),
     path('logout/',views.logout, name='logout'),
     path('patient_dashboard/',views.patient_dashboard,name='patient_dashboard'),
-    path('homepage/patient_dashboard/',views.homepage,name='homepage'),
+    #path('homepage/patient_dashboard/',views.homepage,name='homepage'),
+    #path('homepage/adminpage/',views.homepage,name='homepage'),
     path('patient_dashboard/homepage/',views.homepage,name='homepage'),
     path('doctor_dashboard/homepage/',views.homepage,name='homepage'),
     path('doctor_dashboard/',views.doctor_dashboard,name='doctor_dashboard'),
@@ -30,7 +32,13 @@ urlpatterns = [
    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
    path('block_user/<int:user_id>/', views.block_user, name='block_user'),
    path('unblock_user/<int:user_id>/', views.unblock_user, name='unblock_user'),
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='signin.html')),
+    path('accounts/profile/', auth_views.LoginView.as_view(template_name='patient_dashboard.html')),
 
     
+    path('password_reset/',auth_views.PasswordResetView.as_view(),name='reset_password'),
+    path('password_reset/done/',auth_views.PasswordResetDoneView.as_view(),name='password_reset_done'),
+    path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(),name='password_reset_confirm'),
+    path('reset/done/',auth_views.PasswordResetCompleteView.as_view(),name='password_reset_complete'),
 
 ]

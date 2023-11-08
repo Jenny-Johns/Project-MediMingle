@@ -48,7 +48,7 @@ class UserRegistrationForm(forms.Form):
 
 # forms.py
 from django import forms
-from .models import Patient,tbl_user
+from .models import Patient,tbl_user,Doctor
 
 class UserProfileUpdateForm(forms.ModelForm):
     class Meta:
@@ -59,3 +59,4 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = tbl_user
         fields = ['first_name','last_name','email','phone_number']
+
