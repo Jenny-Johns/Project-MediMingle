@@ -145,7 +145,7 @@
 					<!-- User Menu -->
 					<li class="nav-item dropdown has-arrow">
 						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-							<span class="user-img"><img class="rounded-circle" src="assets/img/profiles/avatar-01.jpg" width="31" alt="Ryan Taylor"></span>
+							<span class="user-img"><img class="rounded-circle" src="{% static 'assets/img/profiles/avatar-01.jpg' %}" width="31" alt="Ryan Taylor"></span>
 						</a>
 						<div class="dropdown-menu">
 							<div class="user-header">
@@ -314,6 +314,7 @@
 											
 											<thead>
 												<tr>
+													<th>Slno</th>
 													<th>Username</th>
 													<th>First Name</th>
 													<th>Last Name</th>
@@ -323,8 +324,10 @@
 												</tr>
 											</thead>
 											<tbody>
+												
 												{% for user in doc %}
 												<tr>
+													<td>{{ user.id}}</td>
 													<td>{{ user.username }}</td>
 													<td>{{ user.first_name }}</td>
 													<td>{{ user.last_name }}</td>
