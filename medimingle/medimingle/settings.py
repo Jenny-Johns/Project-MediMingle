@@ -140,9 +140,10 @@ os.path.join(BASE_DIR,'static')
 ]
 
 
-MEDIA_URL = '/images/'
+# settings.py
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
 
-MEDIA_ROOT=os.path.join(BASE_DIR,'static/images')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -156,8 +157,11 @@ AUTH_USER_MODEL='medi.tbl_user'
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'medi.auth_backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
     
 )
+
 
 # settings.py
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
@@ -183,6 +187,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'prxnv2832@gmail.com'
-EMAIL_HOST_PASSWORD = 'hvgkdjlbaqgqqadw'
+EMAIL_HOST_USER = 'medimingle@gmail.com'
+EMAIL_HOST_PASSWORD = 'qpdpqsdnupsqsubs'
 #EMAIL_HOST_PASSWORD = 'mediminglejenny@123'

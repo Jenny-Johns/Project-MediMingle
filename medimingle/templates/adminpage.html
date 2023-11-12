@@ -1,288 +1,35 @@
 {% load static %}
-<html lang="en">
-    
-<!-- Mirrored from dreamguys.co.in/demo/doccure/admin/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 30 Nov 2019 04:12:20 GMT -->
-<head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-        <title>MediMingle - Dashboard</title>
+{% include "includes/adminheader.html" %}
+<style>
+    .users-header {
+        font-weight: bold;
+        font-size: 30px;  /* Adjust the font size as needed */
 		
-		<!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="{% static '/admin/assets/img/favicon.png' %}">
-		
-		<!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="{% static '/admin/assets/css/bootstrap.min.css'%}">
-		
-		<!-- Fontawesome CSS -->
-        <link rel="stylesheet" href="{% static '/admin/assets/css/font-awesome.min.css'%}">
-		
-		<!-- Feathericon CSS -->
-        <link rel="stylesheet" href="{% static '/admin/assets/css/feathericon.min.css'%}">
-		
-		<link rel="stylesheet" href="{% static '/assets/plugins/morris/morris.css'%}">
-		
-		<!-- Main CSS -->
-        <link rel="stylesheet" href="{% static '/admin/assets/css/style.css'%}">
+	}
+	.dash-widget-icon {
+		align-items: center;
+		display: inline-flex;
+		font-size: 5rem;
+		height: 60px;
+		justify-content: center;
+		line-height: 50px;
+		text-align: center;
+		width: 60px;
+		border: 5px solid;
+		border-radius: 60px;
+		padding: 55px;
+	}
+	</style>
 
-		
-		<!--[if lt IE 9]>
-			<script src="assets/js/html5shiv.min.js"></script>
-			<script src="assets/js/respond.min.js"></script>
-		<![endif]-->
-    </head>
-    <body>
 	
-		<!-- Main Wrapper -->
-        <div class="main-wrapper">
-		
-			<!-- Header -->
-            <div class="header">
-			
-				<!-- Logo -->
-                <div class="header-left">
-                    <a href="index.html" class="logo">
-						<img src="{% static '/assets/img/log.png' %}" alt="Logo">
-					</a>
-					<a href="index.html" class="logo logo-small">
-						<img src="{% static '/assets/img/favicon.png' %}" alt="Logo" width="30" height="30">
-					</a>
-                </div>
-				<!-- /Logo -->
-				
-				<a href="{% static '/javascript:void(0)'%}" id="toggle_btn">
-					<i class="fe fe-text-align-left"></i>
-				</a>
-				
-				<div class="top-nav-search">
-					<form>
-						<input type="text" class="form-control" placeholder="Search here">
-						<button class="btn" type="submit"><i class="fa fa-search"></i></button>
-					</form>
-				</div>
-				
-				<!-- Mobile Menu Toggle -->
-				<a class="mobile_btn" id="mobile_btn">
-					<i class="fa fa-bars"></i>
-				</a>
-				<!-- /Mobile Menu Toggle -->
-				
-				<!-- Header Right Menu -->
-				<ul class="nav user-menu">
-					<h6>{{user.username}}</h6>
-					<!-- Notifications -->
-					<li class="nav-item dropdown noti-dropdown">
-						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-							<i class="fe fe-bell"></i> <span class="badge badge-pill">3</span>
-						</a>
-						<div class="dropdown-menu notifications">
-							<div class="topnav-dropdown-header">
-								<span class="notification-title">Notifications</span>
-								<a href="javascript:void(0)" class="clear-noti"> Clear All </a>
-							</div>
-							<div class="noti-content">
-								<ul class="notification-list">
-									<li class="notification-message">
-										<a href="#">
-											<div class="media">
-												
-											</div>
-										</a>
-									</li>
-									<li class="notification-message">
-										<a href="#">
-											<div class="media">
-												
-											</div>
-										</a>
-									</li>
-									<li class="notification-message">
-										<a href="#">
-											<div class="media">
-												
-											</div>
-										</a>
-									</li>
-									<li class="notification-message">
-										<a href="#">
-											<div class="media">
-												
-											</div>
-										</a>
-									</li>
-								</ul>
-							</div>
-							<div class="topnav-dropdown-footer">
-								<a href="#">View all Notifications</a>
-							</div>
-						</div>
-					</li>
-					<!-- /Notifications -->
-					
-					<!-- User Menu -->
-					<li class="nav-item dropdown has-arrow">
-						
-						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-							<span class="user-img"><img class="rounded-circle" src="assets/img/profiles/avatar-01.jpg" width="31" alt="Ryan Taylor"></span>
-						</a>
-						<div class="dropdown-menu">
-							<div class="user-header">
-								<div class="avatar avatar-sm">
-									<img src="assets/img/profiles/avatar-01.jpg" alt="User Image" class="avatar-img rounded-circle">
-								</div>
-								<div class="user-text">
-									<h6>{{user.username}}</h6>
-									<p class="text-muted mb-0">Administrator</p>
-								</div>
-							</div>
-							
-							<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-						</div>
-					</li>
-					<!-- /User Menu -->
-					
-				</ul>
-				<!-- /Header Right Menu -->
-				
-            </div>
-			<!-- /Header -->
-			
-			<!-- Sidebar -->
-            <div class="sidebar" id="sidebar">
-                <div class="sidebar-inner slimscroll">
-					<div id="sidebar-menu" class="sidebar-menu">
-						<ul>
-							<li class="menu-title"> 
-								<span>Admin Dashboard</span>
-							</li>
-							<li class="active"> 
-								<a href="{% url 'homepage' %}"><i class="fe fe-home"></i> <span>Home</span></a>
-							</li>
-							
-							<li> 
-								<a href="{% url 'doctor_list' %}"><i class="fe fe-user-plus"></i> <span>Doctors</span></a>
-							</li>
-							<li> 
-								<a href="{% url 'patient_list' %}"><i class="fe fe-user"></i> <span>Patients</span></a>
-							</li>
-							<!--<li> 
-								<a href="appointment-list.html"><i class="fe fe-layout"></i> <span>Appointments</span></a>
-							</li>
-							<li> 
-								<a href="specialities.html"><i class="fe fe-users"></i> <span>Specialities</span></a>
-							</li>
-							<li> 
-								<a href="reviews.html"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
-							</li>
-							<li> 
-								<a href="transactions-list.html"><i class="fe fe-activity"></i> <span>Transactions</span></a>
-							</li>
-							<li> 
-								<a href="settings.html"><i class="fe fe-vector"></i> <span>Settings</span></a>
-							</li>
-							<li class="submenu">
-								<a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
-								<ul style="display: none;">
-									<li><a href="invoice-report.html">Invoice Reports</a></li>
-								</ul>
-							</li>
-							<li class="menu-title"> 
-								<span>Pages</span>
-							</li>
-							<li> 
-								<a href="profile.html"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
-							</li>
-							<li class="submenu">
-								<a href="#"><i class="fe fe-document"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
-								<ul style="display: none;">
-									<li><a href="login.html"> Login </a></li>
-									<li><a href="register.html"> Register </a></li>
-									<li><a href="forgot-password.html"> Forgot Password </a></li>
-									<li><a href="lock-screen.html"> Lock Screen </a></li>
-								</ul>
-							</li>
-							<li class="submenu">
-								<a href="#"><i class="fe fe-warning"></i> <span> Error Pages </span> <span class="menu-arrow"></span></a>
-								<ul style="display: none;">
-									<li><a href="error-404.html">404 Error </a></li>
-									<li><a href="error-500.html">500 Error </a></li>
-								</ul>
-							</li>
-							<li> 
-								<a href="blank-page.html"><i class="fe fe-file"></i> <span>Blank Page</span></a>
-							</li>
-							<li class="menu-title"> 
-								<span>UI Interface</span>
-							</li>
-							<li> 
-								<a href="components.html"><i class="fe fe-vector"></i> <span>Components</span></a>
-							</li>
-							<li class="submenu">
-								<a href="#"><i class="fe fe-layout"></i> <span> Forms </span> <span class="menu-arrow"></span></a>
-								<ul style="display: none;">
-									<li><a href="form-basic-inputs.html">Basic Inputs </a></li>
-									<li><a href="form-input-groups.html">Input Groups </a></li>
-									<li><a href="form-horizontal.html">Horizontal Form </a></li>
-									<li><a href="form-vertical.html"> Vertical Form </a></li>
-									<li><a href="form-mask.html"> Form Mask </a></li>
-									<li><a href="form-validation.html"> Form Validation </a></li>
-								</ul>
-							</li>
-							<li class="submenu">
-								<a href="#"><i class="fe fe-table"></i> <span> Tables </span> <span class="menu-arrow"></span></a>
-								<ul style="display: none;">
-									<li><a href="tables-basic.html">Basic Tables </a></li>
-									<li><a href="data-tables.html">Data Table </a></li>
-								</ul>
-							</li>
-							<li class="submenu">
-								<a href="javascript:void(0);"><i class="fe fe-code"></i> <span>Multi Level</span> <span class="menu-arrow"></span></a>
-								<ul style="display: none;">
-									<li class="submenu">
-										<a href="javascript:void(0);"> <span>Level 1</span> <span class="menu-arrow"></span></a>
-										<ul style="display: none;">
-											<li><a href="javascript:void(0);"><span>Level 2</span></a></li>
-											<li class="submenu">
-												<a href="javascript:void(0);"> <span> Level 2</span> <span class="menu-arrow"></span></a>
-												<ul style="display: none;">
-													<li><a href="javascript:void(0);">Level 3</a></li>
-													<li><a href="javascript:void(0);">Level 3</a></li>
-												</ul>
-											</li>
-											<li><a href="javascript:void(0);"> <span>Level 2</span></a></li>
-										</ul>
-									</li>
-									<li>
-										<a href="javascript:void(0);"> <span>Level 1</span></a>
-									</li>
-								</ul>
-							</li>-->
-						</ul>
-					</div>
-                </div>
-            </div>
-			<!-- /Sidebar -->
-			
-			<!-- Page Wrapper -->
-            <div class="page-wrapper">
-			
-                <div class="content container-fluid">
-					
-					<!-- Page Header -->
-					<div class="page-header">
-						<div class="row">
-							<div class="col-sm-12">
-								<h3 class="page-title">Welcome Admin!</h3>
-								<ul class="breadcrumb">
-									<li class="breadcrumb-item active">Dashboard</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!-- /Page Header -->
+	
+	
+	
+ 
 
 					<div class="row">
-						<div class="col-xl-3 col-sm-6 col-12">
-							<div class="card">
+						<div class="col-xl-3 col-sm-6 col-14">
+							<div class="card ">
 								<div class="card-body">
 									<div class="dash-widget-header">
 										<span class="dash-widget-icon text-primary border-primary">
@@ -293,7 +40,7 @@
 										</div>
 									</div>
 									<div class="dash-widget-info">
-										<h6 class="text-primary">Users</h6>
+										<h6 class="text-primary users-header">Users</h6>
 										
 									</div>
 								</div>
@@ -312,7 +59,7 @@
 									</div>
 									<div class="dash-widget-info">
 										
-										<h6 class="text-success">Doctors</h6>
+										<h6 class="text-success users-header">Doctors</h6>
 										
 									</div>
 								</div>
@@ -331,18 +78,18 @@
 									</div>
 									<div class="dash-widget-info">
 										
-										<h6 class="text-warning">Patients</h6>
+										<h6 class="text-warning users-header">Patients</h6>
 										
 									</div>
 								</div>
 							</div>
 						</div>
-						<!--<div class="col-xl-3 col-sm-6 col-12">
+						<div class="col-xl-3 col-sm-6 col-12">
 							<div class="card">
 								<div class="card-body">
 									<div class="dash-widget-header">
-										<span class="dash-widget-icon text-warning border-warning">
-											<i class="fe fe-folder"></i>
+										<span class="dash-widget-icon text-info border-info">
+											<i class="fe fe-layout"></i>
 										</span>
 										<div class="dash-count">
 											<h3>$62523</h3>
@@ -350,15 +97,13 @@
 									</div>
 									<div class="dash-widget-info">
 										
-										<h6 class="text-muted">Revenue</h6>
-										<div class="progress progress-sm">
-											<div class="progress-bar bg-warning w-50"></div>
+										<h6 class="text-info users-header">Appointments</h6>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>-->
+					</div>
 					<div class="row">
 						<div class="col-md-12 col-lg-6">
 						
@@ -395,59 +140,7 @@
 						<div class="col-md-12">
 						
 							<!-- Recent Orders -->
-							<div class="card card-table">
-								<div class="card-header">
-									<h4 class="card-title">Users List</h4>
-								</div>
-								<div class="card-body">
-									<div class="table-responsive">
-										<table class="table table-hover table-center mb-0">
-											
-											<thead>
-												<tr>
-													<th>Username</th>
-													<th>First Name</th>
-													<th>Last Name</th>
-													<th>Email</th>
-													<th>Phone Number</th>
-													<th>User Type</th>
-													<th>Action</th>
-        										    <th>Delete</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for user in users %}
-												<tr>
-													<td>{{ user.username }}</td>
-													<td>{{ user.first_name }}</td>
-													<td>{{ user.last_name }}</td>
-													<td>{{ user.email }}</td>
-													<td>{{ user.phone_number }}</td>
-													<td>{{ user.user_type }}</td>
-													<td>
-														{% if user.blocked %}
-															<a href="{% url 'unblock_user' user.id %}">Unblock</a>
-														{% else %}
-															<a href="{% url 'block_user' user.id %}">Block</a>
-														{% endif %}
-													</td>
-													<td>
-														<form action="{% url 'delete_user' user.id %}" method="post">
-															{% csrf_token %}
-															<button type="submit" class="btn btn-sm bg-danger-light" data-toggle="modal">Delete</button>
-														</form>
-													</td>
-												</tr>
-											{% empty %}
-												<tr>
-													<td colspan="6">No users found.</td>
-												</tr>
-											{% endfor %}
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
+							
 							<!-- /Recent Orders -->
 							
 						</div>

@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
@@ -23,14 +24,15 @@ class tbl_user(AbstractUser):
 class Doctor(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
     city  = models.CharField(max_length=50,null=True,blank=True)
-    profile_image = models.ImageField(upload_to='doctors/%Y/%m/%d/',default='default.png')
+    profile_image = models.ImageField(upload_to='',default='default.png')
     gender = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
 
     def __str__(self):
         return self.user.first_name
-    # Add fields specific to doctors, e.g., specialty, qualifications, etc.
+    
+    
 class DoctorSpecialization(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     specialized_category  = models.CharField(max_length=50, null=True)
@@ -54,7 +56,7 @@ class Experience(models.Model):
     worked_from = models.DateField(null=True)
     worked_to = models.DateField(null=True)
     designation = models.CharField(max_length=50, null=True)
-    user = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.hospital_name

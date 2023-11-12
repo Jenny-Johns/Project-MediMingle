@@ -3,6 +3,13 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
+from django import forms
+from .models import Doctor, DoctorSpecialization, Qualification, Experience
+from django import forms
+from .models import Patient,tbl_user
+
+
+
 
 class UserRegistrationForm(forms.Form):
     username = forms.CharField(max_length=20, required=True, help_text="Required. 20 characters or fewer.")
@@ -46,9 +53,7 @@ class UserRegistrationForm(forms.Form):
 
 
 
-# forms.py
-from django import forms
-from .models import Patient,tbl_user,Doctor
+
 
 class UserProfileUpdateForm(forms.ModelForm):
     class Meta:
@@ -56,7 +61,44 @@ class UserProfileUpdateForm(forms.ModelForm):
         fields = ['city','country','pin','gender','profile_image','blood_group','address']
 
 class ProfileUpdateForm(forms.ModelForm):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+
     class Meta:
         model = tbl_user
         fields = ['first_name','last_name','email','phone_number']
+    widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
+
+
+
+"""class UserForm(UserChangeForm):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+
+    class Meta:
+        model = tbl_user
+        fields = ['first_name', 'last_name', 'email', 'phone_number']"""
+
+
+class DoctorForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = ['city', 'profile_image', 'gender', 'description'] 
+    
+class DoctorSpecializationForm(forms.ModelForm):
+    class Meta:
+        model = DoctorSpecialization
+        fields = ['specialized_category']
+
+class QualificationForm(forms.ModelForm):
+    class Meta:
+        model = Qualification
+        fields = ['institution_name', 'qualification_degree', 'years_of_completion']
+
+class ExperienceForm(forms.ModelForm):
+    class Meta:
+        model = Experience
+        fields = ['hospital_name', 'worked_from', 'worked_to', 'designation']
