@@ -24,7 +24,7 @@ class tbl_user(AbstractUser):
 class Doctor(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
     city  = models.CharField(max_length=50,null=True,blank=True)
-    profile_image = models.ImageField(upload_to='',default='default.png')
+    profile_image = models.ImageField(upload_to='doctor/',default='default.png')
     gender = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
@@ -64,7 +64,7 @@ class Experience(models.Model):
 class Patient(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
     
-    profile_image = models.ImageField(null=True,blank=True)
+    profile_image = models.ImageField(upload_to='patient/',default='default.png')
     city  = models.CharField(max_length=100, null=True,blank=True)
     state  = models.CharField(max_length=100, null=True)
     country  = models.CharField(max_length=100, null=True)

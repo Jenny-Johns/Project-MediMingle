@@ -136,9 +136,9 @@ def profile_settings(request):
 
     if request.method == 'POST':
         user_form = ProfileUpdateForm(request.POST, instance=user)
-        patient_form = UserProfileUpdateForm(request.POST, instance=patient_data)
+        patient_form = UserProfileUpdateForm(request.POST, request.FILES, instance=patient_data)
 
-        if user_form.is_valid():
+        if user_form.is_valid() and patient_form.is_valid():
             # Update the Patient model fields
             user_form.save()
             patient_form.save()
@@ -154,7 +154,6 @@ def profile_settings(request):
 
 @never_cache   
 @login_required(login_url='signin')
-# views.py
 def doctor_profile_settings(request):
     user = request.user  # Get the logged-in user
     try:

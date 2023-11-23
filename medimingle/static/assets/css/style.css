@@ -5177,10 +5177,14 @@ html.menu-opened body {
 .widget-profile {
     background-color: #fff;
     border-bottom: 1px solid #f0f0f0;
+	
 }
 .widget-profile .profile-info-widget {
 	display: block;
 	text-align: center;
+	height: 50px;
+	width: 50px;
+	border-radius: 50%;
 }
 .widget-profile .profile-info-widget .booking-doc-img {
     display: inline-block;

@@ -84,7 +84,7 @@
 							<div class="dropdown-menu dropdown-menu-right">
 								<div class="user-header">
 									<div class="avatar avatar-sm">
-										<img src="" alt="User Image" class="avatar-img rounded-circle">
+										<img src="{{ user.patient_data.profile_image.url }}" alt="User Image" class="avatar-img rounded-circle">
 									</div>
 									<div class="user-text">
 										<h6>{{user.username}}</h6>
@@ -132,9 +132,14 @@
 							<div class="profile-sidebar">
 								<div class="widget-profile pro-widget-content">
 									<div class="profile-info-widget">
+										{% if user.patient_data.profile_image %}
 										<a href="#" class="booking-doc-img">
-											<img src="" alt="User Image">
+											<img src="{{ user.patient_data.profile_image.url }}" alt="User Image">
 										</a>
+										{% else %}
+										<img src="#" alt="User Image">
+										{% endif %}
+
 										<div class="profile-det-info">
 											<h3>{{user.username}}</h3>
 											<div class="patient-details">
