@@ -1,3 +1,4 @@
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
@@ -10,6 +11,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserProfileUpdateForm,ProfileUpdateForm
 from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,DoctorForm
 from django.views.decorators.http import require_POST
+from .models import Schedule
+from .forms import ScheduleForm
 
 
 # Create your views here.
@@ -330,3 +333,28 @@ def patient_change_password(request):
         return redirect('signin')
 
     return render(request, 'patient_change_password.html')
+
+from django.shortcuts import get_object_or_404
+
+def schedule_timings(request):
+    user = request.user
+
+    # Ensure the user is a doctor
+    if not user.is_authenticated or user.user_type != 'doctor':
+        return HttpResponseForbidden("You don't have permission to access this page.")
+
+    doctor = get_object_or_404(Doctor, user=user)
+
+    if request.method == 'POST':
+        form = ScheduleForm(request.POST)
+        if form.is_valid():
+            schedule = form.save(commit=False)
+            schedule.doctor = doctor
+            schedule.save()
+            return redirect('doctor_dashboard')
+    else:
+        form = ScheduleForm()
+
+    schedules = Schedule.objects.filter(doctor=doctor)
+
+    return render(request, 'schedule_timings.html', {'form': form, 'schedules': schedules})

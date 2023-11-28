@@ -28,11 +28,18 @@ class Doctor(models.Model):
     gender = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
-
+    #slots = models.ManyToManyField('Slot',)
     def __str__(self):
         return self.user.first_name
     
-    
+
+class Schedule(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    day = models.CharField(max_length=20)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+
 class DoctorSpecialization(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     specialized_category  = models.CharField(max_length=50, null=True)

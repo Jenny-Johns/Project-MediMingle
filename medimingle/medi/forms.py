@@ -6,7 +6,7 @@ import re
 from django import forms
 from .models import Doctor, DoctorSpecialization, Qualification, Experience
 from django import forms
-from .models import Patient,tbl_user
+from .models import Patient,tbl_user,Schedule
 
 
 
@@ -102,3 +102,9 @@ class ExperienceForm(forms.ModelForm):
     class Meta:
         model = Experience
         fields = ['hospital_name', 'worked_from', 'worked_to', 'designation']
+
+
+class ScheduleForm(forms.ModelForm):
+    class Meta:
+        model = Schedule
+        fields = ['day', 'start_time', 'end_time']
