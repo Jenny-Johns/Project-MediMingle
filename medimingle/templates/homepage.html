@@ -75,16 +75,32 @@
                     <i class="far fa-hospital"></i>							
                 </div>
                 <div class="header-contact-detail">
-                    <p style="color: white;" class="contact-header">Contact</p>
-                    <p style="color: white;" class="contact-info-header">7306741729</p>
+                    {% if user.is_authenticated %}
+                        <p class="contact-header">Welcome | {{ user.first_name }}</p>
+                        {% if user.user_type == 'doctor' %}
+                            <p class="contact-info-header"><a href="{% url 'doctor_dashboard' %}">Dashboard</a></p>
+                        {% else %}
+                        <p class="contact-info-header"><a href="{% url 'patient_dashboard' %}">Dashboard</a></p>
+                        {% endif %}
+                        
+                    {% else  %}
+
+                    {% endif %}
                 </div>
             </li>
             <li class="nav-item">
-               <a class="nav-link header-login" href="{% url 'logout' %}">logout</a>
-            </li>
-            <!--<li class="nav-item">
-                <a class="nav-link header-register" href="{% url 'register' %}">Register</a>
-            </li>-->
+				{% if user.is_authenticated %}
+				<li class="nav-item">
+					<a class="nav-link header-login" href="{% url 'logout' %}">Logout</a>
+				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link header-login" href="{% url 'signin' %}">Login</a>
+				</li>
+					<li class="nav-item">
+						<a class="nav-link header-login" href="{% url 'register' %}">Register </a>
+					</li>
+				{% endif %}
         </ul>
     </nav>
 </header>
@@ -223,7 +239,7 @@
 										<h3 class="title">Dr.{{d.first_name}}
 											<i class="fas fa-check-circle verified"></i>
 										</h3>
-										<p class="speciality">MDS - Periodontology and Oral Implantology, BDS</p>
+										<p class="speciality">{{d.specialised_category}}</p>
 										<div class="rating">
 											<i class="fas fa-star filled"></i>
 											<i class="fas fa-star filled"></i>
@@ -249,11 +265,11 @@
 												<a href="doctor-profile.html" class="btn view-btn">View Profile</a>
 											</div>
 											<div class="col-6">
-												<a href="booking.html" class="btn book-btn">Book Now</a>
+												<a href="{% url 'booking' d.id %}" class="btn book-btn">Book Now</a>
 											</div>
 										</div>
 									</div>
-								</div>-->
+								</div>
 								
 								<!-- Doctor Widget -->
 								{% endfor %}
@@ -284,25 +300,7 @@
 									</div>
 									<div class="footer-about-content">
 										<p>Make Heathcare Better Together</p>
-										<!--<div class="social-icon">
-											<ul>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-twitter"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
-												</li>
-											</ul>
-										</div>-->
+										
 									</div>
 								</div>
 								<!-- /Footer Widget -->
@@ -311,36 +309,11 @@
 							
 							<div class="col-lg-3 col-md-6">
 							
-								<!-- Footer Widget -->
-								<!--<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Patients</h2>
-									<ul>
-										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
-										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
-									</ul>
-								</div>-->
-								<!-- /Footer Widget -->
 								
 							</div>
 							
 							<div class="col-lg-3 col-md-6">
 							
-								<!-- Footer Widget -->
-								<!--<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Doctors</h2>
-									<ul>
-										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
-										<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
-									</ul>
-								</div>-->
-								<!-- /Footer Widget -->
-								
 							</div>
 							
 							<div class="col-lg-3 col-md-6">
@@ -376,12 +349,7 @@
                 <div class="footer-bottom">
 					<div class="container-fluid">
 					
-						<!-- Copyright -->
 						
-								
-									<!-- Copyright Menu -->
-									
-									<!-- /Copyright Menu -->
 									
 								</div>
 							</div>
@@ -413,6 +381,4 @@
 		
 	</body>
 
-<!-- doccure/  30 Nov 2019 04:11:53 GMT -->
 </html>
-<!--{% static '/'%} -->

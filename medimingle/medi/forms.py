@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
 from django import forms
-from .models import Doctor, DoctorSpecialization, Qualification, Experience
+from .models import Doctor, DoctorSpecialization, MedicalHistory, Qualification, Experience
 from django import forms
-from .models import Patient,tbl_user,Schedule
+from .models import Patient,tbl_user
 
 
 
@@ -103,8 +103,12 @@ class ExperienceForm(forms.ModelForm):
         model = Experience
         fields = ['hospital_name', 'worked_from', 'worked_to', 'designation']
 
-
-class ScheduleForm(forms.ModelForm):
+class MedicalHistoryForm(forms.ModelForm):
     class Meta:
-        model = Schedule
-        fields = ['day', 'start_time', 'end_time']
+        model = MedicalHistory
+        fields = ['reason','weight','age', 'previous_operation', 'current_medication', 'other_illness','other_information']
+
+    def __init__(self, *args, **kwargs):
+        super(MedicalHistoryForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'

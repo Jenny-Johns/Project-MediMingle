@@ -1,0 +1,340 @@
+{% comment %} {% load static %}
+<!DOCTYPE html> 
+<html lang="en">
+
+	
+<!-- doccure/  30 Nov 2019 04:11:34 GMT -->
+<head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+		<title>Medimingle</title>
+		
+		<!-- Favicons -->
+		<!--<link rel="icon" type="image/png" href="{% static '/assets/img/favicon.png'%}">-->
+		<link rel="icon" type="image/png" sizes="16x16" href="{% static '/favicon-16x16.png' %}">
+
+		
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/bootstrap.min.css'%}">
+		
+		<!-- Fontawesome CSS -->
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/fontawesome.min.css'%}">
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/all.min.css'%}">
+		
+		<!-- Main CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/style.css'%}">
+		
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.min.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+	
+	</head>
+	<body>
+
+		<!-- Main Wrapper -->
+		<div class="main-wrapper">
+		
+			<!-- Header -->
+			{% load static %}
+<!--Header -->
+<header class="header">
+    <nav class="navbar navbar-expand-lg header-nav">
+        <div class="navbar-header">
+            <a id="mobile_btn" href="javascript:void(0);">
+                <span class="bar-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </a>
+            <a href="index-2.html" class="navbar-brand logo">
+                <img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+            </a>
+        </div>
+        <div class="main-menu-wrapper">
+            <div class="menu-header">
+                <a href="index-2.html" class="menu-logo">
+                    <img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+                </a>
+                <a id="menu_close" class="menu-close" href="javascript:void(0);">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <ul class="main-nav">
+                
+				
+                
+            </ul>		 
+        </div>		 
+        <ul class="nav header-navbar-rht">
+            <li class="nav-item contact-item">
+                <div class="header-contact-img">
+                    <i class="far fa-hospital"></i>							
+                </div>
+                <div class="header-contact-detail">
+                    <p style="color: white;" class="contact-header">Contact</p>
+                    <p style="color: white;" class="contact-info-header">7306741729</p>
+                </div>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link header-login" href="{% url 'logout' %}">logout</a>
+            </li>
+            <!--<li class="nav-item">
+                <a class="nav-link header-register" href="{% url 'register' %}">Register</a>
+            </li>-->
+        </ul>
+    </nav>
+</header> {% endcomment %}
+			<!-- /Header -->
+			
+			<!-- Breadcrumb -->
+			
+			<!-- /Breadcrumb -->
+			
+{% load static %}
+{% include 'includes/main_header.html' %}
+			<!-- Page Content -->
+			<div class="content">
+				<div class="container-fluid">
+
+					<div class="row">
+						<div class="col-md-12 col-lg-4 col-xl-3 theiaStickySidebar">
+						
+							<!-- Search Filter -->
+							<div class="card search-filter">
+								<div class="card-header">
+									<h4 class="card-title mb-0">Search Filter</h4>
+								</div>
+								<div class="card-body">
+									<form action="{% url 'doctor_search' %}" method="GET">
+
+										<div class="filter-widget">
+											<h4>Gender</h4>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="gender_type" value="male">
+													<span class="checkmark"></span> Male Doctor
+												</label>
+											</div>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="gender_type" value="female">
+													<span class="checkmark"></span> Female Doctor
+												</label>
+											</div>
+										</div>
+										<div class="filter-widget">
+											<h4>Select Specialist</h4>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="select_specialist">
+													<span class="checkmark"></span> Urology
+												</label>
+											</div>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="select_specialist">
+													<span class="checkmark"></span> Neurology
+												</label>
+											</div>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="select_specialist">
+													<span class="checkmark"></span> Dentist
+												</label>
+											</div>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="select_specialist">
+													<span class="checkmark"></span> Orthopedic
+												</label>
+											</div>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="select_specialist">
+													<span class="checkmark"></span> Cardiologist
+												</label>
+											</div>
+											<div>
+												<label class="custom_check">
+													<input type="checkbox" name="select_specialist">
+													<span class="checkmark"></span> Cardiologist
+												</label>
+											</div>
+										</div>
+											<div class="btn-search">
+												<button type="submit" class="btn btn-block">Search</button>
+											</div>	
+									 </form>	
+								</div>
+							</div>
+							<!-- /Search Filter -->
+							
+						</div>
+						
+						<div class="col-md-12 col-lg-8 col-xl-9">
+
+							<!-- Doctor Widget -->
+							{% for doctor in doctors %}
+
+							<div class="card">
+								<div class="card-body">
+									<div class="doctor-widget">
+										<div class="doc-info-left">
+											<div class="doctor-img">
+												<a href="{% url 'profile' doctor.id %}">
+													<img src="{{ doctor.profile_image.url }}" class="img-fluid" alt="User Image">
+												</a>
+											</div>
+											<div class="doc-info-cont">
+												<h4 class="doc-name"><a href="{% url 'profile' doctor.id %}">Dr. {{doctor.user.first_name}} {{doctor.user.last_name}}</a></h4>
+												<p class="doc-speciality"></p>
+												<h5 class="doc-department"></h5>
+												<div class="rating">
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star"></i>
+													<span class="d-inline-block average-rating">(17)</span>
+												</div>
+											</div>
+										</div>
+										<div class="doc-info-right">
+											<div class="clini-infos">
+												<ul>
+													<li><i class="far fa-thumbs-up"></i> 98%</li>
+													<li><i class="far fa-comment"></i> 17 Feedback</li>
+													</ul>
+											</div>
+											<div class="clinic-booking">
+												<a class="view-pro-btn" href="doctor-profile.html">View Profile</a>
+												<a class="apt-btn" href="{% url 'booking' doctor.id %}">Book Appointment</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+							<!-- /Doctor Widget -->
+
+							<!-- Doctor Widget -->
+							
+							<!-- /Doctor Widget -->
+
+							<!-- Doctor Widget -->
+							
+							<!-- /Doctor Widget -->
+
+						</div>
+					</div>
+
+				</div>
+
+			</div>		
+			<!-- /Page Content -->
+   
+			<!-- Footer -->
+					   
+			
+			<!-- Footer -->
+			<footer class="footer">
+				
+				<!-- Footer Top -->
+				<div class="footer-top">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-about">
+									<div class="footer-logo">
+										<img src="{% static '/assets/img/logo.png'%}" alt="logo">
+									</div>
+									<div class="footer-about-content">
+										<p>Make Heathcare Better Together</p>
+										
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-contact">
+									<h2 class="footer-title">Contact Us</h2>
+									<div class="footer-contact-info">
+										<div class="footer-address">
+											<span><i class="fas fa-map-marker-alt"></i></span>
+											<p> <br> </p>
+										</div>
+										<p>
+											<i class="fas fa-phone-alt"></i>
+											7306741729
+										</p>
+										<p class="mb-0">
+											<i class="fas fa-envelope"></i>
+											medimingle@gmail.com.com
+										</p>
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<!-- /Footer Top -->
+				
+				<!-- Footer Bottom -->
+                <div class="footer-bottom">
+					<div class="container-fluid">
+					
+						
+									
+								</div>
+							</div>
+						</div>
+						<!-- /Copyright -->
+						
+					</div>
+				</div>
+				<!-- /Footer Bottom -->
+				
+			</footer>
+			<!-- /Footer -->
+		   
+	   </div>
+	   <!-- /Main Wrapper -->
+	  
+		<!-- jQuery -->
+		<script src="{% static '/assets/js/jquery.min.js'%}"></script>
+		
+		<!-- Bootstrap Core JS -->
+		<script src="{% static '/assets/js/popper.min.js'%}"></script>
+		<script src="{% static '/assets/js/bootstrap.min.js'%}"></script>
+		
+		<!-- Slick JS -->
+		<script src="{% static '/assets/js/slick.js'%}"></script>
+		
+		<!-- Custom JS -->
+		<script src="{% static '/assets/js/script.js'%}"></script>
+		
+	</body>
+
+</html>

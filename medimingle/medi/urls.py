@@ -15,8 +15,13 @@ urlpatterns = [
     #path('patient_dashboard/homepage/',views.homepage,name='homepage'),
     #path('doctor_dashboard/homepage/',views.homepage,name='homepage'),
     path('doctor_dashboard/',views.doctor_dashboard,name='doctor_dashboard'),
+    # path('doctor_specialization/',views.doctor_specialization, name='doctor_specialization'),
+    path('history/', views.history, name='history'),
+    path('doctors/',views.doctors, name='doctors'),
+    path('profile/<int:doctor_id>/', views.profile, name='profile'),
+    path('booking/<int:doctor_id>/', views.booking, name='booking'),
+    path('doctor_search/', views.doctor_search, name='doctor_search'),
     path('schedule_timings',views.schedule_timings,name='schedule_timings'),
-    path('add_time_slot/', views.add_time_slot, name='add_time_slot'),
     path('forgot_password/',views.forgot_password,name='forgot_password'),
     path('patient_profile/',views.patient_profile,name='patient_profile'),
     path('profile_settings/',views.profile_settings,name='profile_settings'),
@@ -28,7 +33,8 @@ urlpatterns = [
     path('doctor_list',views.doctor_list,name='doctor_list'),
     path('login_view',views.login_view,name='login_view'),
     path('patient_change_password/',views.patient_change_password,name='patient_change_password'),
-
+    path('patient_appointment/<int:doctor_id>/', views.patient_appointment, name='patient_appointment'),
+    path('bill', views.bill,name='bill'),
 
 
    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),

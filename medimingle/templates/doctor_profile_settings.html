@@ -39,14 +39,26 @@
 										<div class="card-body">
 									<div class="patient-profile-form">
 										<h3>Specialization</h3>
-										{% for field in specialization_form %}
+										{% comment %} <form action="{% url 'doctor_specialization' %}" method="POST">
+											{% csrf_token %}
+											<select data-placeholder="Select Specilization Category" class="chosen-select" multiple tabindex="4" name="category">
+			
+												<option value=""></option>
+												{% for key,value in category.items %}
+													<option value="{{ key }}">{{ value }}</option>
+												{% endfor %}
+											  
+											</select>
+										<button type="submit" class="btn btn-primary" style="width: 120px; height:31px; font-size:14px;">Submit</button>
+										</form> {% endcomment %}
+										 {% for field in specialization_form %}
 											<div class="form-group">
 												{{ field.label_tag }} {{ field }}
 												{% if field.errors %}
 													<div class="error">{{ field.errors }}</div>
 												{% endif %}
 											</div>
-										{% endfor %}
+										{% endfor %} 
 									</div>
 								</div>
 									</div>

@@ -14,52 +14,24 @@
 											<h4 class="card-title">Schedule Timings</h4>
 											<div class="profile-box">
 												<div class="row">
-
-													<div class="col-lg-4">
-														<div class="form-group">               
-															<label>Timing Slot Duration</label>
-															<select class="select form-control">
-																<option>-</option>
-																<option>15 mins</option>
-																<option selected="selected">30 mins</option>  
-																<option>45 mins</option>
-																<option>1 Hour</option>
-															</select>
-														</div>
-													</div>
-
 												</div>     
 												<div class="row">
 													<div class="col-md-12">
 														<div class="card schedule-widget mb-0">
-														
 															<!-- Schedule Header -->
 															<div class="schedule-header">
-															
 																<!-- Schedule Nav -->
 																<div class="schedule-nav">
 																	<ul class="nav nav-tabs nav-justified">
-																		<li class="nav-item">
-																			<a class="nav-link" data-toggle="tab" href="#slot_sunday">Sunday</a>
-																		</li>
-																		<li class="nav-item">
-																			<a class="nav-link active" data-toggle="tab" href="#slot_monday">Monday</a>
-																		</li>
-																		<li class="nav-item">
-																			<a class="nav-link" data-toggle="tab" href="#slot_tuesday">Tuesday</a>
-																		</li>
-																		<li class="nav-item">
-																			<a class="nav-link" data-toggle="tab" href="#slot_wednesday">Wednesday</a>
-																		</li>
-																		<li class="nav-item">
-																			<a class="nav-link" data-toggle="tab" href="#slot_thursday">Thursday</a>
-																		</li>
-																		<li class="nav-item">
-																			<a class="nav-link" data-toggle="tab" href="#slot_friday">Friday</a>
-																		</li>
-																		<li class="nav-item">
-																			<a class="nav-link" data-toggle="tab" href="#slot_saturday">Saturday</a>
-																		</li>
+																		
+																		{% if messages %}
+																<h6 class="messages">
+																  {% for message in messages %}
+																	<h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+																  {% endfor %}
+																</h6>
+															  {% endif %}
+																		
 																	</ul>
 																</div>
 																<!-- /Schedule Nav -->
@@ -76,7 +48,7 @@
 																			</button>
 																		</div>
 																		<div class="modal-body">
-																			<form method="POST" action="{% url 'add_time_slot' %}">
+																			<form method="POST" action="{% url 'schedule_timings' %}">
 																				{% csrf_token %}
 																				<div class="hours-info">
 																					<div class="row form-row hours-cont">
@@ -105,7 +77,7 @@
 															</div>
 															<!-- Schedule Content -->
 															<div class="tab-content schedule-cont">
-															
+																
 																<!-- Sunday Slot -->
 																<div id="slot_sunday" class="tab-pane fade">
 																	<h4 class="card-title d-flex justify-content-between">
@@ -124,15 +96,43 @@
 																	</h4>
 																	
 																	<!-- Slot List -->
-																	<div class="doc-times">
-																		{% for schedule in schedules %}
-																			<div class="doc-slot-list">
-																				{{ schedule.start_time }} - {{ schedule.end_time }}
-																				<a href="{% url 'delete_schedule' schedule.id %}" class="delete_schedule">
-																					<i class="fa fa-times"></i>
-																				</a>
+																	<div class="col-md-12">
+																		<form action="{% url 'schedule_timings' %}" method="POST">
+																			{% csrf_token %}
+																		<div class="form-row">
+							 
+																			<!-- <input type="hidden" value="monday" name="day"> -->
+																			<div class="col-md-3 mb-3">
+																				<label for="">From</label>
+																				<select class="form-control" name="time_from" id="time_from">
+																					<option selected="true" disabled="disabled">Time From</option>
+																					{% for key, value in fromTimeChoice.items %}
+																						<option value="{{key}}">{{value}}</option>
+																					{% endfor %}
+																					
+																				</select>
 																			</div>
-																		{% endfor %}
+																			<div class="col-md-3 mb-3">
+																				<label for="">To</label>
+																				<select class="form-control" name="time_to" id="time_to">
+																					
+																					<option selected="true" disabled="disabled">Time to</option>
+																					{% for key, value in toTimeChoice.items %}
+																						<option value="{{key}}">{{value}}</option>
+																					{% endfor %}
+																				</select>
+																			</div>
+																			<div class="col-md-3 mb-3">
+																				<label for="">Date</label>
+																				<input type="date" class="form-control" name="appointment_date">
+																			</div>
+																			<div class="col-md-2" style="margin-top: 35px;">
+																				<button type="submit" class="btn btn-primary submit-btn ">Save</button>
+																			</div>
+																			
+																		
+																		</div>
+																		</form>
 																	</div>
 																	<!-- /Slot List -->
 																	
@@ -140,53 +140,23 @@
 																<!-- /Monday Slot -->
 
 																<!-- Tuesday Slot -->
-																<div id="slot_tuesday" class="tab-pane fade">
-																	<h4 class="card-title d-flex justify-content-between">
-																		<span>Time Slots</span> 
-																		<a class="edit-link" data-toggle="modal" href="#add_time_slot"><i class="fa fa-plus-circle"></i> Add Slot</a>
-																	</h4>
-																	<p class="text-muted mb-0">Not Available</p>
-																</div>
+																
 																<!-- /Tuesday Slot -->
 
 																<!-- Wednesday Slot -->
-																<div id="slot_wednesday" class="tab-pane fade">
-																	<h4 class="card-title d-flex justify-content-between">
-																		<span>Time Slots</span> 
-																		<a class="edit-link" data-toggle="modal" href="#add_time_slot"><i class="fa fa-plus-circle"></i> Add Slot</a>
-																	</h4>
-																	<p class="text-muted mb-0">Not Available</p>
-																</div>
+																
 																<!-- /Wednesday Slot -->
 
 																<!-- Thursday Slot -->
-																<div id="slot_thursday" class="tab-pane fade">
-																	<h4 class="card-title d-flex justify-content-between">
-																		<span>Time Slots</span> 
-																		<a class="edit-link" data-toggle="modal" href="#add_time_slot"><i class="fa fa-plus-circle"></i> Add Slot</a>
-																	</h4>
-																	<p class="text-muted mb-0">Not Available</p>
-																</div>
+																
 																<!-- /Thursday Slot -->
 
 																<!-- Friday Slot -->
-																<div id="slot_friday" class="tab-pane fade">
-																	<h4 class="card-title d-flex justify-content-between">
-																		<span>Time Slots</span> 
-																		<a class="edit-link" data-toggle="modal" href="#add_time_slot"><i class="fa fa-plus-circle"></i> Add Slot</a>
-																	</h4>
-																	<p class="text-muted mb-0">Not Available</p>
-																</div>
+																
 																<!-- /Friday Slot -->
 
 																<!-- Saturday Slot -->
-																<div id="slot_saturday" class="tab-pane fade">
-																	<h4 class="card-title d-flex justify-content-between">
-																		<span>Time Slots</span> 
-																		<a class="edit-link" data-toggle="modal" href="#add_time_slot"><i class="fa fa-plus-circle"></i> Add Slot</a>
-																	</h4>
-																	<p class="text-muted mb-0">Not Available</p>
-																</div>
+																
 																<!-- /Saturday Slot -->
 
 															</div>

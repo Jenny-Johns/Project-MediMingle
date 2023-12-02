@@ -53,7 +53,41 @@
 									</div>
 								</div>
 							</div>
-							
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="card">
+										<div class="card-body">
+											<div class="table-responsive">
+												<div class="table-responsive">
+												<table class="datatable table table-hover table-center mb-0">
+													<h3 class="page-title">List of Patient</h3>
+													<thead>
+														<tr>
+															<th>Name</th>
+															<th>Email</th>
+															<th>Phone Number</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for user in pat %}
+														<tr>
+															<td>{{ user.first_name }}</td>
+															<td>{{ user.email }}</td>
+															<td>{{ user.phone_number }}</td>
+														</tr>
+													{% empty %}
+														<tr>
+															<td colspan="6">No users found.</td>
+														</tr>
+													{% endfor %}
+													</tbody>
+												</table>
+											</div>
+											</div>
+										</div>
+									</div>
+								</div>			
+							</div>
 							<div class="row">
 								<div class="col-md-12">
 									<h4 class="mb-4">Patient Appoinment</h4>
@@ -89,7 +123,26 @@
 																	</tr>
 																</thead>
 																<tbody>
+																	<tr>
+																		
+																	</tr>
+																	<tr>
+																		
+																		</td>
+																	</tr>
+																	<tr>
 																	
+																	</tr>
+																	<tr>
+																		
+																	</tr>
+																	<tr>
+																		
+																	</tr>
+																	<tr>
+																		
+																		
+																	</tr>
 																</tbody>
 															</table>		
 														</div>
@@ -115,7 +168,27 @@
 																	</tr>
 																</thead>
 																<tbody>
-																	
+																	<tr>
+																		
+																	</tr>
+																	<tr>
+																		
+																		
+																				
+																				
+																	</tr>
+																	<tr>
+																		
+																	</tr>
+																	<tr>
+																		
+																	</tr>
+																	<tr>
+																		
+																	</tr>
+																	<tr>
+																		
+																	</tr>
 																</tbody>
 															</table>		
 														</div>	
@@ -134,7 +207,7 @@
 
 				</div>
 
-			</div>	
+			</div>		
 			<!-- /Page Content -->
    
 			<!-- Footer -->

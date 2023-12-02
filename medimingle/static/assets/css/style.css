@@ -64,14 +64,6 @@ Version      : 1.0
 	url(../fonts/MaterialIcons-Regular.woff) format('woff'),
 	url(../fonts/MaterialIcons-Regular.ttf) format('truetype');
 }
-.delete-button {
-    background-color: red;
-    color: white; /* Text color */
-    border: none; /* Remove button border */
-    padding: 5px 10px; /* Adjust padding as needed */
-    border-radius: 3px; /* Rounded corners */
-    cursor: pointer; /* Add pointer cursor on hover */
-}
 .material-icons {
 	font-family: 'Material Icons';
 	font-weight: normal;
@@ -1677,7 +1669,7 @@ button.bg-danger:hover {
 	-webkit-box-align: center;
 	-ms-flex-align: center;
 	align-items: center;
-	background-color: #1663a6;
+	background-color:#15558d;
 	border: 0;
 	border-bottom: 1px solid #f0f0f0;
 	display: -webkit-box;
@@ -1828,16 +1820,6 @@ button.bg-danger:hover {
 	background-color: #fff;
 }
 .header-navbar-rht li a.header-login {
-    border: 2px solid #09e5ab;
-    border-radius: 4px;
-    padding: 10px 15px !important;
-    text-align: center;
-    font-size: 15px;
-    color: #09e5ab;
-    text-transform: uppercase;
-    font-weight: 500;
-}
-.header-navbar-rht li a.header-register {
     border: 2px solid #09e5ab;
     border-radius: 4px;
     padding: 10px 15px !important;
@@ -2091,8 +2073,7 @@ html.menu-opened body {
 .footer .footer-bottom .copyright {
 	border-top: 1px solid #1663a6;
 	padding: 30px 0;
-} 
-/*#1663a6*/
+}
 .footer .footer-bottom .copyright-text p {
 	color: #fff;
 	font-size: 15px;
@@ -2336,7 +2317,7 @@ html.menu-opened body {
     width: 490px;
 }
 .search-info .form-control {
-	background: #fff url(../img/search.png) no-repeat 10px center;
+	background: #fff url(../img/bg.png) no-repeat 10px center;
 }
 .search-box .search-btn {
     width: 46px;
@@ -5177,14 +5158,10 @@ html.menu-opened body {
 .widget-profile {
     background-color: #fff;
     border-bottom: 1px solid #f0f0f0;
-	
 }
 .widget-profile .profile-info-widget {
 	display: block;
 	text-align: center;
-	height: 50px;
-	width: 50px;
-	border-radius: 50%;
 }
 .widget-profile .profile-info-widget .booking-doc-img {
     display: inline-block;

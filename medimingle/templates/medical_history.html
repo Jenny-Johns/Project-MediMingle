@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html> 
+<html lang="en">
+	
+<!-- doccure/patient-dashboard.html  30 Nov 2019 04:12:16 GMT -->
+<head>
+		<meta charset="utf-8">
+		<title>MediMingle</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+		
+		<!-- Favicons -->
+		<link href="{% static '/assets/img/favicon.png'%}" rel="icon">
+		
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/bootstrap.min.css'%}">
+		
+		<!-- Fontawesome CSS -->
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/fontawesome.min.css'%}">
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/all.min.css'%}">
+		
+		<!-- Main CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/style.css'%}">
+		
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.min.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+	<style>
+		.success {
+			color: green;
+		}
+	</style>
+	</head>
+	<body>
+
+		<!-- Main Wrapper -->
+		<div class="main-wrapper">
+		
+			<!-- Header -->
+			<header class="header">
+				<nav class="navbar navbar-expand-lg header-nav">
+					<div class="navbar-header">
+						<a id="mobile_btn" href="javascript:void(0);">
+							<span class="bar-icon">
+								<span></span>
+								<span></span>
+								<span></span>
+							</span>
+						</a>
+						<a href="{% url 'homepage' %}" class="navbar-brand logo">
+							<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+						</a>
+						<a href="{% url 'doctors' %}">Doctors</i></a>
+
+					</div>
+					<div class="main-menu-wrapper">
+						<div class="menu-header">
+							<a href="index-2.html" class="menu-logo">
+								<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+							</a>
+							<a id="menu_close" class="menu-close" href="javascript:void(0);">
+								<i class="fas fa-times"></i>
+							</a>
+						</div>
+						
+					</div>		 
+					<ul class="nav header-navbar-rht">
+						<li class="nav-item contact-item">
+							<div class="header-contact-img">
+								<i class="far fa-hospital"></i>							
+							</div>
+							<div class="header-contact-detail">
+								<p style="color: white;" class="contact-header">Contact</p>
+								<p style="color: white;" class="contact-info-header">7306741729</p>
+							</div>
+						</li>
+						
+						<!-- User Menu -->
+						<li class="nav-item dropdown has-arrow logged-item">
+							<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+								<span class="user-img">
+									<h6 style="color: white;">Welcome {{user.username}} !</h6>
+								</span>
+							</a>
+							<div class="dropdown-menu dropdown-menu-right">
+								<div class="user-header">
+									<div class="avatar avatar-sm">
+										<img src="{{ user.patient_data.profile_image.url }}" alt="User Image" class="avatar-img rounded-circle">
+									</div>
+									<div class="user-text">
+										<h6>{{user.username}}</h6>
+										<p class="text-muted mb-0">Patient</p>
+									</div>
+								</div>
+								<a class="dropdown-item" href="{% url 'patient_dashboard' %}">Dashboard</a>
+								<a class="dropdown-item" href="{% url 'profile_settings' %}">Profile Settings</a>
+								<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+							</div>
+						</li>
+						<!-- /User Menu -->
+						
+					</ul>
+				</nav>
+			</header>
+<div class="content">
+	<div class="container-fluid">
+
+		<div class="row">
+
+			<div class="col-md-7 col-lg-8 col-xl-9">
+			
+				<!-- Basic Information -->
+				<div class="card">
+					<div class="card-body">
+						<h4 class="card-title">Medical History</h4>
+
+						<div class="row form-row">
+                            
+							<div class="col-md-12">
+								<form action="{% url 'history' %}" method="POST">
+									{% csrf_token %}
+								<div class="form-group">
+									<label>Reason For Appointment <span class="text-danger">*</span></label>
+
+                                    {{form.reason}}
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Weight</label>
+                                    {{form.weight}}
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Age<span class="text-danger">*</span></label>
+									{{form.age}}
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+								<label>Blood Group</label>
+                                <select class="form-control select" name="blood_group">
+                                    <option>A-</option>
+                                    <option>A+</option>
+                                    <option>B-</option>
+                                    <option>B+</option>
+                                    <option>AB-</option>
+                                    <option>AB+</option>
+                                    <option>O-</option>
+                                    <option>O+</option>
+                                </select>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Previous Operation <small>(If Any)</small></label>
+									{{form.previous_operation}}
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Current Medication <small>(If Any)</small></label>
+									{{form.current_medication}}
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group mb-0">
+									<label>Other Illness <small>(If Any)</small></label>
+									{{form.other_illness}}
+								</div>
+							</div>
+
+                            <div class="col-md-12">
+								<div class="form-group mb-0">
+									<label>Other Information <small>(If Any)</small></label>
+									{{form.other_information}}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /Basic Information -->
+				
+                <button type="submit" class="btn btn-primary submit-btn">Save Changes</button>
+				<!-- <div class="submit-section submit-btn-bottom">
+					<button type="submit" class="btn btn-primary submit-btn">Save Changes</button>
+				</div> -->
+            </form>
+			</div>
+		</div>
+
+	</div>
+
+</div>		
+<!-- /Page Content -->
+
+<!-- jQuery -->
+<script src="{% static "/assets/js/jquery.min.js" %}"></script>
+		
+<!-- Bootstrap Core JS -->
+<script src="{% static "/assets/js/popper.min.js" %}"></script>
+<script src="{% static "/assets/js/bootstrap.min.js" %}"></script>
+
+<!-- Sticky Sidebar JS -->
+<script src="{% static "/assets/plugins/theia-sticky-sidebar/ResizeSensor.js" %}"></script>
+<script src="{% static "/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js" %}"></script>
+
+<!-- Select2 JS -->
+<script src="{% static "/assets/plugins/select2/js/select2.min.js" %}"></script>
+
+<!-- Custom JS -->
+<script src="{% static " /assets/js/script.js" %}"></script>
+
+</body>
+
+</html>

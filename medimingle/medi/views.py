@@ -1,18 +1,26 @@
-from django.http import HttpResponseForbidden
+import datetime
+from tkinter import Canvas
+from django.http import FileResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
-from .models import Doctor, Patient, tbl_user
+from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,PatientAppointment
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
 from django.contrib.auth.decorators import login_required
 from .forms import UserProfileUpdateForm,ProfileUpdateForm
-from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,DoctorForm
+from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,DoctorForm,MedicalHistoryForm
 from django.views.decorators.http import require_POST
-from .models import Schedule
-from .forms import ScheduleForm
+from .choices import category, fromTimeChoice,toTimeChoice
+
+# for pdf
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
 
 
 # Create your views here.
@@ -69,10 +77,10 @@ def user_login(request):
                 else:
                     return redirect('patient_dashboard')
             elif user is not None and not user.is_active:
-                messages.error(request, "Your account is inactive and you can't login")
+                messages.error(request, "Admin has blocked your account")
                 return redirect('signin')
             else:
-                messages.info(request,"Username or Password is incorrect")
+                messages.info(request,"Invalid Credentials")
                 return redirect('signin')
         response = render(request,"signin.html")
         response['Cache-Control'] = 'no-store,must-revalidate'
@@ -193,7 +201,20 @@ def doctor_profile_settings(request):
         qualification_form = QualificationForm(instance=doctor.qualification_set.first())
         experience_form = ExperienceForm(instance=doctor.experience_set.first())
 
-    return render(request, 'doctor_profile_settings.html', {'user_form': user_form, 'doctor_form': doctor_form, 'specialization_form': specialization_form, 'qualification_form': qualification_form, 'experience_form': experience_form})
+    return render(request, 'doctor_profile_settings.html', {'user_form': user_form, 'doctor_form': doctor_form,'specialization_form':specialization_form, 'qualification_form': qualification_form, 'experience_form': experience_form})
+
+# def doctor_specialization(request):
+#     try:
+#         current_doctor = Doctor.objects.get(user=request.user)
+#     except Doctor.DoesNotExist:
+#         pass
+#     if request.method == 'POST':
+#         category = request.POST.getlist('category')
+#         for i in range(len(category)):
+#             specialized_category = DoctorSpecialization( doctor=current_doctor,specialized_category=category[i])
+#             specialized_category.save()
+#         return redirect('doctor_profile_settings')
+    
 
 
 @never_cache
@@ -241,7 +262,6 @@ def unblock_user(request, user_id):
 
 def forgot_password(request):
     return render(request,'forgot_password.html')
-
 
 
 @never_cache
@@ -334,27 +354,250 @@ def patient_change_password(request):
 
     return render(request, 'patient_change_password.html')
 
-from django.shortcuts import get_object_or_404
+
 
 def schedule_timings(request):
-    user = request.user
+    doctor = get_object_or_404(Doctor, user=request.user)
+    # doctor = request.user
+    # doctor = Doctor.objects.get(id=doctor_id)
+    if request.method == "POST":
+        time_from = request.POST['time_from']
+        time_to = request.POST['time_to']
+        appointment_date = request.POST['appointment_date']
+        from_to = time_from+"-"+time_to
+        appointment_date_obj = datetime.datetime.strptime(appointment_date, '%Y-%m-%d')
+        day = appointment_date_obj.date().strftime("%A")
+        date = appointment_date_obj.date().strftime("%d")
+        month = appointment_date_obj.date().strftime("%B")
+        print("Date here: ", date)
+        print("Month here: ", month)
+        print("DDDAAY: ",day)
 
-    # Ensure the user is a doctor
-    if not user.is_authenticated or user.user_type != 'doctor':
-        return HttpResponseForbidden("You don't have permission to access this page.")
+        appoint_time = AppointmentTime.objects.create(day=day, time_from=time_from, time_to=time_to ,from_to=from_to, date=date, month=month, appointment_date=appointment_date, doctor=doctor)
+        appoint_time.save()
+        messages.success(request, 'Schedule added successfully.')
+        return redirect(request.path_info)
 
-    doctor = get_object_or_404(Doctor, user=user)
+    context = {
+        'doctor':doctor,
+        'fromTimeChoice': fromTimeChoice,
+        'toTimeChoice' : toTimeChoice,
+    }
+
+    return render(request, 'schedule_timings.html',context)
+
+
+ 
+def booking(request, doctor_id):
+    current_user = request.user
+    current_patient = get_object_or_404(Patient, user=current_user)
+    
+    doctor = Doctor.objects.get(id=doctor_id)
+
+
+    # for checking purpose
+    try:
+        booked_doctor = MedicalHistory.objects.get(doctor=doctor, patient=current_patient)
+    except:
+        booked_doctor = MedicalHistory(doctor=doctor, patient=current_patient)
+        booked_doctor.save()
+
+    appoint_time_doctor = AppointmentTime.objects.filter(doctor=doctor)
+    
+
+    appoint_day = appoint_time_doctor.values_list('day',flat=True).distinct()
+    appoint_date = appoint_time_doctor.values_list('appointment_date', flat=True)
+    time_from = appoint_time_doctor.values_list('time_from',flat=True)
+    time_to = appoint_time_doctor.values_list('time_to',flat=True)
+    print("from: ", time_from)
+    context = {
+        'doctor':doctor,
+        # 'form':form,
+        'appoint_time_doctor' : appoint_time_doctor,
+        # 'day_doc_appoint':day_doc_appoint,
+        'appoint_day':appoint_day,
+        'time_from': time_from,
+        'time_to' : time_to,
+        'appoint_date':appoint_date,
+
+    }
+    return render(request, 'booking.html', context)
+
+def medical_history(request):
+
+    current_user = request.user
+    try:
+        current_doctor = get_object_or_404(Doctor, user=current_user)
+    except:
+        raise ValueError('no doctor found')
+    buf = io.BytesIO()
+    c = Canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    textob = c.beginText()
+    textob.setTextOrigin(inch, inch)
+    textob.setFont("Helvetica", 14)
+
+    history = MedicalHistory.objects.filter(doctor=current_doctor)
+
+    lines = []
+
+    for hist in history:
+        lines.append("********* MediHelp *************")
+        lines.append(" ")
+        lines.append("========== Patient Medical History ===============")
+        lines.append("First Name: "+hist.first_name)
+        lines.append("Last Name: "+hist.last_name)
+        lines.append("Reason For Visit: "+hist.reason)
+        lines.append("Height: "+hist.weight)
+        lines.append("Age: "+hist.age)
+        lines.append("Gender: "+str(hist.gender))
+        lines.append("Blood Group: "+hist.blood_group)
+        lines.append("Previous Operation: "+hist.previous_operation)
+        lines.append("Current Medicaion: "+hist.current_medication)
+        lines.append("Other Illness: "+hist.other_illness)
+        lines.append("Other Information: "+hist.other_information)
+        lines.append("==========================================")
+        
+
+    for line in lines:
+        textob.textLine(line)
+    
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename='medical_history.pdf')
+
+def appointments(request):
+    current_user = request.user
+    current_doctor = Doctor.objects.get(user=current_user)
+
+    appointment = MedicalHistory.objects.filter(doctor=current_doctor)
+    specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
+    context = {
+        'current_doctor':current_doctor,
+        'appointment':appointment,
+        'specialization':specialization,
+    }
+    return render(request, 'appointments.html', context)
+
+def patient_appointment(request, doctor_id):
+    current_user = request.user
+    current_patient = get_object_or_404(Patient, user=current_user)
+    
+    doctor = Doctor.objects.get(id=doctor_id)
+
+    if request.method == "POST":
+        
+        from_to = str(request.POST['from_to'])
+        print("from_to day:", from_to)
+        
+        splitted_from_to = from_to.split(',')
+        print("Split: ", splitted_from_to[1])
+
+        doc_appoint = PatientAppointment(appoint_day=splitted_from_to[1], appoint_time=splitted_from_to[0], doctor=doctor, patient=current_patient)
+        doc_appoint.save()
+        return redirect('history') 
+
+
+def history(request):
+    #doctor = Doctor.objects.get(id=doctor_id)
+    #doctor_id = Doctor.objects.get(id=doctor_id)
+    current_user = request.user
+    current_patient = get_object_or_404(Patient, user=current_user)
+    patient = MedicalHistory.objects.filter(patient=current_patient)
+
+    first_name = current_patient.user.first_name
+    last_name = current_patient.user.last_name
+    gender = current_patient.gender
+    #doctor = Doctor.objects.get(id=doctor_id)
+    # medical_historyForm = MedicalHistory.objects.all()
 
     if request.method == 'POST':
-        form = ScheduleForm(request.POST)
+        medical_history_entries = MedicalHistory.objects.filter(patient=current_patient, is_processing=False)
+
+        if medical_history_entries.exists():
+            # If there is exactly one matching entry, use it
+            if medical_history_entries.count() == 1:
+                medical_history = medical_history_entries.first()
+            else:
+                # Handle the case where there are multiple entries
+                # You might want to log a warning or take some other action
+                print("Warning: Multiple MedicalHistory entries found for the same patient.")
+                medical_history = medical_history_entries.first()
+        else:
+            # If there are no matching entries, create a new one
+            medical_history = MedicalHistory(patient=current_patient, is_processing=False)
+
+    # Rest of the code...
+       
+        form = MedicalHistoryForm(request.POST)
         if form.is_valid():
-            schedule = form.save(commit=False)
-            schedule.doctor = doctor
-            schedule.save()
-            return redirect('doctor_dashboard')
+
+            medical_history.first_name = first_name
+            medical_history.last_name = last_name
+            medical_history.gender = gender
+            medical_history.reason = form.cleaned_data['reason']
+            # height = form.cleaned_data['height']
+            medical_history.blood_group = request.POST['blood_group']
+            medical_history.weight = form.cleaned_data['weight']
+            medical_history.age = form.cleaned_data['age']
+            medical_history.previous_operation = form.cleaned_data['previous_operation']
+            medical_history.current_medication = form.cleaned_data['current_medication']
+            medical_history.other_illness = form.cleaned_data['other_illness']
+            medical_history.other_information = form.cleaned_data['other_information']
+            medical_history.is_processing = True
+            medical_history.save()
+            return redirect('patient_dashboard')
     else:
-        form = ScheduleForm()
+        form = MedicalHistoryForm()
 
-    schedules = Schedule.objects.filter(doctor=doctor)
+    context = {
+        'form':form,
+    }
+    return render(request, 'medical_history.html', context)
 
-    return render(request, 'schedule_timings.html', {'form': form, 'schedules': schedules})
+
+def doctors(request):
+    doctors = Doctor.objects.all()
+
+    context = {
+        'doctors':doctors,
+    }
+    return render(request, 'doctors.html', context)
+
+
+def profile(request, doctor_id):
+    current_user = request.user
+    # current_patient = get_object_or_404(Patient, user=current_user)
+    
+    doctor = Doctor.objects.get(id=doctor_id)
+    specialization = DoctorSpecialization.objects.get(doctor=doctor)
+    qualification = Qualification.objects.get(doctor=doctor)
+    experience = Experience.objects.get(user=doctor)
+    appointment = AppointmentTime.objects.filter(doctor=doctor)
+    context = {
+        'doc_profile':doctor,
+        'specialization':specialization,
+        'qualification':qualification,
+        'experience':experience,
+        'appointment':appointment,
+    }
+    return render(request, 'profile.html', context)
+
+def doctor_search(request):
+    doctors = Doctor.objects.order_by('-date_joined') #A hyphen "-" in front of "check_in" indicates descending order. 
+
+    if 'gender_type' in request.GET:
+        gender_type = request.GET['gender_type']
+        if gender_type:
+            doctors = doctors.filter(gender__iexact=gender_type)
+            # print("filtered: ",doctors)
+
+    context = {
+        'doctors':doctors,
+    }
+    return render(request, 'doctor_search.html', context)
+
+def bill(request):
+    return render(request, 'bill.html')
