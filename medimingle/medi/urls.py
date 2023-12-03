@@ -2,7 +2,9 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from .import views
+from .import views 
+from .views import activate_account
+
 
 urlpatterns = [
     path('',views.index,name='home'),
@@ -40,6 +42,7 @@ urlpatterns = [
     path('pat_doc_view/<int:doctor_id>/', views.pat_doc_view, name='pat_doc_view'),
     path('view_slot',views.view_slot,name='view_slot'),
     path('delete_slot/<int:slot_id>/', views.delete_slot, name='delete_slot'),
+    path('activate/<str:uidb64>/<str:token>/', activate_account, name='account_activation'),
 
 
    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),

@@ -31,6 +31,16 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.core.mail import send_mail
+from medi.tokens import account_activation_token
+from django.shortcuts import redirect
+from django.contrib.auth import get_user_model
+from django.utils.http import urlsafe_base64_decode
+from medi.tokens import account_activation_token
+
 
 # Create your views here.
 def index(request):
@@ -54,19 +64,20 @@ def register(request):
             user.user_type = user_type
             user.phone_number = phone_number
             user.save();
-            messages.add_message(request,messages.SUCCESS,f"Welcome {first_name}, You are now registered and can login")
-            if user_type=='doctor':
-                doctor=Doctor(user=user)
-                doctor.save()
-            else:
-                patient=Patient(user=user)
-                patient.save()
+            current_site = get_current_site(request)
+            activation_link = f"{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{account_activation_token.make_token(user)}/"
+
+            # Send activation email
+            subject = 'Activate Your Medimingle Account'
+            message = f'Hi {user.first_name},\n\nClick the link below to activate your account:\n\n{activation_link}\n\nBest regards,\nThe Medimingle Team'
+            send_mail(subject, message, 'medimingle@gmail.com', [user.email])
+            messages.success(request, "You have registered successfully. Verify your email and login.")
             return redirect('signin')
         else:
             return render(request,'register.html')
         
  
-
+"""
 @never_cache
 def user_login(request):
     if request.user.is_authenticated:
@@ -88,13 +99,67 @@ def user_login(request):
             elif user is not None and not user.is_active:
                 messages.error(request, "Admin has blocked your account")
                 return redirect('signin')
+            elif user is not None and not user.is_email_verified:
+                messages.info(request, "Email not verified.")
             else:
                 messages.info(request,"Invalid Credentials")
                 return redirect('signin')
         response = render(request,"signin.html")
         response['Cache-Control'] = 'no-store,must-revalidate'
-        return response
+        return response"""
 
+
+@never_cache
+def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('homepage')
+    else:
+        if request.method == 'POST':
+            email = request.POST['email']
+            password = request.POST['password']
+            user = authenticate(request, username=email, password=password)
+
+            if user is not None:
+                if user.is_active:
+                    if user.is_superuser:
+                        login(request, user)
+                        request.session['username'] = user.username
+                        return redirect('adminpage')
+
+                    if user.is_email_verified:
+                        login(request, user)
+                        request.session['username'] = user.username
+                        if user.user_type == 'doctor':
+                            return redirect('doctor_dashboard')
+                        else:
+                            return redirect('patient_dashboard')
+                    else:
+                        messages.warning(request, "Email not verified. Please verify your email and login.")
+                else:
+                    messages.error(request, "Admin has blocked your account.")
+            else:
+                messages.info(request, "Invalid Credentials")
+
+        return render(request, "signin.html")
+
+
+@never_cache
+def activate_account(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = get_user_model().objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_email_verified = True
+        user.save()
+        # Log the user in after email verification if needed
+        # login(request, user)
+        return redirect('signin')
+    else:
+        return redirect('activation_failed')
+    
 
 @never_cache
 @login_required(login_url='signin')
@@ -152,7 +217,7 @@ def profile_settings(request):
     try:
         patient_data = Patient.objects.get(user=user)
     except Patient.DoesNotExist:
-        patient_data = None
+        patient_data = Patient(user=user)
 
     if request.method == 'POST':
         user_form = ProfileUpdateForm(request.POST, instance=user)
@@ -161,13 +226,37 @@ def profile_settings(request):
         if user_form.is_valid() and patient_form.is_valid():
             # Update the Patient model fields
             user_form.save()
-            patient_form.save()
-            messages.success(request,"Profile Updated")
-            return redirect('patient_dashboard')  # Redirect back to the profile update page or another page
+            patient = patient_form.save(commit=False)
+            patient.user = user
+            patient.save()
+            messages.success(request, "Profile Updated")
+            return redirect('profile_settings')  # Redirect back to the profile update page or another page
     else:
         user_form = ProfileUpdateForm(instance=user)
         patient_form = UserProfileUpdateForm(instance=patient_data)
-    return render(request, 'profile_settings.html', {'user_form': user_form,'patient_form':patient_form})
+
+    return render(request, 'profile_settings.html', {'user_form': user_form, 'patient_form': patient_form})
+# def profile_settings(request):
+#     user = request.user  # Get the logged-in user
+#     try:
+#         patient_data = Patient.objects.get(user=user)
+#     except Patient.DoesNotExist:
+#         patient_data = None
+
+#     if request.method == 'POST':
+#         user_form = ProfileUpdateForm(request.POST, instance=user)
+#         patient_form = UserProfileUpdateForm(request.POST, request.FILES, instance=patient_data)
+
+#         if user_form.is_valid() and patient_form.is_valid():
+#             # Update the Patient model fields
+#             user_form.save()
+#             patient_form.save()
+#             messages.success(request,"Profile Updated")
+#             return redirect('patient_dashboard')  # Redirect back to the profile update page or another page
+#     else:
+#         user_form = ProfileUpdateForm(instance=user)
+#         patient_form = UserProfileUpdateForm(instance=patient_data)
+#     return render(request, 'profile_settings.html', {'user_form': user_form,'patient_form':patient_form})
 
 
 
@@ -176,41 +265,93 @@ def profile_settings(request):
 @login_required(login_url='signin')
 def doctor_profile_settings(request):
     user = request.user  # Get the logged-in user
-    try:
-        doctor = Doctor.objects.get(user=user)
-    except Doctor.DoesNotExist:
-        doctor = None
-    
+    doctor, created = Doctor.objects.get_or_create(user=user)
     if request.method == 'POST':
         user_form = ProfileUpdateForm(request.POST, instance=user)
         doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
-        specialization_form = DoctorSpecializationForm(request.POST, instance=doctor.doctorspecialization_set.first())
-        qualification_form = QualificationForm(request.POST, instance=doctor.qualification_set.first())
-        experience_form = ExperienceForm(request.POST, instance=doctor.experience_set.first())
+        
+        if doctor:
+            specialization_form = DoctorSpecializationForm(request.POST, instance=doctor.doctorspecialization_set.first())
+            qualification_form = QualificationForm(request.POST, instance=doctor.qualification_set.first())
+            experience_form = ExperienceForm(request.POST, instance=doctor.experience_set.first())
+        else:
+            specialization_form = DoctorSpecializationForm(request.POST)
+            qualification_form = QualificationForm(request.POST)
+            experience_form = ExperienceForm(request.POST)
 
         if user_form.is_valid() and doctor_form.is_valid() and specialization_form.is_valid() and qualification_form.is_valid() and experience_form.is_valid():
             user_form.save()
-            doctor_form.save()
-            doctorspecialization = specialization_form.save(commit=False)
-            doctorspecialization.doctor = doctor
-            specialization_form.save()
-            qualification = qualification_form.save(commit=False)
-            qualification.doctor = doctor
-            qualification.save()
-            experience = experience_form.save(commit=False)
-            experience.doctor = doctor
-            experience.save()
-            messages.success(request,"Profile Updated")           
+            
+            # Ensure that the doctor instance has a user before saving
+            doctor = doctor_form.save(commit=False)
+            doctor.user = user
+            doctor.save()
+
+            if doctor:
+                doctorspecialization = specialization_form.save(commit=False)
+                doctorspecialization.doctor = doctor
+                specialization_form.save()
+                qualification = qualification_form.save(commit=False)
+                qualification.doctor = doctor
+                qualification.save()
+                experience = experience_form.save(commit=False)
+                experience.doctor = doctor
+                experience.save()
+
+            messages.success(request, "Profile Updated")
             return redirect('doctor_dashboard')
 
     else:
         user_form = ProfileUpdateForm(instance=user)
         doctor_form = DoctorForm(instance=doctor)
-        specialization_form = DoctorSpecializationForm(instance=doctor.doctorspecialization_set.first())
-        qualification_form = QualificationForm(instance=doctor.qualification_set.first())
-        experience_form = ExperienceForm(instance=doctor.experience_set.first())
 
-    return render(request, 'doctor_profile_settings.html', {'user_form': user_form, 'doctor_form': doctor_form,'specialization_form':specialization_form, 'qualification_form': qualification_form, 'experience_form': experience_form})
+        if doctor:
+            specialization_form = DoctorSpecializationForm(instance=doctor.doctorspecialization_set.first())
+            qualification_form = QualificationForm(instance=doctor.qualification_set.first())
+            experience_form = ExperienceForm(instance=doctor.experience_set.first())
+        else:
+            specialization_form = DoctorSpecializationForm()
+            qualification_form = QualificationForm()
+            experience_form = ExperienceForm()
+
+    return render(request, 'doctor_profile_settings.html', {'user_form': user_form, 'doctor_form': doctor_form, 'specialization_form': specialization_form, 'qualification_form': qualification_form, 'experience_form': experience_form})
+# def doctor_profile_settings(request):
+#     user = request.user  # Get the logged-in user
+#     try:
+#         doctor = Doctor.objects.get(user=user)
+#     except Doctor.DoesNotExist:
+#         doctor = None
+    
+#     if request.method == 'POST':
+#         user_form = ProfileUpdateForm(request.POST, instance=user)
+#         doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
+#         specialization_form = DoctorSpecializationForm(request.POST, instance=doctor.doctorspecialization_set.first())
+#         qualification_form = QualificationForm(request.POST, instance=doctor.qualification_set.first())
+#         experience_form = ExperienceForm(request.POST, instance=doctor.experience_set.first())
+
+#         if user_form.is_valid() and doctor_form.is_valid() and specialization_form.is_valid() and qualification_form.is_valid() and experience_form.is_valid():
+#             user_form.save()
+#             doctor_form.save()
+#             doctorspecialization = specialization_form.save(commit=False)
+#             doctorspecialization.doctor = doctor
+#             specialization_form.save()
+#             qualification = qualification_form.save(commit=False)
+#             qualification.doctor = doctor
+#             qualification.save()
+#             experience = experience_form.save(commit=False)
+#             experience.doctor = doctor
+#             experience.save()
+#             messages.success(request,"Profile Updated")           
+#             return redirect('doctor_dashboard')
+
+#     else:
+#         user_form = ProfileUpdateForm(instance=user)
+#         doctor_form = DoctorForm(instance=doctor)
+#         specialization_form = DoctorSpecializationForm(instance=doctor.doctorspecialization_set.first())
+#         qualification_form = QualificationForm(instance=doctor.qualification_set.first())
+#         experience_form = ExperienceForm(instance=doctor.experience_set.first())
+
+#     return render(request, 'doctor_profile_settings.html', {'user_form': user_form, 'doctor_form': doctor_form,'specialization_form':specialization_form, 'qualification_form': qualification_form, 'experience_form': experience_form})
 
 # def doctor_specialization(request):
 #     try:
@@ -256,6 +397,8 @@ def approve_doctor(request, doctor_id, status):
     doctor.save()
 
     return redirect('doctor_list')
+
+
 @never_cache
 @login_required(login_url='signin')
 def delete_user(request, user_id):
@@ -263,14 +406,16 @@ def delete_user(request, user_id):
     user.delete()
     return redirect('adminpage')
 
-
+@never_cache
+@login_required(login_url='signin')
 def block_user(request, user_id):
     user = tbl_user.objects.get(id=user_id)
     user.blocked = True
     user.save()
     return redirect('adminpage')
 
-
+@never_cache
+@login_required(login_url='signin')
 def unblock_user(request, user_id):
     user = tbl_user.objects.get(id=user_id)
     user.blocked = False
@@ -297,10 +442,13 @@ def patient_list(request):
 def doctor_list(request):
     doc = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
     context={
-        "doc":doc
+        "doc":doc,
     }
     return render(request,'doctor_list.html',context)
 
+
+@never_cache
+@login_required(login_url='signin')
 def total_user_list(request):
     users = tbl_user.objects.exclude(is_superuser=True)
     context={
@@ -308,7 +456,8 @@ def total_user_list(request):
     }
     return render(request,'total_user_list.html',context)
 
-
+@never_cache
+@login_required(login_url='signin')
 def view_doctor_details(request, doctor_id):
     doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
     doctor_details = {
@@ -326,7 +475,8 @@ def login_view(request):
     return render(request,'login_view.html')
 
 
-
+@never_cache
+@login_required(login_url='signin')
 @require_POST
 def deactivate_user(request, user_id):
     user = get_object_or_404(tbl_user, id=user_id)
@@ -334,6 +484,9 @@ def deactivate_user(request, user_id):
     user.save()
     return redirect('adminpage')
 
+
+@never_cache
+@login_required(login_url='signin')
 @require_POST
 def activate_user(request, user_id):
     user = get_object_or_404(tbl_user, id=user_id)
@@ -341,8 +494,9 @@ def activate_user(request, user_id):
     user.save()
     return redirect('adminpage')
 
+
 @never_cache
-@login_required
+@login_required(login_url='signin')
 def doctor_change_password(request):
     if request.method == 'POST':
         current_password = request.POST['current_password']
@@ -369,7 +523,7 @@ def doctor_change_password(request):
 
 
 @never_cache
-@login_required
+@login_required(login_url='signin')
 def patient_change_password(request):
     if request.method == 'POST':
         current_password = request.POST['current_password']
@@ -392,6 +546,9 @@ def patient_change_password(request):
 
     return render(request, 'patient_change_password.html')
 
+
+@never_cache
+@login_required(login_url='signin')
 def pat_doc_view(request, doctor_id):
     doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
     doctor_details = {
@@ -404,6 +561,9 @@ def pat_doc_view(request, doctor_id):
     context = {'doctor_details': doctor_details}
     return render(request, 'pat_doc_view.html', context)
 
+
+@never_cache
+@login_required(login_url='signin')
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
     if request.method == "POST":
@@ -426,12 +586,18 @@ def schedule_timings(request):
     }
     return render(request, 'schedule_timings.html',context)
 
+
+@never_cache
+@login_required(login_url='signin')
 def delete_slot(request, slot_id):
     slot = get_object_or_404(AppointmentTime, id=slot_id)
     slot.delete()
     messages.success(request, 'Slot deleted successfully.')
     return redirect('view_slot')
 
+
+@never_cache
+@login_required(login_url='signin')
 def view_slot(request):
     doctor = get_object_or_404(Doctor, user=request.user)
     scheduled_slots = AppointmentTime.objects.filter(doctor=doctor)
@@ -442,7 +608,8 @@ def view_slot(request):
     return render(request,"view_slot.html",context)
 
 
- 
+@never_cache
+@login_required(login_url='signin') 
 def booking(request, doctor_id):
     current_user = request.user
     current_patient = get_object_or_404(Patient, user=current_user)
@@ -609,7 +776,8 @@ def history(request):
     }
     return render(request, 'medical_history.html', context)
 
-
+@never_cache
+@login_required(login_url='signin')
 def doctors(request):
     doctors = Doctor.objects.all()
 
@@ -618,7 +786,8 @@ def doctors(request):
     }
     return render(request, 'doctors.html', context)
 
-
+@never_cache
+@login_required(login_url='signin')
 def profile(request, doctor_id):
     current_user = request.user
     # current_patient = get_object_or_404(Patient, user=current_user)
@@ -637,6 +806,9 @@ def profile(request, doctor_id):
     }
     return render(request, 'profile.html', context)
 
+
+@never_cache
+@login_required(login_url='signin')
 def doctor_search(request):
     doctors = Doctor.objects.order_by('-date_joined') #A hyphen "-" in front of "check_in" indicates descending order. 
 
@@ -654,42 +826,3 @@ def doctor_search(request):
 def bill(request):
     return render(request, 'bill.html')
 
-# email verification
-
-def send_verification_email(user):
-    token = default_token_generator.make_token(user)
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    verification_link = f"http://yourdomain.com/verify-email/{uid}/{token}/"
-
-    subject = 'Verify your email'
-    message = f'Click the following link to verify your email: {verification_link}'
-    from_email = 'medimingle@gmail.com'
-    to_email = user.email
-
-    send_mail(subject, message, from_email, [to_email])
-
-def verify_email(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = tbl_user.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, tbl_user.DoesNotExist):
-        user = None
-
-    if user is not None and default_token_generator.check_token(user, token):
-        user.is_email_verified = True
-        user.save()
-        
-        # Send success verification email
-        send_mail(
-            'Email Verification Success',
-            'Your email has been verified successfully.',
-            'medimingle@gmail.com',
-            [user.email],
-            fail_silently=False,
-        )
-
-        messages.success(request, 'Your email has been verified successfully. You can now log in.')
-        return redirect('signin')
-    else:
-        messages.error(request, 'Invalid verification link.')
-        return redirect('signin')

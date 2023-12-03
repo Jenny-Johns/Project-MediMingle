@@ -17,6 +17,8 @@ class tbl_user(AbstractUser):
         default='patient',  
     )
     is_email_verified = models.BooleanField(default=False)
+    email_verification_token = models.CharField(max_length=255, blank=True, null=True)
+    status= models.BooleanField(default=False)
 
     def __str__(self):
         return self.email
@@ -28,7 +30,7 @@ class Doctor(models.Model):
     gender = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
-    status= models.BooleanField(default=False)
+    
     def __str__(self):
         return self.user.first_name
     
