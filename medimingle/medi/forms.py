@@ -112,3 +112,31 @@ class MedicalHistoryForm(forms.ModelForm):
         super(MedicalHistoryForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+# forms.py
+from django import forms
+from .models import Doctor
+
+class ConsultingFeeForm(forms.ModelForm):
+    consulting_fee = forms.CharField(max_length=15)  # Adjust the max length as needed
+
+    class Meta:
+        model = Doctor
+        fields = ['consulting_fee']
+
+    def clean_consulting_fee(self):
+        consulting_fee = self.cleaned_data['consulting_fee']
+        
+        # Validate the entered value using a regular expression
+        if not re.match(r'^\d+\sINR$', consulting_fee.strip()):
+            raise forms.ValidationError('Please enter a valid amount with INR (e.g., 100 INR)')
+
+        # Extract the numeric part and convert it to an integer
+        numeric_part = int(consulting_fee.split()[0])
+
+        # Check for minimum value
+        if numeric_part < 100:
+            raise forms.ValidationError('The minimum consulting fee is 100 INR')
+
+        return consulting_fee

@@ -165,7 +165,7 @@
 										{% for appoint_day in appoint_day %}
 												
 												  
-										<form action="{% url 'patient_appointment' doctor.id %}" method="POST">
+										<form action="{% url 'slot_select' doctor.id %}" method="POST">
 												{% csrf_token %}
 										<li style="margin-right: 50px;">
 											
@@ -177,28 +177,18 @@
 														
 														{% for appoint_time_doctor in appoint_time_doctor %}
 															{% if appoint_time_doctor.day == appoint_day %}
-																
 																<option value="{{appoint_time_doctor.from_to}},{{appoint_day}}">{{appoint_time_doctor.from_to}}</option>
 															{% endif %}
 														{% endfor %}
-														
 													</select>
-											
 												</span> 
-											
-											
 										</li>
 										{% endfor %}
-									
 									</ul>
 								</div>
-								<!-- /Time Slot -->
-								
 							</div>
 						</div>
 					</div>
-					<!-- /Schedule Content -->
-					
 				</div>
 				<!-- /Schedule Widget -->
 				

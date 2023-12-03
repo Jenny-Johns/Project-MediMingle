@@ -31,6 +31,7 @@
 													<th>Active</th>
 													<th>Profile</th>
 													<th>Action</th>
+													<th>Fee</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -60,6 +61,15 @@
 																<button type="submit" class="btn btn-outline-success">Activate</button>
 															</form>
 														{% endif %}
+														</td>
+														<td>
+															<!-- Input field for consulting fee -->
+															<form method="post" action="{% url 'update_consulting_fee' user.id %}">
+																{% csrf_token %}
+																<input type="text" name="consulting_fee" value="{{ user.doctor.consulting_fee }}" placeholder="Consulting Fee" pattern="\d+\sINR" title="Please enter a valid amount with INR (e.g., 100 INR)" required>
+																<button type="submit" class="btn btn-outline-primary">Update Fee</button>
+															</form>
+															
 														</td>
 													{% comment %} <td>
 														{% if doctor.status %}

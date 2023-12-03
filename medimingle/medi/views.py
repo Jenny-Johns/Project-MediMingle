@@ -14,7 +14,7 @@ from .forms import UserProfileUpdateForm,ProfileUpdateForm
 from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,DoctorForm,MedicalHistoryForm
 from django.views.decorators.http import require_POST
 from .choices import category, fromTimeChoice,toTimeChoice
-
+from django.utils import timezone
 # for pdf
 from django.http import FileResponse
 import io
@@ -494,6 +494,14 @@ def activate_user(request, user_id):
     user.save()
     return redirect('adminpage')
 
+def update_consulting_fee(request, user_id):
+    doctor = get_object_or_404(Doctor, user_id=user_id)
+    if request.method == 'POST':
+        consulting_fee = request.POST.get('consulting_fee')
+        doctor.consulting_fee = consulting_fee
+        doctor.save()
+    return redirect('adminpage')
+
 
 @never_cache
 @login_required(login_url='signin')
@@ -564,28 +572,74 @@ def pat_doc_view(request, doctor_id):
 
 @never_cache
 @login_required(login_url='signin')
+# def schedule_timings(request):
+#     doctor = get_object_or_404(Doctor, user=request.user)
+#     if request.method == "POST":
+#         time_from = request.POST['time_from']
+#         time_to = request.POST['time_to']
+#         appointment_date = request.POST['appointment_date']
+#         from_to = time_from+"-"+time_to
+#         appointment_date_obj = datetime.datetime.strptime(appointment_date, '%Y-%m-%d')
+#         day = appointment_date_obj.date().strftime("%A")
+#         date = appointment_date_obj.date().strftime("%d")
+#         month = appointment_date_obj.date().strftime("%B")
+#         appoint_time = AppointmentTime.objects.create(day=day, time_from=time_from, time_to=time_to ,from_to=from_to, date=date, month=month, appointment_date=appointment_date, doctor=doctor)
+#         appoint_time.save()
+#         messages.success(request, 'Schedule added successfully.')
+#         return redirect(request.path_info)
+#     context = {
+#         'doctor':doctor,
+#         'fromTimeChoice': fromTimeChoice,
+#         'toTimeChoice' : toTimeChoice,
+#     }
+#     return render(request, 'schedule_timings.html',context)
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
+
     if request.method == "POST":
         time_from = request.POST['time_from']
         time_to = request.POST['time_to']
         appointment_date = request.POST['appointment_date']
-        from_to = time_from+"-"+time_to
+        from_to = f"{time_from}-{time_to}"
         appointment_date_obj = datetime.datetime.strptime(appointment_date, '%Y-%m-%d')
-        day = appointment_date_obj.date().strftime("%A")
-        date = appointment_date_obj.date().strftime("%d")
-        month = appointment_date_obj.date().strftime("%B")
-        appoint_time = AppointmentTime.objects.create(day=day, time_from=time_from, time_to=time_to ,from_to=from_to, date=date, month=month, appointment_date=appointment_date, doctor=doctor)
-        appoint_time.save()
+
+        # Check if the appointment_date is in the future
+        if appointment_date_obj.date() < timezone.now().date():
+            messages.error(request, 'Cannot schedule slots for past dates.')
+            return redirect(request.path_info)
+
+        # Check if the same slot already exists
+        existing_slot = AppointmentTime.objects.filter(
+            doctor=doctor,
+            appointment_date=appointment_date,
+            from_to=from_to
+        ).exists()
+
+        if existing_slot:
+            messages.error(request, 'This slot already exists. Please choose a different time or date.')
+            return redirect(request.path_info)
+
+        appoint_time = AppointmentTime.objects.create(
+            day=appointment_date_obj.strftime("%A"),
+            time_from=time_from,
+            time_to=time_to,
+            from_to=from_to,
+            date=appointment_date_obj.strftime("%d"),
+            month=appointment_date_obj.strftime("%B"),
+            appointment_date=appointment_date,
+            doctor=doctor
+        )
+
         messages.success(request, 'Schedule added successfully.')
         return redirect(request.path_info)
-    context = {
-        'doctor':doctor,
-        'fromTimeChoice': fromTimeChoice,
-        'toTimeChoice' : toTimeChoice,
-    }
-    return render(request, 'schedule_timings.html',context)
 
+    context = {
+        'doctor': doctor,
+        'fromTimeChoice': fromTimeChoice,
+        'toTimeChoice': toTimeChoice,
+    }
+
+    return render(request, 'schedule_timings.html', context)
 
 @never_cache
 @login_required(login_url='signin')
@@ -700,7 +754,24 @@ def appointments(request):
     }
     return render(request, 'appointments.html', context)
 
-def patient_appointment(request, doctor_id):
+# def patient_appointment(request, doctor_id):
+#     current_user = request.user
+#     current_patient = get_object_or_404(Patient, user=current_user)
+    
+#     doctor = Doctor.objects.get(id=doctor_id)
+
+#     if request.method == "POST":
+        
+#         from_to = str(request.POST['from_to'])
+#         print("from_to day:", from_to)
+        
+#         splitted_from_to = from_to.split(',')
+#         print("Split: ", splitted_from_to[1])
+
+#         doc_appoint = PatientAppointment(appoint_day=splitted_from_to[1], appoint_time=splitted_from_to[0], doctor=doctor, patient=current_patient)
+#         doc_appoint.save()
+#         return redirect('history') 
+def slot_select(request, doctor_id):
     current_user = request.user
     current_patient = get_object_or_404(Patient, user=current_user)
     
@@ -714,9 +785,50 @@ def patient_appointment(request, doctor_id):
         splitted_from_to = from_to.split(',')
         print("Split: ", splitted_from_to[1])
 
+        
         doc_appoint = PatientAppointment(appoint_day=splitted_from_to[1], appoint_time=splitted_from_to[0], doctor=doctor, patient=current_patient)
         doc_appoint.save()
-        return redirect('history') 
+
+        return redirect('booking_summary') 
+
+   
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import PatientAppointment
+
+from django.shortcuts import get_list_or_404
+import razorpay
+def booking_summary(request):
+    current_user = request.user
+
+    # Retrieve a list of appointments for the current user
+    appointments = get_list_or_404(PatientAppointment, patient__user=current_user)
+
+    # You can then choose how to handle multiple appointments, for example, display the latest one
+    if appointments:
+        appointment = appointments[0]
+    else:
+        # Handle the case where no appointment is found
+        appointment = None
+
+    context = {
+        'appointment': appointment,
+        # Add any other necessary data you want to display on the summary page
+    }
+
+    if request.method=='POST':
+        amount=10000
+        order_currency='INR'
+        client=razorpay.Client(
+            auth=('rzp_test_GfzsM6qWehBGju','4ZZkYgLAtHFGy89EjiHpDCyE')
+        )
+        payment=client.order.create({'amount':amount,'currency':'INR','payment_capture':'1'})
+
+
+    return render(request, 'booking_summary.html', context)
+
+def success(request):
+    return render(request,"success.html")
 
 
 def history(request):

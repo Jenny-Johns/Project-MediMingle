@@ -2,15 +2,15 @@
 {% include "includes/adminheader.html" %}
 
 
+<h2><u><b>DOCTOR PROFILE</b></u></h2><br>
 
-
-<h2>{{ doctor_details.basic_info.username }}</h2>
+<h3>{{ doctor_details.basic_info.username }}</h3>
 <p>Email: {{ doctor_details.basic_info.email }}</p>
 <p>Phone Number: {{ doctor_details.basic_info.phone_number }}</p>
 <p>City: {{ doctor_details.profile.city }}</p>
 <p>Gender: {{ doctor_details.profile.gender }}</p>
 <p>Description: {{ doctor_details.profile.description }}</p>
-
+<P>Consulting Fee: {{ doctor_details.profile.consulting_fee}}
 <h3>Specializations:</h3>
 <ul>
     {% for specialization in doctor_details.specializations %}

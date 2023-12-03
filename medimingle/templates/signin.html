@@ -118,6 +118,9 @@
 											
 											<div class="text-center dont-have">Don’t have an account? <a href="{% url 'register' %}">Register</a></div>
 										</form>
+										<div class="col-14">
+											<a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-facebook btn-block"><i class="fab fa-google mr-1"></i> Google Login</a>
+										</div>
 									</div>
 								</div>
 							</div>
