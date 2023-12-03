@@ -31,10 +31,15 @@ urlpatterns = [
     path('adminpage/',views.adminpage,name='adminpage'),
     path('patient_list',views.patient_list,name='patient_list'),
     path('doctor_list',views.doctor_list,name='doctor_list'),
+    path('total_user_list',views.total_user_list,name='total_user_list'),
     path('login_view',views.login_view,name='login_view'),
     path('patient_change_password/',views.patient_change_password,name='patient_change_password'),
     path('patient_appointment/<int:doctor_id>/', views.patient_appointment, name='patient_appointment'),
     path('bill', views.bill,name='bill'),
+    path('doctor/<int:doctor_id>/', views.view_doctor_details, name='view_doctor_details'),
+    path('pat_doc_view/<int:doctor_id>/', views.pat_doc_view, name='pat_doc_view'),
+    path('view_slot',views.view_slot,name='view_slot'),
+    path('delete_slot/<int:slot_id>/', views.delete_slot, name='delete_slot'),
 
 
    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),

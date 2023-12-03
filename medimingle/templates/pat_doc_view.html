@@ -1,0 +1,120 @@
+{% load static %}
+{% include "includes/pat_header.html" %}
+
+
+
+<div>
+<h2>{{ doctor_details.basic_info.username }}</h2>
+<p>Email: {{ doctor_details.basic_info.email }}</p>
+<p>Phone Number: {{ doctor_details.basic_info.phone_number }}</p>
+<p>City: {{ doctor_details.profile.city }}</p>
+<p>Gender: {{ doctor_details.profile.gender }}</p>
+<p>Description: {{ doctor_details.profile.description }}</p>
+
+<h3>Specializations:</h3>
+<ul>
+    {% for specialization in doctor_details.specializations %}
+        <li>{{ specialization.specialized_category }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Qualifications:</h3>
+<ul>
+    {% for qualification in doctor_details.qualifications %}
+        <li>{{ qualification.qualification_degree }} - {{ qualification.institution_name }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Experiences:</h3>
+<ul>
+    {% for experience in doctor_details.experiences %}
+        <li>{{ experience.designation }} at {{ experience.hospital_name }}</li>
+    {% endfor %}
+</ul>
+</div>
+</div>
+
+</div>
+
+</div>		
+<!-- /Page Content -->
+
+<!-- Footer -->
+<footer class="footer">
+    
+    <!-- Footer Top -->
+    <div class="footer-top">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                
+                    <!-- Footer Widget -->
+                    
+                    <!-- /Footer Widget -->
+                    
+                </div>
+                
+                
+                
+                <div class="col-lg-3 col-md-6">
+                
+                    <!-- Footer Widget -->
+                    
+                    <!-- /Footer Widget -->
+                    
+                </div>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+    <!-- /Footer Top -->
+    
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+        <div class="container-fluid">
+        
+            <!-- Copyright -->
+            <div class="copyright">
+                <div class="row">
+                    
+                    <div class="col-md-6 col-lg-6">
+                    
+                        <!-- Copyright Menu -->
+                        
+                        <!-- /Copyright Menu -->
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- /Copyright -->
+            
+        </div>
+    </div>
+    <!-- /Footer Bottom -->
+    
+</footer>
+<!-- /Footer -->
+
+</div>
+<!-- /Main Wrapper -->
+
+<!-- jQuery -->
+<script src="{% static "/assets/js/jquery.min.js" %}"></script>
+
+<!-- Bootstrap Core JS -->
+<script src="{% static "/assets/js/popper.min.js" %}"></script>
+<script src="{% static "/assets/js/bootstrap.min.js" %}"></script>
+
+<!-- Sticky Sidebar JS -->
+<script src="{% static "/assets/plugins/theia-sticky-sidebar/ResizeSensor.js" %}"></script>
+<script src="{% static "/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js" %}"></script>
+
+<!-- Custom JS -->
+<script src="{% static "/assets/js/script.js" %}"></script>
+
+</body>
+
+<!-- doccure/change-password.html  30 Nov 2019 04:12:18 GMT -->
+</html>

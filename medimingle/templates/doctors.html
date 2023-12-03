@@ -211,7 +211,7 @@
 													</ul>
 											</div>
 											<div class="clinic-booking">
-												<a class="view-pro-btn" href="doctor-profile.html">View Profile</a>
+												<a class="view-pro-btn" href="{% url 'pat_doc_view' doctor.id %}">View Profile</a>
 												<a class="apt-btn" href="{% url 'booking' doctor.id %}">Book Appointment</a>
 											</div>
 										</div>

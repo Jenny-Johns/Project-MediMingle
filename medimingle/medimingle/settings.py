@@ -32,13 +32,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'medi',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'medi',
     'social_django',
     
 
@@ -170,7 +170,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 LOGIN_URL = 'homepage'
 LOGIN_REDIRECT = 'home'
 LOGOUT_URL ='logout'
-LOGOUT_REDIRECT_URL ='signin'
+LOGOUT_REDIRECT_URL ='home'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ="216331157514-131glm4fcf6813vq14g1ujehv47i20ms.apps.googleusercontent.com"
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ="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"

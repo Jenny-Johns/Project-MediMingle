@@ -14,12 +14,12 @@ class tbl_user(AbstractUser):
     user_type = models.CharField(
         max_length=10,
         choices=USER_TYPE_CHOICES,
-        default='patient',  # You can set a default value if needed
+        default='patient',  
     )
-    #user_type = models.CharField(max_length=10,default='patient')  # Add a field for user type
+    is_email_verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.username
+        return self.email
 
 class Doctor(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
@@ -28,23 +28,10 @@ class Doctor(models.Model):
     gender = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
+    status= models.BooleanField(default=False)
     def __str__(self):
         return self.user.first_name
     
-
-class AppointmentTime(models.Model):
-    day = models.CharField(max_length=50, null=True)
-    time_from = models.CharField(max_length=50, null=True)
-    time_to = models.CharField(max_length=50, null=True)
-    from_to = models.CharField(max_length=50, null=True)
-    appointment_date = models.DateField(null=True)
-    month = models.CharField(max_length=50, null=True)
-    date = models.CharField(max_length=50, null=True)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
-    
-
-    def __str__(self):
-        return self.day
 
 
 class DoctorSpecialization(models.Model):
@@ -75,9 +62,20 @@ class Experience(models.Model):
     def __str__(self):
         return self.hospital_name
 
+class AppointmentTime(models.Model):
+    day = models.CharField(max_length=50, null=True)
+    time_from = models.CharField(max_length=50, null=True)
+    time_to = models.CharField(max_length=50, null=True)
+    from_to = models.CharField(max_length=50, null=True)
+    appointment_date = models.DateField(null=True)
+    month = models.CharField(max_length=50, null=True)
+    date = models.CharField(max_length=50, null=True)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return self.day
+
 class Patient(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
-    
     profile_image = models.ImageField(upload_to='patient/',default='default.png')
     city  = models.CharField(max_length=100, null=True,blank=True)
     state  = models.CharField(max_length=100, null=True)

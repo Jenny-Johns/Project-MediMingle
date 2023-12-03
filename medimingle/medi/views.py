@@ -22,6 +22,15 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 
+# for email verification
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
+from django.contrib import messages
+from django.shortcuts import redirect
 
 # Create your views here.
 def index(request):
@@ -92,13 +101,13 @@ def user_login(request):
 def handlelogout(request):
     if request.user.is_authenticated:
         logout(request)
-        return redirect('signin')
+        return redirect('index')
     
 @never_cache
 @login_required(login_url='signin')
 def logout(request):
     logout(request)
-    return redirect('signin')
+    return redirect('index')
 
 @never_cache   
 @login_required(login_url='signin')
@@ -238,7 +247,15 @@ def adminpage(request):
     return render(request,'adminpage.html',context)
 
 
+def approve_doctor(request, doctor_id, status):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You don't have permission to perform this action.")
 
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    doctor.status = status
+    doctor.save()
+
+    return redirect('doctor_list')
 @never_cache
 @login_required(login_url='signin')
 def delete_user(request, user_id):
@@ -283,6 +300,27 @@ def doctor_list(request):
         "doc":doc
     }
     return render(request,'doctor_list.html',context)
+
+def total_user_list(request):
+    users = tbl_user.objects.exclude(is_superuser=True)
+    context={
+        "users":users
+    }
+    return render(request,'total_user_list.html',context)
+
+
+def view_doctor_details(request, doctor_id):
+    doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
+    doctor_details = {
+        'basic_info': doctor,
+        'profile': doctor.doctor,
+        'specializations': DoctorSpecialization.objects.filter(doctor=doctor.doctor),
+        'qualifications': Qualification.objects.filter(doctor=doctor.doctor),
+        'experiences': Experience.objects.filter(doctor=doctor.doctor),
+    }
+    context = {'doctor_details': doctor_details}
+    return render(request, 'view_doctor_details.html', context)
+
 
 def login_view(request):
     return render(request,'login_view.html')
@@ -354,12 +392,20 @@ def patient_change_password(request):
 
     return render(request, 'patient_change_password.html')
 
-
+def pat_doc_view(request, doctor_id):
+    doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
+    doctor_details = {
+        'basic_info': doctor,
+        'profile': doctor.doctor,
+        'specializations': DoctorSpecialization.objects.filter(doctor=doctor.doctor),
+        'qualifications': Qualification.objects.filter(doctor=doctor.doctor),
+        'experiences': Experience.objects.filter(doctor=doctor.doctor),
+    }
+    context = {'doctor_details': doctor_details}
+    return render(request, 'pat_doc_view.html', context)
 
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
-    # doctor = request.user
-    # doctor = Doctor.objects.get(id=doctor_id)
     if request.method == "POST":
         time_from = request.POST['time_from']
         time_to = request.POST['time_to']
@@ -369,32 +415,38 @@ def schedule_timings(request):
         day = appointment_date_obj.date().strftime("%A")
         date = appointment_date_obj.date().strftime("%d")
         month = appointment_date_obj.date().strftime("%B")
-        print("Date here: ", date)
-        print("Month here: ", month)
-        print("DDDAAY: ",day)
-
         appoint_time = AppointmentTime.objects.create(day=day, time_from=time_from, time_to=time_to ,from_to=from_to, date=date, month=month, appointment_date=appointment_date, doctor=doctor)
         appoint_time.save()
         messages.success(request, 'Schedule added successfully.')
         return redirect(request.path_info)
-
     context = {
         'doctor':doctor,
         'fromTimeChoice': fromTimeChoice,
         'toTimeChoice' : toTimeChoice,
     }
-
     return render(request, 'schedule_timings.html',context)
+
+def delete_slot(request, slot_id):
+    slot = get_object_or_404(AppointmentTime, id=slot_id)
+    slot.delete()
+    messages.success(request, 'Slot deleted successfully.')
+    return redirect('view_slot')
+
+def view_slot(request):
+    doctor = get_object_or_404(Doctor, user=request.user)
+    scheduled_slots = AppointmentTime.objects.filter(doctor=doctor)
+    context={
+        'doctor':doctor,
+        'scheduled_slots':scheduled_slots,
+    }
+    return render(request,"view_slot.html",context)
 
 
  
 def booking(request, doctor_id):
     current_user = request.user
     current_patient = get_object_or_404(Patient, user=current_user)
-    
     doctor = Doctor.objects.get(id=doctor_id)
-
-
     # for checking purpose
     try:
         booked_doctor = MedicalHistory.objects.get(doctor=doctor, patient=current_patient)
@@ -601,3 +653,43 @@ def doctor_search(request):
 
 def bill(request):
     return render(request, 'bill.html')
+
+# email verification
+
+def send_verification_email(user):
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    verification_link = f"http://yourdomain.com/verify-email/{uid}/{token}/"
+
+    subject = 'Verify your email'
+    message = f'Click the following link to verify your email: {verification_link}'
+    from_email = 'medimingle@gmail.com'
+    to_email = user.email
+
+    send_mail(subject, message, from_email, [to_email])
+
+def verify_email(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = tbl_user.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, tbl_user.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_email_verified = True
+        user.save()
+        
+        # Send success verification email
+        send_mail(
+            'Email Verification Success',
+            'Your email has been verified successfully.',
+            'medimingle@gmail.com',
+            [user.email],
+            fail_silently=False,
+        )
+
+        messages.success(request, 'Your email has been verified successfully. You can now log in.')
+        return redirect('signin')
+    else:
+        messages.error(request, 'Invalid verification link.')
+        return redirect('signin')

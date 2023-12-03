@@ -1,0 +1,154 @@
+{% load static%}
+{% include 'includes/doc_header.html' %}
+
+
+<div class="col-md-7 col-lg-8 col-xl-9">
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Scheduled Slots</h4>
+				{% if messages %}
+				<h6 class="messages">
+				{% for message in messages %}
+				<h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+				{% endfor %}
+			    </h6>
+				{% endif %}
+				<div class="profile-box">     
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card schedule-widget mb-0">
+								<div class="schedule-header">
+									<div class="schedule-nav">
+										<div class="doc-times">
+											{% if scheduled_slots %}
+												{% for slot in scheduled_slots %}
+													<div class="doc-slot-list">
+														{{ slot.time_from }} - {{ slot.time_to }}
+														<a href="{% url 'delete_slot' slot.id %}" class="delete_schedule">
+															<i class="fa fa-times"></i> Delete
+														</a>	
+													</div>
+												{% endfor %}
+											{% else %}
+												<p class="text-muted mb-0">No slots available</p>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>
+</div>
+</div>
+
+  
+			<!-- Footer -->
+		
+			<!-- Footer -->
+			<footer class="footer">
+				
+				<!-- Footer Top -->
+				<div class="footer-top">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-about">
+									<div class="footer-logo">
+										<img src="{% static '/assets/img/logo.png' %}" alt="logo">
+									</div>
+									
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-contact">
+									
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<!-- /Footer Top -->
+				
+				<!-- Footer Bottom -->
+                <div class="footer-bottom">
+					<div class="container-fluid">
+					
+						<!-- Copyright -->
+						<div class="copyright">
+							<div class="row">
+								
+								<div class="col-md-6 col-lg-6">
+								
+									<!-- Copyright Menu -->
+									
+									<!-- /Copyright Menu -->
+									
+								</div>
+							</div>
+						</div>
+						<!-- /Copyright -->
+						
+					</div>
+				</div>
+				<!-- /Footer Bottom -->
+				
+			</footer>
+			<!-- /Footer -->
+
+	  
+		<!-- jQuery -->
+		<script src="{% static "/assets/js/jquery.min.js" %}"></script>
+		
+		<!-- Bootstrap Core JS -->
+		<script src="{% static "/assets/js/popper.min.js" %}"></script>
+		<script src="{% static "/assets/js/bootstrap.min.js" %}"></script>
+		
+		<!-- Sticky Sidebar JS -->
+        <script src="{% static "/assets/plugins/theia-sticky-sidebar/ResizeSensor.js" %}"></script>
+        <script src="{% static "/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js" %}"></script>
+		
+		<!-- Select2 JS -->
+		<script src="{% static "/assets/plugins/select2/js/select2.min.js" %}"></script>
+		
+		<!-- Custom JS -->
+		<script src="{% static " /assets/js/script.js" %}"></script>
+		
+	</body>
+
+<!-- doccure/schedule-timings.html  30 Nov 2019 04:12:09 GMT -->
+</html>

@@ -262,7 +262,7 @@
 										</ul>
 										<div class="row row-sm">
 											<div class="col-6">
-												<a href="doctor-profile.html" class="btn view-btn">View Profile</a>
+												<a href="{% url 'pat_doc_view' d.id %}" class="btn view-btn">View Profile</a>
 											</div>
 											<div class="col-6">
 												<a href="{% url 'booking' d.id %}" class="btn book-btn">Book Now</a>

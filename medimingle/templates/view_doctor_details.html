@@ -1,0 +1,58 @@
+{% load static %}
+{% include "includes/adminheader.html" %}
+
+
+
+
+<h2>{{ doctor_details.basic_info.username }}</h2>
+<p>Email: {{ doctor_details.basic_info.email }}</p>
+<p>Phone Number: {{ doctor_details.basic_info.phone_number }}</p>
+<p>City: {{ doctor_details.profile.city }}</p>
+<p>Gender: {{ doctor_details.profile.gender }}</p>
+<p>Description: {{ doctor_details.profile.description }}</p>
+
+<h3>Specializations:</h3>
+<ul>
+    {% for specialization in doctor_details.specializations %}
+        <li>{{ specialization.specialized_category }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Qualifications:</h3>
+<ul>
+    {% for qualification in doctor_details.qualifications %}
+        <li>{{ qualification.qualification_degree }} - {{ qualification.institution_name }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Experiences:</h3>
+<ul>
+    {% for experience in doctor_details.experiences %}
+        <li>{{ experience.designation }} at {{ experience.hospital_name }}</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'doctor_list' %}">Back to Doctor List</a>
+
+
+		<!-- jQuery -->
+        <script src="{% static '/admin/assets/js/jquery-3.2.1.min.js' %}"></script>
+		
+		<!-- Bootstrap Core JS -->
+        <script src="{% static '/admin/assets/js/popper.min.js' %}"></script>
+        <script src="{% static '/admin/assets/js/bootstrap.min.js' %}"></script>
+		
+		<!-- Slimscroll JS -->
+        <script src="{% static '/admin/assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+		
+		<!-- Datatables JS -->
+		<script src="{% static '/admin/assets/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+		<script src="{% static '/admin/assets/plugins/datatables/datatables.min.js' %}"></script>
+		
+		<!-- Custom JS -->
+		<script  src="{% static '/admin/assets/js/script.js' %}"></script>
+		
+    </body>
+
+<!-- Mirrored from dreamguys.co.in/demo/doccure/admin/doctor-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 30 Nov 2019 04:12:51 GMT -->
+</html>

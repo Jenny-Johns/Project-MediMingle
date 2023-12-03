@@ -4,10 +4,10 @@
 					<div class="page-header">
 						<div class="row">
 							<div class="col-sm-12">
-								<h3 class="page-title">List of Doctors</h3>
+								<h3 class="page-title">Total Users</h3>
 								<ul class="breadcrumb">
 									<li class="breadcrumb-item"><a href="{% url 'adminpage' %}">Dashboard</a></li>
-									<li class="breadcrumb-item active">Doctor</li>
+									<li class="breadcrumb-item active">Users</li>
 								</ul>
 							</div>
 						</div>
@@ -20,6 +20,7 @@
 								<div class="card-body">
 									<div class="table-responsive">
 										<table class="datatable table table-hover table-center mb-0">
+											
 											<thead>
 												<tr>
 													<th>Slno</th>
@@ -28,17 +29,14 @@
 													<th>Last Name</th>
 													<th>Email</th>
 													<th>Phone Number</th>
-													{% comment %} <th>User Type</th> {% endcomment %}
+													<th>User Type</th>
 													<th>Active</th>
-													<th>Profile</th>
-													<th>Status</th>
-													<th>Action</th>
 													
 												</tr>
 											</thead>
 											<tbody>
 												
-												{% for user in doc %}
+												{% for user in users %}
 												<tr>
 													<td>{{ forloop.counter }}</td> 
 													<td>{{ user.username }}</td>
@@ -46,33 +44,8 @@
 													<td>{{ user.last_name }}</td>
 													<td>{{ user.email }}</td>
 													<td>{{ user.phone_number }}</td>
-													{% comment %} <td>{{ user.user_type }}</td> {% endcomment %}
+													<td>{{ user.user_type }}</td>
 													<td>{{ user.is_active }}</td>
-													<td>
-														<a href="{% url 'view_doctor_details' user.id %}">View</a>
-													</td>
-													<td>{{ user.status }}
-													<td>
-														{% if user.is_active %}
-															<form method="post" action="{% url 'deactivate_user' user.id %}">
-																{% csrf_token %}
-																<button type="submit" class="btn btn-outline-danger">Deactivate</button>
-															</form>
-														{% else %}
-															<form method="post" action="{% url 'activate_user' user.id %}">
-																{% csrf_token %}
-																<button type="submit" class="btn btn-outline-success">Activate</button>
-															</form>
-														{% endif %}
-													</td>
-													
-													{% comment %} <td>
-														{% if doctor.status %}
-															<a href="{% url 'approve_doctor' user.id 'approved' %}">Approve</a>
-															<a href="{% url 'approve_doctor' user.id 'rejected' %}">Reject</a>
-														{% endif %}
-													</td> {% endcomment %}
-													
 												</tr>
 											{% empty %}
 												<tr>
