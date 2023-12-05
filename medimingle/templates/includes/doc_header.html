@@ -70,7 +70,7 @@
 					<ul class="nav header-navbar-rht">
 						<li class="nav-item contact-item">
 							<div class="header-contact-img">
-								<i class="far fa-hospital"></i>							
+								<i  style="color: white;" class="far fa-hospital"></i>							
 							</div>
 							<div class="header-contact-detail">
 								
@@ -167,6 +167,7 @@
 				</a>
 				<div class="profile-det-info">
 					<h3>Dr. {{user.first_name}} {{ user.last_name }}</h3>
+					<h3>{{user.email}}</h3>
 						<div class="patient-details">
 							<h4>{{ user.doctor.doctorspecialization.specialized_category }}</h4>
 						</div>

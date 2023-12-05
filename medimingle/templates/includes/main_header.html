@@ -72,15 +72,15 @@
         <ul class="nav header-navbar-rht">
             <li class="nav-item contact-item">
                 <div class="header-contact-img">
-                    <i class="far fa-hospital"></i>							
+                    <i  style="color: white;" class="far fa-hospital"></i>							
                 </div>
                 <div class="header-contact-detail">
                     {% if user.is_authenticated %}
                         <p style="color: white;" class="contact-header">Welcome | {{ user.first_name }}</p>
                         {% if user.user_type == 'doctor' %}
-                            <p style="color: white;" class="contact-info-header"><a href="{% url 'doctor_dashboard' %}">Dashboard</a></p>
+                            <p class="contact-info-header"><a href="{% url 'doctor_dashboard' %}" style="color: white;" >Dashboard</a></p>
                         {% else %}
-                        <p style="color: white;" class="contact-info-header"><a href="{% url 'patient_dashboard' %}">Dashboard</a></p>
+                        <p style="color: white;" class="contact-info-header"><a href="{% url 'patient_dashboard' %}" style="color: white;" >Dashboard</a></p>
                         {% endif %}
                         
                     {% else  %}

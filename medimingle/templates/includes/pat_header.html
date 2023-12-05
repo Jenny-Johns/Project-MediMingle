@@ -51,13 +51,12 @@
 						<a href="{% url 'homepage' %}" class="navbar-brand logo">
 							<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
 						</a>
-						<span><a href="{% url 'doctors' %}" style="color: white;">Doctors</i></a></span>
 						<span><a href="{% url 'homepage' %}" style="color: white;">Home</i></a></span>
 
 					</div>
 					<div class="main-menu-wrapper">
 						<div class="menu-header">
-							<a href="index-2.html" class="menu-logo">
+							<a href="{% url 'homepage' %}" class="menu-logo">
 								<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
 							</a>
 							<a id="menu_close" class="menu-close" href="javascript:void(0);">
@@ -69,7 +68,7 @@
 					<ul class="nav header-navbar-rht">
 						<li class="nav-item contact-item">
 							<div class="header-contact-img">
-								<i class="far fa-hospital"></i>							
+								<i  style="color: white;" class="far fa-hospital"></i>							
 							</div>
 							<div class="header-contact-detail">
 								
@@ -112,7 +111,7 @@
 						<div class="col-md-12 col-12">
 							<nav aria-label="breadcrumb" class="page-breadcrumb">
 								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="index-2.html">Home</a></li>
+									<li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
 									<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
 								</ol>
 							</nav>
@@ -142,7 +141,7 @@
 											{% endif %}
 										</a>
 										<div class="profile-det-info">
-											<h3>{{user.username}}</h3>
+											<h3>{{user.first_name}} {{user.last_name}}</h3>
 											<div class="patient-details">
 												<h5>{{ user.email }}</h5>
 												<h5 class="mb-0"><i class="fas fa-map-marker-alt"></i>{{ request.user.patient.address}}</h5>
@@ -157,6 +156,12 @@
 												<a href="{% url 'patient_dashboard' %}">
 													<i class="fas fa-columns"></i>
 													<span>Dashboard</span>
+												</a>
+											</li>
+											<li>
+												<a href="{% url 'doctors' %}">
+													<i class="fas fa-columns"></i>
+													<span>View Doctors</span>
 												</a>
 											</li>
 											
