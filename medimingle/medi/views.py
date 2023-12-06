@@ -177,23 +177,49 @@ def logout(request):
 @never_cache   
 @login_required(login_url='signin')
 def patient_dashboard(request):
+    current_user = request.user
+    current_patient = get_object_or_404(Patient, user=current_user)
+    current_appointment = PatientAppointment.objects.filter(patient=current_patient)
     doc = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
     context={
-        "doc":doc
+        'patient': current_patient,
+        'current_appointment':current_appointment,
     }
     return render(request,'patient_dashboard.html',context)
 
 @never_cache   
 @login_required(login_url='signin')
 def doctor_dashboard(request):
+    current_user = request.user
+    current_doctor = get_object_or_404(Doctor, user=current_user)
+    specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
+
+    patient_appointment = PatientAppointment.objects.filter(doctor=current_doctor)
+    if request.method == 'POST':
+        patient_id = request.POST['status']
+        accepted_patient = MedicalHistory.objects.get(id=patient_id)
+        accepted_patient.is_active = True
+        accepted_patient.save()
+        return redirect('doctor_dashboard')
+
     pat=tbl_user.objects.filter(user_type='patient').exclude(is_superuser=True)
     pat_count=pat.count()
     context={
         "pat":pat,
-        "pat_count":pat_count
+        "pat_count":pat_count,
+        "doctor": current_doctor,
+        'specialization':specialization,
+        'patient_appointment':patient_appointment,
     }
     return render(request,'doctor_dashboard.html',context) 
-
+def status(request, patient_id):
+    current_user = request.user
+    current_doctor = get_object_or_404(Doctor,user=current_user)
+    patient = Patient.objects.get(id=patient_id, doctor=current_doctor)
+    patientMedicalHistory = PatientAppointment.objects.get(patient=patient)
+    patientMedicalHistory.is_active = True
+    patientMedicalHistory.save()
+    return redirect('doctor_dashboard')
 @never_cache   
 @login_required(login_url='signin')
 def homepage(request):
@@ -387,7 +413,8 @@ def adminpage(request):
     
     return render(request,'adminpage.html',context)
 
-
+@never_cache
+@login_required(login_url='signin')
 def approve_doctor(request, doctor_id, status):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You don't have permission to perform this action.")
@@ -494,6 +521,8 @@ def activate_user(request, user_id):
     user.save()
     return redirect('adminpage')
 
+@never_cache
+@login_required(login_url='signin')
 def update_consulting_fee(request, user_id):
     doctor = get_object_or_404(Doctor, user_id=user_id)
     if request.method == 'POST':
@@ -593,6 +622,8 @@ def pat_doc_view(request, doctor_id):
 #         'toTimeChoice' : toTimeChoice,
 #     }
 #     return render(request, 'schedule_timings.html',context)
+@never_cache
+@login_required(login_url='signin')
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
 
@@ -771,6 +802,8 @@ def appointments(request):
 #         doc_appoint = PatientAppointment(appoint_day=splitted_from_to[1], appoint_time=splitted_from_to[0], doctor=doctor, patient=current_patient)
 #         doc_appoint.save()
 #         return redirect('history') 
+@never_cache
+@login_required(login_url='signin')
 def slot_select(request, doctor_id):
     current_user = request.user
     current_patient = get_object_or_404(Patient, user=current_user)
@@ -798,6 +831,8 @@ from .models import PatientAppointment
 
 from django.shortcuts import get_list_or_404
 import razorpay
+@never_cache
+@login_required(login_url='signin')
 def booking_summary(request):
     current_user = request.user
     appointments = get_list_or_404(PatientAppointment, patient__user=current_user)
@@ -820,7 +855,8 @@ def booking_summary(request):
 
 
     return render(request, 'booking_summary.html', context)
-
+@never_cache
+@login_required(login_url='signin')
 def success(request):
     current_user = request.user
     appointments = get_list_or_404(PatientAppointment, patient__user=current_user)

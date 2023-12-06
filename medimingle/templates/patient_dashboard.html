@@ -39,11 +39,12 @@
 													<tr>
 														<th>Doctor</th>
 														{% comment %} <th>Appt Date</th> {% endcomment %}
-														<th>Booking Date</th>
+														{% comment %} <th>Booking Date</th> {% endcomment %}
 														{% comment %} <th>Amount</th> {% endcomment %}
-														<th>Follow Up</th>
+														{% comment %} <th>Follow Up</th> {% endcomment %}
+														{% comment %} <th>fee</th> {% endcomment %}
 														<th>Status</th>
-														<th></th>
+														
 													</tr>
 												</thead>
 												<tbody>
@@ -52,16 +53,12 @@
 														  
 														<td>
 															<h2 class="table-avatar">
-																<a href="{% url 'profile' appointment.doctor.id %}" class="avatar avatar-sm mr-2">
-																	<img class="avatar-img rounded-circle" src="{{ appointment.doctor.profile_image.url }}" alt="User Image">
-																</a>
-																<a href="{% url 'profile' appointment.doctor.id %}">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name}}<span></span></a>
+																<a href="{% url 'view_doctor_details' appointment.doctor.id %}">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name}}<span></span></a>
 															</h2>
 														</td>
-														<td><span class="d-block text-info"></span>{{appointment.date_created}}</td>
-														<td>TBD</td>
-														<!-- <td>$160</td> -->
-														<!-- <td>16 Nov 2019</td> -->
+														{% comment %} <td><span class="d-block text-info"></span>{{appointment.date_created}}</td> {% endcomment %}
+														{% comment %} <td>{{appointment.doctor.user.consulting_fee}}</td> {% endcomment %}
+														
 														<td>
 															{% if appointment.is_active %}
 															<span class="badge badge-pill bg-success-light">Active</span>

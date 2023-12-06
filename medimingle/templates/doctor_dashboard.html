@@ -81,15 +81,56 @@
 																<thead>
 																	<tr>
 																		<th>Patient Name</th>
-																		<th>Appt Date</th>
-																		<th>Purpose</th>
 																		<th>Type</th>
-																		<th class="text-center">Paid Amount</th>
+																		{% comment %} <th>Appt Date</th> {% endcomment %}
+																		<th>Action</th>
+																		
+																		{% comment %} <th class="text-center">Paid Amount</th> {% endcomment %}
 																		<th></th>
 																	</tr>
 																</thead>
 																<tbody>
-																	
+																	{% for patient_appointment in patient_appointment %}
+                                          
+																	<tr>
+																		<td>
+																			<h2 class="table-avatar">
+																				{{ patient_appointment.patient.user.first_name }}<span>#PT{{patient_appointment.patient.id}}</span></a>
+																			</h2>
+																		</td>
+																		<!-- <td>{{patient_appointment.date_created}} <span class="d-block text-info"></span></td> -->
+																		<!-- <td>General</td> -->
+																		<td>New Patient</td>
+																		<!-- <td class="text-center">{{patient_appointment.date_created|time}}</td> -->
+																		<!-- <td class="text-center">$150</td> -->
+																		<td class="text-left">
+                                                
+																			<div class="table-action">
+																				<!-- <a href="javascript:void(0);" class="btn btn-sm bg-info-light">
+																					<i class="far fa-eye"></i> View
+																				</a> -->
+																				<form action="{% url 'doctor_dashboard' %}" method="post">
+																					{% csrf_token %}
+																				{% if patient_appointment.is_active %}
+																					<a href="#" >
+																						<input type="hidden" name="status" value="{{patient_appointment.id}}">
+																						<button type="submit" class="btn btn-sm bg-success-light"><i class="fas fa-check"></i> Accepted
+																						</button>
+																					</a>
+																				{% else %}
+																				<a href="#" >
+																					<input type="hidden" name="status" value="{{patient_appointment.id}}">
+																					<button type="submit" class="btn btn-sm bg-primary-light"><i class="fas fa-check"></i> Accept
+																					</button>
+																				</a>
+																				{% endif %}
+																			</form>
+																			</div>
+																			
+																		</td>
+																		{% comment %} <td>{{patient_appointment.user.consulting_fee}} {% endcomment %}
+																	</tr>
+																	{% endfor %}
 																</tbody>
 															</table>		
 														</div>
