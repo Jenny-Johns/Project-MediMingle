@@ -800,20 +800,14 @@ from django.shortcuts import get_list_or_404
 import razorpay
 def booking_summary(request):
     current_user = request.user
-
-    # Retrieve a list of appointments for the current user
     appointments = get_list_or_404(PatientAppointment, patient__user=current_user)
-
-    # You can then choose how to handle multiple appointments, for example, display the latest one
     if appointments:
         appointment = appointments[0]
     else:
-        # Handle the case where no appointment is found
         appointment = None
 
     context = {
         'appointment': appointment,
-        # Add any other necessary data you want to display on the summary page
     }
 
     if request.method=='POST':
@@ -828,7 +822,17 @@ def booking_summary(request):
     return render(request, 'booking_summary.html', context)
 
 def success(request):
-    return render(request,"success.html")
+    current_user = request.user
+    appointments = get_list_or_404(PatientAppointment, patient__user=current_user)
+    if appointments:
+        appointment = appointments[0]
+    else:
+        appointment = None
+
+    context = {
+        'appointment': appointment,
+    }
+    return render(request,"success.html",context)
 
 
 def history(request):

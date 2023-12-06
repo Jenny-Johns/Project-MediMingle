@@ -102,14 +102,14 @@ class PrescriptionStatus(models.Model):
     # Add fields specific to patients, e.g., medical history, contact information, etc.
 
 class PatientAppointment(models.Model):
-    appoint_date = models.CharField(max_length=50, null=True)
+    appoint_date = models.DateField(max_length=50, null=True)
     appoint_time = models.CharField(max_length=50, null=True)
     appoint_day = models.CharField(max_length=50, null=True)
     doctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING, null=True)
     patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
     month = models.CharField(max_length=50, null=True)
     date = models.CharField(max_length=50, null=True)
-
+    
 
 
 class MedicalRecords(models.Model):

@@ -122,7 +122,7 @@
         <script
             src="https://checkout.razorpay.com/v1/checkout.js"
             data-key="rzp_test_GfzsM6qWehBGju" 
-            data-amount="1000" 
+            data-amount="10000" 
             data-currency="INR"
             data-order_id="{{payment.id}}"
             data-buttontext="Pay with Razorpay"
@@ -135,12 +135,5 @@
         ></script>
         <input type="hidden" custom="Hidden Element" name="hidden"/>
         </form>
-    <!-- Add any other relevant information you want to display -->
-
-    {% comment %} <form method="post" action="{% url 'razorpay_payment' %}">
-        {% csrf_token %}
-        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
-        <button type="submit">Book</button>
-    </form> {% endcomment %}
 </body>
 </html>
