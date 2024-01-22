@@ -2,7 +2,6 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
-# Create your models here.
 
 class tbl_user(AbstractUser):
     email=models.EmailField(unique=True)
@@ -99,7 +98,6 @@ class PrescriptionStatus(models.Model):
 
     def __int__(self):
         return self.id
-    # Add fields specific to patients, e.g., medical history, contact information, etc.
 
 class PatientAppointment(models.Model):
     appoint_date = models.DateField(max_length=50, null=True)
@@ -147,16 +145,6 @@ class MedicalHistory(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     class Meta:
         verbose_name_plural = "MedicalHistories"
-
-    # def __str__(self):
-    #     return self.id
-
-    # def __str__(self):
-    #     if self.doctor:
-    #         return f"For Dr. {self.doctor}"
-    #     else:
-    #         return f"History from {self.patient.user.first_name}"
-
 
 
 
