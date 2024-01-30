@@ -290,7 +290,7 @@ def profile_settings(request):
 @never_cache   
 @login_required(login_url='signin')
 def doctor_profile_settings(request):
-    user = request.user  # Get the logged-in user
+    user = request.user  
     doctor, created = Doctor.objects.get_or_create(user=user)
     if request.method == 'POST':
         user_form = ProfileUpdateForm(request.POST, instance=user)
@@ -308,7 +308,6 @@ def doctor_profile_settings(request):
         if user_form.is_valid() and doctor_form.is_valid() and specialization_form.is_valid() and qualification_form.is_valid() and experience_form.is_valid():
             user_form.save()
             
-            # Ensure that the doctor instance has a user before saving
             doctor = doctor_form.save(commit=False)
             doctor.user = user
             doctor.save()

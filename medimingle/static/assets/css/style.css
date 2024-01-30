@@ -2313,11 +2313,11 @@ html.menu-opened body {
     -ms-flex: 0 0 490px;
     flex: 0 0 490px;
     margin-right: 12px;
-    position: relative;
+    position: center;
     width: 490px;
 }
 .search-info .form-control {
-	background: #fff url(../img/bg.png) no-repeat 10px center;
+	background: #fff  no-repeat 10px center;
 }
 .search-box .search-btn {
     width: 46px;

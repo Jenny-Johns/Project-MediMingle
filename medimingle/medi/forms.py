@@ -56,21 +56,35 @@ class UserRegistrationForm(forms.Form):
 
 
 class UserProfileUpdateForm(forms.ModelForm):
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    ]
+
+    city = forms.CharField(label='City', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}))
+    country = forms.CharField(label='Country', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}))
+    pin = forms.CharField(label='PIN', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'PIN'}))
+    gender = forms.ChoiceField(label='Gender', choices=GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    profile_image = forms.ImageField(label='Profile Image', widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    blood_group = forms.CharField(label='Blood Group', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Blood Group'}))
+    address = forms.CharField(label='Address', widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Address'}))
+
     class Meta:
         model = Patient
-        fields = ['city','country','pin','gender','profile_image','blood_group','address']
+        fields = ['city', 'country', 'pin', 'gender', 'profile_image', 'blood_group', 'address']
+
 
 class ProfileUpdateForm(forms.ModelForm):
-    email = forms.EmailField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    email = forms.EmailField(widget=forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control'}))
+    first_name = forms.CharField(label='First Name', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(label='Last Name', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    phone_number = forms.CharField(label='Phone Number', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}))
 
     class Meta:
         model = tbl_user
-        fields = ['first_name','last_name','email','phone_number']
-    widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
-        }
+        fields = ['first_name', 'last_name', 'email', 'phone_number']
+
 
 
 
@@ -83,25 +97,70 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'email', 'phone_number']"""
 
 
+# 
 class DoctorForm(forms.ModelForm):
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    ]
+
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    city = forms.CharField(label='City', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}))
+    profile_image = forms.ImageField(label='Profile Image', widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    description = forms.CharField(label='Description', widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}))
+
     class Meta:
         model = Doctor
-        fields = ['city', 'profile_image', 'gender', 'description'] 
+        fields = ['city', 'profile_image', 'gender', 'description']
+ 
     
+# class DoctorSpecializationForm(forms.ModelForm):
+#     class Meta:
+#         model = DoctorSpecialization
+#         fields = ['specialized_category']
 class DoctorSpecializationForm(forms.ModelForm):
+    SPECIALIZATION_CHOICES = [
+        ('Cardiologist', 'Cardiologist'),
+        ('Dermatologist', 'Dermatologist'),
+        ('Orthopedic Surgeon', 'Orthopedic Surgeon'),
+        ('Pediatrician','Pediatrician'),
+        ('Gynecologist','Gynecologist'),
+        ('Pulmonologist','Pulmonologist'),
+        ('Psychiatrist','Psychiatrist'),
+        ('Ophthalmologist','Ophthalmologist'),
+        ('Dentist','Dentist'),
+
+
+    ]
+
+    specialized_category = forms.ChoiceField(choices=SPECIALIZATION_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+
     class Meta:
         model = DoctorSpecialization
         fields = ['specialized_category']
+
 
 class QualificationForm(forms.ModelForm):
     class Meta:
         model = Qualification
         fields = ['institution_name', 'qualification_degree', 'years_of_completion']
+        widgets = {
+            'institution_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'qualification_degree': forms.TextInput(attrs={'class': 'form-control'}),
+            'years_of_completion': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 class ExperienceForm(forms.ModelForm):
     class Meta:
         model = Experience
         fields = ['hospital_name', 'worked_from', 'worked_to', 'designation']
+        widgets = {
+            'hospital_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'worked_from': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'worked_to': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'designation': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 class MedicalHistoryForm(forms.ModelForm):
     class Meta:
