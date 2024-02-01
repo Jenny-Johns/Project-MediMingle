@@ -4,6 +4,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from .import views 
 from .views import activate_account
+from .views import update_consulting_fee
 
 
 urlpatterns = [
@@ -43,7 +44,10 @@ urlpatterns = [
     path('view_slot',views.view_slot,name='view_slot'),
     path('delete_slot/<int:slot_id>/', views.delete_slot, name='delete_slot'),
     path('activate/<str:uidb64>/<str:token>/', activate_account, name='account_activation'),
-    path('update_consulting_fee/<int:user_id>/', views.update_consulting_fee, name='update_consulting_fee'),
+    # path('update_consulting_fee/<int:user_id>/', views.update_consulting_fee, name='update_consulting_fee'),
+    path('update_consulting_fee/<int:doctor_id>/', views.update_consulting_fee, name='update_consulting_fee'),
+
+ 
     path('success',views.success,name='success'),
    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
    path('block_user/<int:user_id>/', views.block_user, name='block_user'),

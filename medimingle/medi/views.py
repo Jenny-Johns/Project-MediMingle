@@ -1,16 +1,17 @@
 import datetime
 from tkinter import Canvas
-from django.http import FileResponse, HttpResponseForbidden
+from django.http import FileResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
+from django.urls import reverse
 from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,PatientAppointment
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
 from django.contrib.auth.decorators import login_required
-from .forms import UserProfileUpdateForm,ProfileUpdateForm
+from .forms import UserProfileUpdateForm,ProfileUpdateForm,ConsultingFeeForm
 from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,DoctorForm,MedicalHistoryForm
 from django.views.decorators.http import require_POST
 from .choices import category, fromTimeChoice,toTimeChoice
@@ -522,13 +523,8 @@ def activate_user(request, user_id):
 
 @never_cache
 @login_required(login_url='signin')
-def update_consulting_fee(request, user_id):
-    doctor = get_object_or_404(Doctor, user_id=user_id)
-    if request.method == 'POST':
-        consulting_fee = request.POST.get('consulting_fee')
-        doctor.consulting_fee = consulting_fee
-        doctor.save()
-    return redirect('adminpage')
+
+
 
 
 @never_cache
@@ -977,3 +973,15 @@ def doctor_search(request):
 def bill(request):
     return render(request, 'bill.html')
 
+def update_consulting_fee(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    if request.method == 'POST':
+        form = ConsultingFeeForm(request.POST, instance=doctor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Consulting fee updated successfully.')
+            return redirect('doctor_list')
+    else:
+        form = ConsultingFeeForm(instance=doctor)
+
+    return render(request, 'doctor_list.html', {'form': form, 'doctor': doctor})

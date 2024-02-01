@@ -62,12 +62,39 @@ class UserProfileUpdateForm(forms.ModelForm):
         ('O', 'Other'),
     ]
 
-    city = forms.CharField(label='City', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}))
+    CITY_CHOICES = [
+        ('Thiruvananthapuram','Thiruvananthapuram'),
+        ('Kollam','Kollam'),
+        ('Pathanamthitta','Pathanamthitta'),
+        ('Alappuzha','Alappuzha'),
+        ('Kottayam','Kottayam'),
+        ('Idukki','Idukki'),
+        ('Ernakulam','Ernakulam'),
+        ('Thrissur','Thrissur'),
+        ('Palakkad','Palakkad'),
+        ('Malappuram','Malappuram'),
+        ('Kozhikode','Kozhikode'),
+        ('Wayanad','Wayanad'),
+        ('Kannur','Kannur'),
+        ('Kasargod','Kasargod'),
+
+    ]
+    BLOOD_GROUP_CHOICES = [
+        ('A+', 'A+'),
+        ('B+', 'B+'),
+        ('AB+', 'AB+'),
+        ('O+', 'O+'),
+        ('A-', 'A-'),
+        ('B-', 'B-'),
+        ('AB-', 'AB-'),
+        ('O-', 'O-'),
+    ]
+    city = forms.ChoiceField(label='City', choices=CITY_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     country = forms.CharField(label='Country', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}))
     pin = forms.CharField(label='PIN', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'PIN'}))
     gender = forms.ChoiceField(label='Gender', choices=GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     profile_image = forms.ImageField(label='Profile Image', widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
-    blood_group = forms.CharField(label='Blood Group', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Blood Group'}))
+    blood_group = forms.ChoiceField(label='Blood Group', choices=BLOOD_GROUP_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     address = forms.CharField(label='Address', widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Address'}))
 
     class Meta:
@@ -104,9 +131,26 @@ class DoctorForm(forms.ModelForm):
         ('F', 'Female'),
         ('O', 'Other'),
     ]
+    CITY_CHOICES = [
+        ('Thiruvananthapuram','Thiruvananthapuram'),
+        ('Kollam','Kollam'),
+        ('Pathanamthitta','Pathanamthitta'),
+        ('Alappuzha','Alappuzha'),
+        ('Kottayam','Kottayam'),
+        ('Idukki','Idukki'),
+        ('Ernakulam','Ernakulam'),
+        ('Thrissur','Thrissur'),
+        ('Palakkad','Palakkad'),
+        ('Malappuram','Malappuram'),
+        ('Kozhikode','Kozhikode'),
+        ('Wayanad','Wayanad'),
+        ('Kannur','Kannur'),
+        ('Kasargod','Kasargod'),
+
+    ]
 
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
-    city = forms.CharField(label='City', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}))
+    city = forms.ChoiceField(label='City', choices=CITY_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     profile_image = forms.ImageField(label='Profile Image', widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
     description = forms.CharField(label='Description', widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}))
 
@@ -135,7 +179,6 @@ class DoctorSpecializationForm(forms.ModelForm):
     ]
 
     specialized_category = forms.ChoiceField(choices=SPECIALIZATION_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
-
     class Meta:
         model = DoctorSpecialization
         fields = ['specialized_category']
@@ -172,30 +215,8 @@ class MedicalHistoryForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
-
-# forms.py
-from django import forms
-from .models import Doctor
-
 class ConsultingFeeForm(forms.ModelForm):
-    consulting_fee = forms.CharField(max_length=15)  # Adjust the max length as needed
-
     class Meta:
         model = Doctor
         fields = ['consulting_fee']
-
-    def clean_consulting_fee(self):
-        consulting_fee = self.cleaned_data['consulting_fee']
-        
-        # Validate the entered value using a regular expression
-        if not re.match(r'^\d+\sINR$', consulting_fee.strip()):
-            raise forms.ValidationError('Please enter a valid amount with INR (e.g., 100 INR)')
-
-        # Extract the numeric part and convert it to an integer
-        numeric_part = int(consulting_fee.split()[0])
-
-        # Check for minimum value
-        if numeric_part < 100:
-            raise forms.ValidationError('The minimum consulting fee is 100 INR')
-
-        return consulting_fee
+    

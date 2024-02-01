@@ -29,7 +29,7 @@ class Doctor(models.Model):
     gender = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
-    consulting_fee = models.CharField(max_length=10, null=True, blank=True)
+    consulting_fee = models.IntegerField(null=True, blank=True)
     def __str__(self):
         return self.user.first_name
     

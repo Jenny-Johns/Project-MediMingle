@@ -13,7 +13,13 @@
 						</div>
 					</div>
 					<!-- /Page Header -->
-					
+					{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="card">
@@ -47,7 +53,7 @@
 													{% comment %} <td>{{ user.user_type }}</td> {% endcomment %}
 													<td>{{ user.is_active }}</td>
 													<td>
-														<a href="{% url 'view_doctor_details' user.id %}">View</a>
+														<a href="{% url 'view_doctor_details' user.id %}" class="btn btn-success">View</a>
 													</td>
 													<td>
 														{% if user.is_active %}
@@ -63,14 +69,14 @@
 														{% endif %}
 														</td>
 														<td>
-															<!-- Input field for consulting fee -->
 															<form method="post" action="{% url 'update_consulting_fee' user.id %}">
 																{% csrf_token %}
-																<input type="text" name="consulting_fee" value="{{ user.doctor.consulting_fee }}" placeholder="Consulting Fee" pattern="\d+\sINR" title="Please enter a valid amount with INR (e.g., 100 INR)" required>
+																<input type="number" name="consulting_fee" min="100" max="500" required>
 																<button type="submit" class="btn btn-outline-primary">Update Fee</button>
 															</form>
-															
 														</td>
+														
+														
 													{% comment %} <td>
 														{% if doctor.status %}
 															<a href="{% url 'approve_doctor' user.id 'approved' %}">Approve</a>
@@ -98,7 +104,23 @@
 		
         </div>
 		<!-- /Main Wrapper -->
-		
+		<!-- Add this script to enforce input validation -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                const consultingFeeInput = form.querySelector('[name="consulting_fee"]');
+                const feeValue = parseFloat(consultingFeeInput.value);
+
+                if (isNaN(feeValue) || feeValue < 100 || feeValue > 500) {
+                    event.preventDefault();
+                    alert('Consulting fee must be a number between 100 and 500.');
+                }
+            });
+        });
+    });
+</script>
+
 		<!-- jQuery -->
         <script src="{% static '/admin/assets/js/jquery-3.2.1.min.js' %}"></script>
 		
