@@ -16,7 +16,7 @@
 					{% if messages %}
     <ul class="messages">
         {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            <h4{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
         {% endfor %}
     </ul>
 {% endif %}
@@ -69,11 +69,13 @@
 														{% endif %}
 														</td>
 														<td>
-															<form method="post" action="{% url 'update_consulting_fee' user.id %}">
+															
+														<form method="post" action="{% url 'update_consulting_fee' user.id %}">
 																{% csrf_token %}
-																<input type="number" name="consulting_fee" min="100" max="500" required>
+																<input type="number" name="consulting_fee" min="100" max="500" value="{{ user.doctor.consulting_fee }}">
 																<button type="submit" class="btn btn-outline-primary">Update Fee</button>
-															</form>
+															</form> 
+															
 														</td>
 														
 														

@@ -973,15 +973,15 @@ def doctor_search(request):
 def bill(request):
     return render(request, 'bill.html')
 
-def update_consulting_fee(request, doctor_id):
-    doctor = get_object_or_404(Doctor, id=doctor_id)
-    if request.method == 'POST':
-        form = ConsultingFeeForm(request.POST, instance=doctor)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Consulting fee updated successfully.')
-            return redirect('doctor_list')
-    else:
-        form = ConsultingFeeForm(instance=doctor)
 
-    return render(request, 'doctor_list.html', {'form': form, 'doctor': doctor})
+def update_consulting_fee(request, user_id):
+    doctor = get_object_or_404(Doctor, user_id=user_id)
+    if request.method == 'POST':
+        consulting_fee = request.POST.get('consulting_fee')
+        doctor.consulting_fee = consulting_fee
+        doctor.save()
+        messages.success(request, 'Consulting fee updated successfully.')
+
+    return redirect('doctor_list')
+
+        
