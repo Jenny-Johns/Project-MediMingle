@@ -41,6 +41,10 @@ from django.shortcuts import redirect
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_decode
 from medi.tokens import account_activation_token
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 
 # Create your views here.
@@ -60,11 +64,24 @@ def register(request):
             phone_number=request.POST['phone_number']
             password=request.POST['password']
             user_type=request.POST['user_type']
-            user=tbl_user(username=username,first_name=first_name,last_name=last_name,email=email,phone_number=phone_number,user_type=user_type)
+            
+            # Create tbl_user instance
+            user = tbl_user.objects.create_user(username=username, first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, user_type=user_type)
             user.set_password(password)
-            user.user_type = user_type
-            user.phone_number = phone_number
-            user.save();
+            user.save()
+            
+            # Check if the user is registering as a doctor
+            if user_type == 'doctor':
+                # Create Doctor instance
+                doctor = Doctor.objects.create(user=user)
+            else:
+                patient=Patient.objects.create(user=user)
+
+            # user=tbl_user(username=username,first_name=first_name,last_name=last_name,email=email,phone_number=phone_number,user_type=user_type)
+            # user.set_password(password)
+            # user.user_type = user_type
+            # user.phone_number = phone_number
+            # user.save();
             current_site = get_current_site(request)
             activation_link = f"{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{account_activation_token.make_token(user)}/"
 
@@ -213,6 +230,7 @@ def doctor_dashboard(request):
         'patient_appointment':patient_appointment,
     }
     return render(request,'doctor_dashboard.html',context) 
+
 def status(request, patient_id):
     current_user = request.user
     current_doctor = get_object_or_404(Doctor,user=current_user)
@@ -241,17 +259,13 @@ def patient_profile(request):
 @login_required(login_url='signin')
 def profile_settings(request):
     user = request.user  # Get the logged-in user
-    try:
-        patient_data = Patient.objects.get(user=user)
-    except Patient.DoesNotExist:
-        patient_data = Patient(user=user)
+    patient, created = Patient.objects.get_or_create(user=user)
 
     if request.method == 'POST':
         user_form = ProfileUpdateForm(request.POST, instance=user)
-        patient_form = UserProfileUpdateForm(request.POST, request.FILES, instance=patient_data)
+        patient_form = UserProfileUpdateForm(request.POST, request.FILES, instance=patient)
 
         if user_form.is_valid() and patient_form.is_valid():
-            # Update the Patient model fields
             user_form.save()
             patient = patient_form.save(commit=False)
             patient.user = user
@@ -260,138 +274,51 @@ def profile_settings(request):
             return redirect('profile_settings')  # Redirect back to the profile update page or another page
     else:
         user_form = ProfileUpdateForm(instance=user)
-        patient_form = UserProfileUpdateForm(instance=patient_data)
+        patient_form = UserProfileUpdateForm(instance=patient)
 
     return render(request, 'profile_settings.html', {'user_form': user_form, 'patient_form': patient_form})
-# def profile_settings(request):
-#     user = request.user  # Get the logged-in user
-#     try:
-#         patient_data = Patient.objects.get(user=user)
-#     except Patient.DoesNotExist:
-#         patient_data = None
-
-#     if request.method == 'POST':
-#         user_form = ProfileUpdateForm(request.POST, instance=user)
-#         patient_form = UserProfileUpdateForm(request.POST, request.FILES, instance=patient_data)
-
-#         if user_form.is_valid() and patient_form.is_valid():
-#             # Update the Patient model fields
-#             user_form.save()
-#             patient_form.save()
-#             messages.success(request,"Profile Updated")
-#             return redirect('patient_dashboard')  # Redirect back to the profile update page or another page
-#     else:
-#         user_form = ProfileUpdateForm(instance=user)
-#         patient_form = UserProfileUpdateForm(instance=patient_data)
-#     return render(request, 'profile_settings.html', {'user_form': user_form,'patient_form':patient_form})
-
-
-
 
 @never_cache   
 @login_required(login_url='signin')
 def doctor_profile_settings(request):
     user = request.user  
     doctor, created = Doctor.objects.get_or_create(user=user)
+    
     if request.method == 'POST':
         user_form = ProfileUpdateForm(request.POST, instance=user)
         doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
-        
-        if doctor:
-            specialization_form = DoctorSpecializationForm(request.POST, instance=doctor.doctorspecialization_set.first())
-            qualification_form = QualificationForm(request.POST, instance=doctor.qualification_set.first())
-            experience_form = ExperienceForm(request.POST, instance=doctor.experience_set.first())
-        else:
-            specialization_form = DoctorSpecializationForm(request.POST)
-            qualification_form = QualificationForm(request.POST)
-            experience_form = ExperienceForm(request.POST)
+        specialization_form = DoctorSpecializationForm(request.POST, instance=doctor.doctorspecialization_set.first())
+        qualification_form = QualificationForm(request.POST, instance=doctor.qualification_set.first())
+        experience_form = ExperienceForm(request.POST, instance=doctor.experience_set.first())
 
         if user_form.is_valid() and doctor_form.is_valid() and specialization_form.is_valid() and qualification_form.is_valid() and experience_form.is_valid():
             user_form.save()
-            
             doctor = doctor_form.save(commit=False)
             doctor.user = user
             doctor.save()
 
-            if doctor:
-                doctorspecialization = specialization_form.save(commit=False)
-                doctorspecialization.doctor = doctor
-                specialization_form.save()
-                qualification = qualification_form.save(commit=False)
-                qualification.doctor = doctor
-                qualification.save()
-                experience = experience_form.save(commit=False)
-                experience.doctor = doctor
-                experience.save()
+            specialization = specialization_form.save(commit=False)
+            specialization.doctor = doctor
+            specialization.save()
+
+            qualification = qualification_form.save(commit=False)
+            qualification.doctor = doctor
+            qualification.save()
+
+            experience = experience_form.save(commit=False)
+            experience.doctor = doctor
+            experience.save()
 
             messages.success(request, "Profile Updated")
             return redirect('doctor_dashboard')
-
     else:
         user_form = ProfileUpdateForm(instance=user)
         doctor_form = DoctorForm(instance=doctor)
-
-        if doctor:
-            specialization_form = DoctorSpecializationForm(instance=doctor.doctorspecialization_set.first())
-            qualification_form = QualificationForm(instance=doctor.qualification_set.first())
-            experience_form = ExperienceForm(instance=doctor.experience_set.first())
-        else:
-            specialization_form = DoctorSpecializationForm()
-            qualification_form = QualificationForm()
-            experience_form = ExperienceForm()
+        specialization_form = DoctorSpecializationForm(instance=doctor.doctorspecialization_set.first())
+        qualification_form = QualificationForm(instance=doctor.qualification_set.first())
+        experience_form = ExperienceForm(instance=doctor.experience_set.first())
 
     return render(request, 'doctor_profile_settings.html', {'user_form': user_form, 'doctor_form': doctor_form, 'specialization_form': specialization_form, 'qualification_form': qualification_form, 'experience_form': experience_form})
-# def doctor_profile_settings(request):
-#     user = request.user  # Get the logged-in user
-#     try:
-#         doctor = Doctor.objects.get(user=user)
-#     except Doctor.DoesNotExist:
-#         doctor = None
-    
-#     if request.method == 'POST':
-#         user_form = ProfileUpdateForm(request.POST, instance=user)
-#         doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
-#         specialization_form = DoctorSpecializationForm(request.POST, instance=doctor.doctorspecialization_set.first())
-#         qualification_form = QualificationForm(request.POST, instance=doctor.qualification_set.first())
-#         experience_form = ExperienceForm(request.POST, instance=doctor.experience_set.first())
-
-#         if user_form.is_valid() and doctor_form.is_valid() and specialization_form.is_valid() and qualification_form.is_valid() and experience_form.is_valid():
-#             user_form.save()
-#             doctor_form.save()
-#             doctorspecialization = specialization_form.save(commit=False)
-#             doctorspecialization.doctor = doctor
-#             specialization_form.save()
-#             qualification = qualification_form.save(commit=False)
-#             qualification.doctor = doctor
-#             qualification.save()
-#             experience = experience_form.save(commit=False)
-#             experience.doctor = doctor
-#             experience.save()
-#             messages.success(request,"Profile Updated")           
-#             return redirect('doctor_dashboard')
-
-#     else:
-#         user_form = ProfileUpdateForm(instance=user)
-#         doctor_form = DoctorForm(instance=doctor)
-#         specialization_form = DoctorSpecializationForm(instance=doctor.doctorspecialization_set.first())
-#         qualification_form = QualificationForm(instance=doctor.qualification_set.first())
-#         experience_form = ExperienceForm(instance=doctor.experience_set.first())
-
-#     return render(request, 'doctor_profile_settings.html', {'user_form': user_form, 'doctor_form': doctor_form,'specialization_form':specialization_form, 'qualification_form': qualification_form, 'experience_form': experience_form})
-
-# def doctor_specialization(request):
-#     try:
-#         current_doctor = Doctor.objects.get(user=request.user)
-#     except Doctor.DoesNotExist:
-#         pass
-#     if request.method == 'POST':
-#         category = request.POST.getlist('category')
-#         for i in range(len(category)):
-#             specialized_category = DoctorSpecialization( doctor=current_doctor,specialized_category=category[i])
-#             specialized_category.save()
-#         return redirect('doctor_profile_settings')
-    
-
 
 @never_cache
 @login_required(login_url='signin')
@@ -498,8 +425,8 @@ def view_doctor_details(request, doctor_id):
     return render(request, 'view_doctor_details.html', context)
 
 
-def login_view(request):
-    return render(request,'login_view.html')
+def doc_suggest(request):
+    return render(request,'doc_suggest.html')
 
 
 @never_cache
@@ -956,19 +883,37 @@ def profile(request, doctor_id):
 
 @never_cache
 @login_required(login_url='signin')
+# def doctor_search(request):
+#     doctors = Doctor.objects.order_by('-date_joined') #A hyphen "-" in front of "check_in" indicates descending order. 
+
+#     if 'gender_type' in request.GET:
+#         gender_type = request.GET['gender_type']
+#         if gender_type:
+#             doctors = doctors.filter(gender__iexact=gender_type)
+            
+#     context = {
+#         'doctors':doctors,
+#     }
+#     return render(request, 'doctor_search.html', context)
+
+
+
+
+
 def doctor_search(request):
-    doctors = Doctor.objects.order_by('-date_joined') #A hyphen "-" in front of "check_in" indicates descending order. 
+    gender_type = request.GET.get('gender_type')
+    select_specialist = request.GET.getlist('select_specialist')
 
-    if 'gender_type' in request.GET:
-        gender_type = request.GET['gender_type']
-        if gender_type:
-            doctors = doctors.filter(gender__iexact=gender_type)
-            # print("filtered: ",doctors)
+    doctors = Doctor.objects.all()
 
-    context = {
-        'doctors':doctors,
-    }
-    return render(request, 'doctor_search.html', context)
+    if gender_type:
+        doctors = doctors.filter(gender=gender_type)
+    
+    if select_specialist:
+        doctors = doctors.filter(doctorspecialization__specialized_category__in=select_specialist)
+
+    return render(request, 'doctor_search.html', {'doctors': doctors})
+
 
 def bill(request):
     return render(request, 'bill.html')
@@ -983,5 +928,69 @@ def update_consulting_fee(request, user_id):
         messages.success(request, 'Consulting fee updated successfully.')
 
     return redirect('doctor_list')
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from .models import Doctor
+import random
+import string
+
+# views.py
+
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import tbl_user, Doctor
+
+def add_doctor(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        phone_number = request.POST.get('phone_number')
+        name = request.POST.get('name')
+        city = request.POST.get('city')
+        gender = request.POST.get('gender')
+        description = request.POST.get('description')
+        consulting_fee = request.POST.get('consulting_fee')
+
+        # Create a new user
+        user = tbl_user.objects.create(
+            email=email, 
+            phone_number=phone_number, 
+            first_name=name, 
+            user_type='doctor',
+            is_email_verified=True
+        )
+        user.set_password(password)  # Set password manually
+        user.save()
+
+        # Create a doctor profile
+        doctor = Doctor.objects.create(
+            user=user, 
+            city=city, 
+            gender=gender, 
+            description=description, 
+            consulting_fee=consulting_fee
+        )
+
+        # Send welcome email
+        send_welcome_email(email, password)
+        messages.success(request, 'New Doctor  added successfully.')
+
+
+        return redirect('add_doctor')  
+
+    return render(request, 'add_doctor.html')
+
+
+def send_welcome_email(email, password):
+    subject = 'Welcome to Our Hospital'
+    message = f'Your login details:\nEmail: {email}\nPassword: {password}'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [email]
+    send_mail(subject, message, email_from, recipient_list)
+
 
         

@@ -1,0 +1,262 @@
+
+
+{% load static %}
+<!DOCTYPE html> 
+<html lang="en">
+	
+<!-- doccure/register.html  30 Nov 2019 04:12:20 GMT -->
+<head>
+	<style>
+		.error-message {
+			color: red;
+			font-size: 10px;
+		}
+
+		.valid-input {
+			border: 2px solid lightblue !important;
+		}
+		
+		.invalid-input {
+			border: 2px solid red !important;
+		}
+		
+	</style>
+		<meta charset="utf-8">
+		<title>MediMingle</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+		
+		<!-- Favicons -->
+		<link href="{% static '/assets/img/favicon.png'%}" rel="icon">
+		
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/bootstrap.min.css'%}">
+		
+		<!-- Fontawesome CSS -->
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/fontawesome.min.css'%}">
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/all.min.css'%}">
+		
+		<!-- Main CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/style.css'%}">
+		
+	
+</head>
+	<body class="account-page">
+
+		<!-- Main Wrapper -->
+		<div class="main-wrapper">
+		
+			<!-- Header -->
+			<header class="header">
+				<nav class="navbar navbar-expand-lg header-nav">
+					<div class="navbar-header">
+						<a id="mobile_btn" href="javascript:void(0);">
+							<span class="bar-icon">
+								<span></span>
+								<span></span>
+								<span></span>
+							</span>
+						</a>
+						<a href="{% url 'home' %}" class="navbar-brand logo">
+							<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+						</a>
+					</div>
+					<div class="main-menu-wrapper">
+						<div class="menu-header">
+							<a href="{% url 'home' %}" class="menu-logo">
+								<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+							</a>
+
+							<a id="menu_close" class="menu-close" href="javascript:void(0);">
+								<i class="fas fa-times"></i>
+							</a>
+						</div>
+						<ul class="main-nav">
+							<li><a href="{% url 'home' %}" style="color: white;" class="menu-logo">Home</a></li>
+
+						
+							
+							
+						</ul>
+					</div>
+					<ul class="nav header-navbar-rht">
+						<li class="nav-item contact-item">
+							<div class="header-contact-img">
+								<i style="color: white;" class="far fa-hospital"></i>							
+							</div>
+							<div class="header-contact-detail">
+								<p style="color: white;" class="contact-header">Contact</p>
+								<p style="color: white;" class="contact-info-header">7306741729</p>
+							</div>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link header-login" href="{% url 'signin' %}">login</a>
+						</li>
+					</ul>
+				</nav>
+			</header>
+			<!-- /Header -->
+			
+			<!-- Page Content -->
+			<div class="content">
+				<div class="container-fluid">
+					
+					<div class="row">
+						<div class="col-md-8 offset-md-2">
+								
+							<!-- Register Content -->
+							<div class="account-content">
+								<div class="row align-items-center justify-content-center">
+									<div class="col-md-7 col-lg-6 login-left">
+										<img src="{% static '/assets/img/pic.jpg'%}" class="img-fluid" alt="Doccure Register">	
+									</div>
+									<div class="col-md-12 col-lg-6 login-right">
+										<div class="container">
+											<h1 class="mt-5">Symptom Assessment</h1>
+											<p class="mb-4">Please provide information about your symptoms:</p>
+											<form action="" method="POST">
+												{% csrf_token %}
+												<div class="form-group row">
+													<div class="col-md-10">
+														<select class="form-control">
+															<option>Symptoms</option>
+															<option>Option 1</option>
+															<option>Option 2</option>
+															<option>Option 3</option>
+															<option>Option 4</option>
+															<option>Option 5</option>
+														</select>
+													</div>
+												</div>
+												<button type="submit" class="btn btn-primary">Get Doctor Recommendation</button>
+											</form>
+										</div>
+										
+										
+
+										
+									
+										
+									</div>
+								</div>
+							</div>
+							<!-- /Register Content -->
+								
+						</div>
+					</div>
+
+				</div>
+
+			</div>		
+			<!-- /Page Content -->
+   
+			<!-- Footer -->
+			<!-- Footer -->
+			<footer class="footer">
+				
+				<!-- Footer Top -->
+				<div class="footer-top">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-about">
+									<div class="footer-logo">
+										<img src="{% static '/assets/img/logo.png'%}" alt="logo">
+									</div>
+									<div class="footer-about-content">
+										<p>Make Heathcare Better Together</p>
+										
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-contact">
+									<h2 class="footer-title">Contact Us</h2>
+									<div class="footer-contact-info">
+										
+										<p>
+											<i class="fas fa-phone-alt"></i>
+											7306741729
+										</p>
+										<p class="mb-0">
+											<i class="fas fa-envelope"></i>
+											medimingle@gmail.com.com
+										</p>
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<!-- /Footer Top -->
+				
+				<!-- Footer Bottom -->
+                <div class="footer-bottom">
+					<div class="container-fluid">
+					
+						<!-- Copyright -->
+						<div class="copyright">
+							<div class="row">
+								<div class="col-md-6 col-lg-6">
+									<div class="copyright-text">
+										<p class="mb-0">MediMingle</a></p>
+									</div>
+								</div>
+								<div class="col-md-6 col-lg-6">
+								
+									<!-- Copyright Menu -->
+									
+									<!-- /Copyright Menu -->
+									
+								</div>
+							</div>
+						</div>
+						<!-- /Copyright -->
+						
+					</div>
+				</div>
+				<!-- /Footer Bottom -->
+				
+			</footer>
+			<!-- /Footer -->
+		   
+	   </div>
+	   <!-- /Main Wrapper -->
+	  
+		<!-- jQuery -->
+		<script src="{% static '/assets/js/jquery.min.js'%}"></script>
+		
+		<!-- Bootstrap Core JS -->
+		<script src="{% static '/assets/js/popper.min.js'%}"></script>
+		<script src="{% static '/assets/js/bootstrap.min.js'%}"></script>
+		
+		<!-- Slick JS -->
+		<script src="{% static '/assets/js/slick.js'%}"></script>
+		
+		<!-- Custom JS -->
+		<script src="{% static '/assets/js/script.js'%}"></script>
+		
+	</body>
+
+<!-- doccure/  30 Nov 2019 04:11:53 GMT -->
+</html>
+<!--{% static '/'%} -->

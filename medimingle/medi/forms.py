@@ -57,9 +57,9 @@ class UserRegistrationForm(forms.Form):
 
 class UserProfileUpdateForm(forms.ModelForm):
     GENDER_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
     ]
 
     CITY_CHOICES = [
@@ -90,16 +90,18 @@ class UserProfileUpdateForm(forms.ModelForm):
         ('O-', 'O-'),
     ]
     city = forms.ChoiceField(label='City', choices=CITY_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    state = forms.CharField(label='State', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'State'}))
     country = forms.CharField(label='Country', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}))
     pin = forms.CharField(label='PIN', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'PIN'}))
     gender = forms.ChoiceField(label='Gender', choices=GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     profile_image = forms.ImageField(label='Profile Image', widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
     blood_group = forms.ChoiceField(label='Blood Group', choices=BLOOD_GROUP_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     address = forms.CharField(label='Address', widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Address'}))
+    date_of_birth = forms.DateField(label='DOB', widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'DOB'}))
 
     class Meta:
         model = Patient
-        fields = ['city', 'country', 'pin', 'gender', 'profile_image', 'blood_group', 'address']
+        fields = ['city','state', 'country', 'pin', 'gender', 'profile_image', 'blood_group', 'address','date_of_birth']
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -127,9 +129,9 @@ class ProfileUpdateForm(forms.ModelForm):
 # 
 class DoctorForm(forms.ModelForm):
     GENDER_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
     ]
     CITY_CHOICES = [
         ('Thiruvananthapuram','Thiruvananthapuram'),
@@ -172,6 +174,7 @@ class DoctorSpecializationForm(forms.ModelForm):
         ('Gynecologist','Gynecologist'),
         ('Pulmonologist','Pulmonologist'),
         ('Psychiatrist','Psychiatrist'),
+        ('Psychologist','Psychologist'),
         ('Ophthalmologist','Ophthalmologist'),
         ('Dentist','Dentist'),
 
@@ -219,4 +222,9 @@ class ConsultingFeeForm(forms.ModelForm):
     class Meta:
         model = Doctor
         fields = ['consulting_fee']
+
+class DoctorAddForm(forms.ModelForm):
+    class Meta:
+        model = tbl_user
+        fields = ['email','first_name','last_name','phone_number','password']
     

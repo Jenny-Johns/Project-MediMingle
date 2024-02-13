@@ -17,6 +17,7 @@ urlpatterns = [
     #path('homepage/adminpage/',views.homepage,name='homepage'),
     #path('patient_dashboard/homepage/',views.homepage,name='homepage'),
     #path('doctor_dashboard/homepage/',views.homepage,name='homepage'),
+
     path('doctor_dashboard/',views.doctor_dashboard,name='doctor_dashboard'),
     # path('doctor_specialization/',views.doctor_specialization, name='doctor_specialization'),
     path('history/', views.history, name='history'),
@@ -35,7 +36,7 @@ urlpatterns = [
     path('patient_list',views.patient_list,name='patient_list'),
     path('doctor_list',views.doctor_list,name='doctor_list'),
     path('total_user_list',views.total_user_list,name='total_user_list'),
-    path('login_view',views.login_view,name='login_view'),
+    # path('login_view',views.login_view,name='login_view'),
     path('patient_change_password/',views.patient_change_password,name='patient_change_password'),
     path('slot_select/<int:doctor_id>/', views.slot_select, name='slot_select'),
     path('booking_summary', views.booking_summary,name='booking_summary'),
@@ -62,6 +63,8 @@ urlpatterns = [
 
     path('deactivate_user/<int:user_id>/', views.deactivate_user, name='deactivate_user'),
     path('activate_user/<int:user_id>/', views.activate_user, name='activate_user'),
+    path('doc_suggest/',views.doc_suggest,name="doc_suggest"),
+     path('add_doctor/', views.add_doctor, name='add_doctor'),
 
 
 ]

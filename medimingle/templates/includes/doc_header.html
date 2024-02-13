@@ -81,7 +81,7 @@
 						<li class="nav-item dropdown has-arrow logged-item">
 							<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
 								<span class="user-img">
-									<h6 style="color: white;">Welcome {{user.username}}  .</h6>
+									<h6 style="color: white;">Welcome {{user.first_name}}  .</h6>
 								</span>
 								<span class="user-img">
 									<img src="{{ user.doctor.profile_image.url }}" alt="Profile Image"> 
@@ -90,7 +90,7 @@
 							<div class="dropdown-menu dropdown-menu-right">
 								<div class="user-header">
 									<div class="avatar avatar-sm">
-										<img src="{{ doctor.user.profile_image.url }}"  alt="User Image" class="avatar-img rounded-circle">
+										<img src="{{ user.doctor.profile_image.url }}"  alt="User Image" class="avatar-img rounded-circle">
 									</div>
 									<div class="user-text">
 										<h6>Dr.{{user.first_name}}</h6>

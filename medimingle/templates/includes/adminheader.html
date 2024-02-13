@@ -111,13 +111,16 @@
 							<li> 
 								<a href="{% url 'patient_list' %}"><i class="fe fe-user"></i> <span>Patients</span></a>
 							</li>
-							<!--<li> 
+						    {% comment %} <li> 
 								<a href="appointment-list.html"><i class="fe fe-layout"></i> <span>Appointments</span></a>
-							</li>
+							</li> {% endcomment %}
 							<li> 
-								<a href="specialities.html"><i class="fe fe-users"></i> <span>Specialities</span></a>
+								<a href="{% url 'add_doctor' %}"><i class="fe fe-users"></i> <span>Add Doctor</span></a>
 							</li>
-							<li> 
+							<li>
+								<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+							</li>
+							<!--<li> 
 								<a href="reviews.html"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
 							</li>
 							<li> 
