@@ -1,15 +1,13 @@
 
 {% load static %}
 {% include "includes/adminheader.html" %}
-
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <h4{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
-        {% endfor %}
-    </ul>
-{% endif %}
-<h3>Add New Doctor</h3>
+<div class="row">
+    <div class="col-xl-6 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h4 class="card-title">Add New Doctor</h4>
+            </div>
+            <div class="card-body">
 
 <form method="POST" class="needs-validation" novalidate>
     {% csrf_token %}
@@ -20,13 +18,7 @@
             Please provide a valid email.
         </div>
     </div>
-    <div class="mb-3">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-        <div class="invalid-feedback">
-            Please provide a password.
-        </div>
-    </div>
+    
     <div class="mb-3">
         <label for="name">Name</label>
         <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
@@ -42,22 +34,26 @@
         </div>
     </div>
     <div class="mb-3">
-        <label for="city">City</label>
-        <input type="text" class="form-control" id="city" name="city" placeholder="City">
+        <label for="phone_number">Register Number</label>
+        <input type="text" class="form-control" id="phone_number" name="register_number" placeholder="Register Number" required>
+        <div class="invalid-feedback">
+            Please provide a register number.
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="gender">Gender</label>
-        <input type="text" class="form-control" id="gender" name="gender" placeholder="Gender">
-    </div>
-    <div class="mb-3">
-        <label for="description">Description</label>
-        <textarea class="form-control" id="description" name="description" placeholder="Description"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="consulting_fee">Consulting Fee</label>
-        <input type="number" class="form-control" id="consulting_fee" name="consulting_fee" placeholder="Consulting Fee">
-    </div>
+    
     <button type="submit" class="btn btn-primary">Add Doctor</button>
 </form>
+            </div>
+        </div>
+    </div></div>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <h4{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 
 

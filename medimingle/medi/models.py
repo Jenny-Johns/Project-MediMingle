@@ -31,6 +31,8 @@ class Doctor(models.Model):
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
     consulting_fee = models.IntegerField(null=True, blank=True)
+    registration_number = models.CharField(max_length=50, null=True, blank=True)
+    certificate = models.FileField(upload_to='certificates/', null=True, blank=True)
     def __str__(self):
         return self.user.first_name
     

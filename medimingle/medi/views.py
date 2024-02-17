@@ -944,16 +944,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import tbl_user, Doctor
 
+import secrets
+import string
+
 def add_doctor(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        password = request.POST.get('password')
         phone_number = request.POST.get('phone_number')
         name = request.POST.get('name')
-        city = request.POST.get('city')
-        gender = request.POST.get('gender')
-        description = request.POST.get('description')
-        consulting_fee = request.POST.get('consulting_fee')
+        registration_number=request.POST.get('registration_number')
+        # Generate a random password
+        password = generate_random_password()
 
         # Create a new user
         user = tbl_user.objects.create(
@@ -969,25 +970,46 @@ def add_doctor(request):
         # Create a doctor profile
         doctor = Doctor.objects.create(
             user=user, 
-            city=city, 
-            gender=gender, 
-            description=description, 
-            consulting_fee=consulting_fee
+            registration_number=registration_number
         )
 
         # Send welcome email
         send_welcome_email(email, password)
-        messages.success(request, 'New Doctor  added successfully.')
-
+        messages.success(request, 'New Doctor added successfully.')
 
         return redirect('add_doctor')  
 
     return render(request, 'add_doctor.html')
 
 
+def generate_random_password(length=12):
+    # Define characters to use for generating password
+    characters = string.ascii_letters + string.digits + string.punctuation
+    # Generate random password
+    random_password = ''.join(secrets.choice(characters) for i in range(length))
+    return random_password
+
+
+
 def send_welcome_email(email, password):
-    subject = 'Welcome to Our Hospital'
-    message = f'Your login details:\nEmail: {email}\nPassword: {password}'
+    subject = 'Welcome to MediMingle'
+    message = f'''Dear Doctor,
+
+    We are thrilled to inform you that you are now part of our extended family at MediMingle!
+    We warmly welcome you and look forward to working together to provide exceptional healthcare services to our community. 
+    Your expertise and dedication will undoubtedly contribute to our shared mission of improving lives.
+    If you have any questions or need assistance, please don't hesitate to reach out to us.
+
+
+
+    Your login details:
+    Email: {email}
+    Password: {password}
+
+    
+    Best regards,
+    Team Medimingle
+    '''
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [email]
     send_mail(subject, message, email_from, recipient_list)

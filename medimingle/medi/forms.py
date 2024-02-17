@@ -155,10 +155,12 @@ class DoctorForm(forms.ModelForm):
     city = forms.ChoiceField(label='City', choices=CITY_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     profile_image = forms.ImageField(label='Profile Image', widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
     description = forms.CharField(label='Description', widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}))
+    registration_number=forms.CharField(label='Registration Number',widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Registration Number'}))
+    certificate=forms.FileField(label='Certificate',widget=forms.FileInput(attrs={'class': 'form-control', 'placeholder':'Certificate'}))
 
     class Meta:
         model = Doctor
-        fields = ['city', 'profile_image', 'gender', 'description']
+        fields = ['city', 'profile_image', 'gender', 'registration_number','certificate','description']
  
     
 # class DoctorSpecializationForm(forms.ModelForm):
