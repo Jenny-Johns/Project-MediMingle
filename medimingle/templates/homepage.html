@@ -231,9 +231,7 @@
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="{% static '/assets/img/doctors/doctor-01.jpg'%}">
 										</a>
-										<a href="javascript:void(0)" class="fav-btn">
-											<i class="far fa-bookmark"></i>
-										</a>
+										
 									</div>
 									<div class="pro-content">
 										<h3 class="title">Dr.{{d.first_name}}
@@ -265,7 +263,7 @@
 												<a href="{% url 'pat_doc_view' d.id %}" class="btn view-btn">View Profile</a>
 											</div>
 											<div class="col-6">
-												<a href="{% url 'booking' d.id %}" class="btn book-btn">Book Now</a>
+												{% comment %} <a href="{% url 'booking' d.id %}" class="btn book-btn">Book Now</a> {% endcomment %}
 											</div>
 										</div>
 									</div>

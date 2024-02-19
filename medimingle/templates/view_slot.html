@@ -7,7 +7,7 @@
 	<div class="col-sm-12">
 		<div class="card">
 			<div class="card-body">
-				<h4 class="card-title">Scheduled Slots</h4>
+				{% comment %} <h4 class="card-title">Scheduled Slots</h4>
 				{% if messages %}
 				<h6 class="messages">
 				{% for message in messages %}
@@ -36,7 +36,41 @@
 											{% endif %}
 										</div>
 									</div>
-								</div>
+								</div> {% endcomment %}
+								<h4 class="card-title">Scheduled Slots</h4>
+{% if messages %}
+    <h6 class="messages">
+        {% for message in messages %}
+            <h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </h6>
+{% endif %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {% for day in unique_days %}
+                <button class="btn btn-primary mb-2 day-toggle" type="button" data-toggle="collapse" data-target="#{{ day|slugify }}" aria-expanded="false" aria-controls="{{ day|slugify }}">
+                    {{ day }}
+                </button>
+                <div class="collapse" id="{{ day|slugify }}">
+                    <div class="card card-body">
+                        {% for slot in scheduled_slots %}
+                            {% if slot.day == day %}
+                                <p>{{ slot.time_from }} - {{ slot.time_to }} ({{ slot.appointment_date|date:"D, M d, Y" }})</p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if forloop.last %}
+                    <!-- Add an empty div after the last iteration to prevent overlapping content -->
+                    <div style="margin-bottom: 50px;"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
 							</div>
 						</div>
 					</div>
@@ -132,6 +166,16 @@
 
 	  
 		<!-- jQuery -->
+		<script>
+			$(document).ready(function() {
+				$('.day-toggle').click(function() {
+					var target = $(this).data('target');
+					$(target).collapse('toggle');
+				});
+			});
+		</script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
 		<script src="{% static "/assets/js/jquery.min.js" %}"></script>
 		
 		<!-- Bootstrap Core JS -->

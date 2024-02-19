@@ -71,17 +71,25 @@
 								<i  style="color: white;" class="far fa-hospital"></i>							
 							</div>
 							<div class="header-contact-detail">
-								
+								<div class="header-contact-detail">
+									{% if user.is_authenticated %}
+										<p  style="color: white;" class="contact-header">Welcome | {{ user.first_name }}</p>
+										{% if user.user_type == 'doctor' %}
+											<p class="contact-info-header"><a href="{% url 'doctor_dashboard' %}"  style="color: white;" >Dashboard</a></p>
+										{% else %}
+										<p class="contact-info-header"><a href="{% url 'patient_dashboard' %}"  style="color: white;" >Dashboard</a></p>
+										{% endif %}
+										
+									{% else  %}
+				
+									{% endif %}
+								</div>
 							</div>
 						</li>
 						
 						<!-- User Menu -->
 						<li class="nav-item dropdown has-arrow logged-item">
-							<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-								<span class="user-img">
-									<h6 style="color: white;">Welcome {{user.first_name}} {{user.last_name}}</h6>
-								</span>
-							</a>
+							
 							<div class="dropdown-menu dropdown-menu-right">
 								<div class="user-header">
 									<div class="avatar avatar-sm">

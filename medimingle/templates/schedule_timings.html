@@ -1,12 +1,6 @@
-{% load static %}
-
-		
-		
+{% load static %}		
 {% include 'includes/doc_header.html' %}
-		
-						
 						<div class="col-md-7 col-lg-8 col-xl-9">
-						 
 							<div class="row">
 								<div class="col-sm-12">
 									<div class="card">
@@ -38,7 +32,7 @@
 																
 															</div>
 															<!-- /Schedule Header -->
-															<div class="modal fade custom-modal" id="add_time_slot">
+															{% comment %} <div class="modal fade custom-modal" id="add_time_slot">
 																<div class="modal-dialog modal-dialog-centered">
 																	<div class="modal-content">
 																		<div class="modal-header">
@@ -74,7 +68,7 @@
 																		</div>
 																	</div>
 																</div>
-															</div>
+															</div> {% endcomment %}
 															<!-- Schedule Content -->
 															<div class="tab-content schedule-cont">
 															
@@ -88,37 +82,28 @@
 																	<div class="col-md-12">
 																		<form action="{% url 'schedule_timings' %}" method="POST">
 																			{% csrf_token %}
-																		<div class="form-row">
-							 
-																			<div class="col-md-3 mb-3">
-																				<label for="">From</label>
-																				<select class="form-control" name="time_from" id="time_from">
-																					<option selected="true" disabled="disabled">Time From</option>
-																					{% for key, value in fromTimeChoice.items %}
-																						<option value="{{key}}">{{value}}</option>
-																					{% endfor %}
-																					
-																				</select>
+																			<div class="form-row">
+																				<div class="col-md-3 mb-3">
+																					<label for="">Date</label>
+																					<input type="date" class="form-control" name="appointment_date">
+																				</div>
+																				<div class="col-md-3 mb-3">
+																					<label for="">Starting Time</label>
+																					<select class="form-control" name="time_from">
+																						<option selected disabled>Select starting time</option>
+																						<!-- Populate dropdown options with available starting times -->
+																						{% for key, value in starting_times.items %}
+																							<option value="{{ key }}">{{ value }}</option>
+																						{% endfor %}
+																					</select>
+																				</div>
+																				<div class="col-md-2" style="margin-top: 35px;">
+																					<button type="submit" class="btn btn-primary submit-btn">Save</button>
+																				</div>
 																			</div>
-																			<div class="col-md-3 mb-3">
-																				<label for="">To</label>
-																				<select class="form-control" name="time_to" id="time_to">
-																					
-																					<option selected="true" disabled="disabled">Time to</option>
-																					{% for key, value in toTimeChoice.items %}
-																						<option value="{{key}}">{{value}}</option>
-																					{% endfor %}
-																				</select>
-																			</div>
-																			<div class="col-md-3 mb-3">
-																				<label for="">Date</label>
-																				<input type="date" class="form-control" name="appointment_date">
-																			</div>
-																			<div class="col-md-2" style="margin-top: 35px;">
-																				<button type="submit" class="btn btn-primary submit-btn ">Save</button>
-																			</div>
-																		</div>
 																		</form>
+																		
+																		
 																	</div>
 																	<!-- /Slot List -->
 																</div>

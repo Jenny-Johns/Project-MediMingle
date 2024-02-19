@@ -16,6 +16,9 @@ from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,
 from django.views.decorators.http import require_POST
 from .choices import category, fromTimeChoice,toTimeChoice
 from django.utils import timezone
+from datetime import datetime
+from datetime import datetime, timedelta
+
 # for pdf
 from django.http import FileResponse
 import io
@@ -46,6 +49,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
+
+
+from django.db.models import Count
+from datetime import date
 
 # Create your views here.
 def index(request):
@@ -523,76 +530,86 @@ def pat_doc_view(request, doctor_id):
 
 @never_cache
 @login_required(login_url='signin')
-# def schedule_timings(request):
-#     doctor = get_object_or_404(Doctor, user=request.user)
-#     if request.method == "POST":
-#         time_from = request.POST['time_from']
-#         time_to = request.POST['time_to']
-#         appointment_date = request.POST['appointment_date']
-#         from_to = time_from+"-"+time_to
-#         appointment_date_obj = datetime.datetime.strptime(appointment_date, '%Y-%m-%d')
-#         day = appointment_date_obj.date().strftime("%A")
-#         date = appointment_date_obj.date().strftime("%d")
-#         month = appointment_date_obj.date().strftime("%B")
-#         appoint_time = AppointmentTime.objects.create(day=day, time_from=time_from, time_to=time_to ,from_to=from_to, date=date, month=month, appointment_date=appointment_date, doctor=doctor)
-#         appoint_time.save()
-#         messages.success(request, 'Schedule added successfully.')
-#         return redirect(request.path_info)
-#     context = {
-#         'doctor':doctor,
-#         'fromTimeChoice': fromTimeChoice,
-#         'toTimeChoice' : toTimeChoice,
-#     }
-#     return render(request, 'schedule_timings.html',context)
-@never_cache
-@login_required(login_url='signin')
+
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
 
-    if request.method == "POST":
-        time_from = request.POST['time_from']
-        time_to = request.POST['time_to']
-        appointment_date = request.POST['appointment_date']
-        from_to = f"{time_from}-{time_to}"
-        appointment_date_obj = datetime.datetime.strptime(appointment_date, '%Y-%m-%d')
+    starting_times = {
+        '08:00': '8:00 AM',
+        '08:30': '8:30 AM',
+        '09:00': '9:00 AM',
+        '10:30': '10:30 AM',
+        '11:00': '11:00 AM',
+        '02:00': '2:00 PM',
+        '02:30': '2:30 PM',
+        '03:00': '3:00 PM',
+        '03:30': '3:30 PM',
+        '04:00': '4:00 PM'    
+    }
 
-        # Check if the appointment_date is in the future
-        if appointment_date_obj.date() < timezone.now().date():
+    if request.method == "POST":
+        # Get the selected date and starting time
+        appointment_date = request.POST.get('appointment_date')
+        time_from = request.POST.get('time_from')
+
+        # Convert the selected date string to a datetime object
+        appointment_date_obj = datetime.strptime(appointment_date, '%Y-%m-%d').date()
+
+        # Convert the selected starting time string to a datetime object
+        time_from_obj = datetime.strptime(time_from, '%H:%M').time()
+
+        # Calculate the ending time by adding 30 minutes to the starting time
+        ending_time_obj = (datetime.combine(datetime.today(), time_from_obj) + timedelta(minutes=30)).time()
+        t = f"{time_from}-{ending_time_obj}"
+
+        # Check if appointment date is in the past
+        if appointment_date_obj < timezone.now().date():
             messages.error(request, 'Cannot schedule slots for past dates.')
             return redirect(request.path_info)
 
-        # Check if the same slot already exists
-        existing_slot = AppointmentTime.objects.filter(
+        # Check if the selected time is already scheduled for the same day
+        existing_slots = AppointmentTime.objects.filter(
             doctor=doctor,
-            appointment_date=appointment_date,
-            from_to=from_to
-        ).exists()
-
-        if existing_slot:
-            messages.error(request, 'This slot already exists. Please choose a different time or date.')
+            appointment_date=appointment_date_obj,
+            time_from=time_from_obj
+        )
+        if existing_slots.exists():
+            messages.error(request, 'This time slot is already scheduled for the selected date.')
             return redirect(request.path_info)
 
-        appoint_time = AppointmentTime.objects.create(
+        # Check if the doctor has already scheduled 10 timings for the selected day
+        num_existing_slots = AppointmentTime.objects.filter(
+            doctor=doctor,
+            appointment_date=appointment_date_obj
+        ).count()
+        if num_existing_slots >= 10:
+            messages.error(request, 'Doctor cannot schedule more than 10 timings for a day.')
+            return redirect(request.path_info)
+
+        # Create AppointmentTime object with the selected date, starting time, and ending time
+        AppointmentTime.objects.create(
             day=appointment_date_obj.strftime("%A"),
-            time_from=time_from,
-            time_to=time_to,
-            from_to=from_to,
+            time_from=time_from_obj,
+            time_to=ending_time_obj,
+            from_to=t,
+            appointment_date=appointment_date_obj,
             date=appointment_date_obj.strftime("%d"),
             month=appointment_date_obj.strftime("%B"),
-            appointment_date=appointment_date,
             doctor=doctor
         )
 
-        messages.success(request, 'Schedule added successfully.')
+        messages.success(request, 'Slot added successfully.')
         return redirect(request.path_info)
 
     context = {
         'doctor': doctor,
-        'fromTimeChoice': fromTimeChoice,
-        'toTimeChoice': toTimeChoice,
+        'starting_times': starting_times,
     }
 
     return render(request, 'schedule_timings.html', context)
+
+
+
 
 @never_cache
 @login_required(login_url='signin')
@@ -605,14 +622,19 @@ def delete_slot(request, slot_id):
 
 @never_cache
 @login_required(login_url='signin')
+
 def view_slot(request):
     doctor = get_object_or_404(Doctor, user=request.user)
-    scheduled_slots = AppointmentTime.objects.filter(doctor=doctor)
-    context={
-        'doctor':doctor,
-        'scheduled_slots':scheduled_slots,
+    scheduled_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('appointment_date', 'time_from')
+
+    unique_days = scheduled_slots.values_list('day', flat=True).distinct()
+
+    context = {
+        'doctor': doctor,
+        'unique_days': unique_days,
+        'scheduled_slots': scheduled_slots,
     }
-    return render(request,"view_slot.html",context)
+    return render(request, "view_slot.html", context)
 
 
 @never_cache
@@ -621,33 +643,18 @@ def booking(request, doctor_id):
     current_user = request.user
     current_patient = get_object_or_404(Patient, user=current_user)
     doctor = Doctor.objects.get(id=doctor_id)
-    # for checking purpose
-    try:
-        booked_doctor = MedicalHistory.objects.get(doctor=doctor, patient=current_patient)
-    except:
-        booked_doctor = MedicalHistory(doctor=doctor, patient=current_patient)
-        booked_doctor.save()
 
     appoint_time_doctor = AppointmentTime.objects.filter(doctor=doctor)
     
+    appoint_day = appoint_time_doctor.values_list('day', flat=True).distinct()
 
-    appoint_day = appoint_time_doctor.values_list('day',flat=True).distinct()
-    appoint_date = appoint_time_doctor.values_list('appointment_date', flat=True)
-    time_from = appoint_time_doctor.values_list('time_from',flat=True)
-    time_to = appoint_time_doctor.values_list('time_to',flat=True)
-    print("from: ", time_from)
     context = {
-        'doctor':doctor,
-        # 'form':form,
-        'appoint_time_doctor' : appoint_time_doctor,
-        # 'day_doc_appoint':day_doc_appoint,
-        'appoint_day':appoint_day,
-        'time_from': time_from,
-        'time_to' : time_to,
-        'appoint_date':appoint_date,
-
+        'doctor': doctor,
+        'appoint_time_doctor': appoint_time_doctor,
+        'appoint_day': appoint_day,
     }
     return render(request, 'booking.html', context)
+
 
 def medical_history(request):
 
@@ -735,10 +742,8 @@ def slot_select(request, doctor_id):
     if request.method == "POST":
         
         from_to = str(request.POST['from_to'])
-        print("from_to day:", from_to)
         
         splitted_from_to = from_to.split(',')
-        print("Split: ", splitted_from_to[1])
 
         
         doc_appoint = PatientAppointment(appoint_day=splitted_from_to[1], appoint_time=splitted_from_to[0], doctor=doctor, patient=current_patient)

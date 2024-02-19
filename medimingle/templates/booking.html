@@ -132,54 +132,34 @@
 								<!-- Day Slot -->
 								<div class="day-slot">
 									<ul>
-										
-										{% for appoint_day in appoint_day %}
-
-											<li style="margin-right: 40px;">
-												<span class="slot-date">{{appoint_day}}</span>
-												<!-- <span class="slot-date">11 Nov <small class="slot-year">2021</small></span> -->
-											</li>
-										{% endfor %}
-										
+                                        {% for day in appoint_day %}
+                                        <li style="margin-right: 40px;">
+                                            <span class="slot-date">{{ day }}</span>
+                                        </li>
+                                    {% endfor %}
 									</ul>
 								</div>
-								<!-- /Day Slot -->
-								
 							</div>
 						</div>
 					</div>
-					<!-- /Schedule Header -->
-					
-					<!-- Schedule Content -->
 					<div class="schedule-cont">
 						<div class="row">
 							<div class="col-md-12">
-							
-								<!-- Time Slot -->
 								<div class="time-slot ">
 									<ul class="clearfix ">
-
-												
-											</li> 
-
-										{% for appoint_day in appoint_day %}
-												
-												  
-										<form action="{% url 'slot_select' doctor.id %}" method="POST">
-												{% csrf_token %}
-										<li style="margin-right: 50px;">
-											
-											
-												<span >
-													
-													<select name="from_to" id="" style="width: 180px; height:30px;">
-														<option value="" selected disabled>Time</option>
-														
-														{% for appoint_time_doctor in appoint_time_doctor %}
-															{% if appoint_time_doctor.day == appoint_day %}
-																<option value="{{appoint_time_doctor.from_to}},{{appoint_day}}">{{appoint_time_doctor.from_to}}</option>
-															{% endif %}
-														{% endfor %}
+										
+										{% for day in appoint_day %}
+            <form action="{% url 'slot_select' doctor.id %}" method="POST">
+                {% csrf_token %}
+                <li style="margin-right: 50px;">
+                    <span>
+                        <select name="from_to" id="" style="width: 180px; height:30px;">
+                            <option value="" selected disabled>Time</option>
+                            {% for time_slot in appoint_time_doctor %}
+                                {% if time_slot.day == day %}
+                                    <option value="{{ time_slot.from_to }},{{ day }}">{{ time_slot.from_to }}</option>
+                                {% endif %}
+                            {% endfor %}
 													</select>
 												</span> 
 										</li>

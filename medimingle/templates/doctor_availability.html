@@ -1,0 +1,14 @@
+<h1>Doctor Availability</h1>
+<h2>{{ doctor.user.username }}</h2>
+<ul>
+  {% for slot in slots %}
+    <li>{{ slot.start_time }} - {{ slot.end_time }} 
+      {% if slot.is_available %}
+        <a href="{% url 'book_appointment' slot.id %}">Book</a>
+      {% else %}
+        Booked
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+<a href="{% url 'add_slots' %}">Add Slots</a>
