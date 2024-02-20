@@ -13,12 +13,12 @@
 								<li class="nav-item">
 									<a class="nav-link active" href="#pat_appointments" data-toggle="tab">Appointments</a>
 								</li>
-								<li class="nav-item">
+								{% comment %} <li class="nav-item">
 									<a class="nav-link" href="#pat_prescriptions" data-toggle="tab">Prescriptions</a>
 								</li>
 								<li class="nav-item">
 									<a class="nav-link" href="#pat_medical_records" data-toggle="tab"><span class="med-records">Medical Records</span></a>
-								</li>
+								</li> {% endcomment %}
 								<li class="nav-item">
 									<a class="nav-link" href="#pat_billing" data-toggle="tab">Billing</a>
 								</li>
@@ -38,39 +38,23 @@
 												<thead>
 													<tr>
 														<th>Doctor</th>
-														{% comment %} <th>Appt Date</th> {% endcomment %}
-														{% comment %} <th>Booking Date</th> {% endcomment %}
-														{% comment %} <th>Amount</th> {% endcomment %}
-														{% comment %} <th>Follow Up</th> {% endcomment %}
-														{% comment %} <th>fee</th> {% endcomment %}
+														<th>Date/Time</th>
 														<th>Status</th>
-														
 													</tr>
 												</thead>
 												<tbody>
-													<tr>
-														{% for appointment in current_appointment %}
-														  
-														<td>
-															<h2 class="table-avatar">
-																<a href="{% url 'view_doctor_details' appointment.doctor.id %}">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name}}<span></span></a>
-															</h2>
-														</td>
-														{% comment %} <td><span class="d-block text-info"></span>{{appointment.date_created}}</td> {% endcomment %}
-														{% comment %} <td>{{appointment.doctor.user.consulting_fee}}</td> {% endcomment %}
-														
-														<td>
-															{% if appointment.is_active %}
-															<span class="badge badge-pill bg-success-light">Active</span>
-																
-															{% else %}
-															<span class="badge badge-pill bg-warning-light">Pending</span>
-															{% endif %}
-														</td>
-														
-													</tr>
+													{% for appointment in appointments %}
+														<tr>
+															<td>{{ appointment.doctor }}</td>
+															<td>{{ appointment.appointment_datetime }}</td>
+															<td>
+																{% if appointment.is_confirmed %}
+																  Confirmed
+																{% else %}
+																  Pending
+																{% endif %}
+															  </td>														</tr>
 													{% endfor %}
-													
 												</tbody>
 											</table>
 										</div>

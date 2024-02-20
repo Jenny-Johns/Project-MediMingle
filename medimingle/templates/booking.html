@@ -99,12 +99,8 @@
   <!-- Page Content -->
 <div class="content">
 	<div class="container">
-	
 		<div class="row">
-			<div class="col-12">
-            
-              
-            
+			<div class="col-12">              
 				<div class="card">
 					<div class="card-body">
 						<div class="booking-doc-info">
@@ -123,72 +119,49 @@
 				
 				<!-- Schedule Widget -->
 				<div class="card booking-schedule schedule-widget">
-				
-					<!-- Schedule Header -->
-					<div class="schedule-header">
-						<div class="row">
-							<div class="col-md-12">
-							
-								<!-- Day Slot -->
-								<div class="day-slot">
-									<ul>
-                                        {% for day in appoint_day %}
-                                        <li style="margin-right: 40px;">
-                                            <span class="slot-date">{{ day }}</span>
-                                        </li>
-                                    {% endfor %}
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="schedule-cont">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="time-slot ">
-									<ul class="clearfix ">
-										
-										{% for day in appoint_day %}
-            <form action="{% url 'slot_select' doctor.id %}" method="POST">
-                {% csrf_token %}
-                <li style="margin-right: 50px;">
-                    <span>
-                        <select name="from_to" id="" style="width: 180px; height:30px;">
-                            <option value="" selected disabled>Time</option>
-                            {% for time_slot in appoint_time_doctor %}
-                                {% if time_slot.day == day %}
-                                    <option value="{{ time_slot.from_to }},{{ day }}">{{ time_slot.from_to }}</option>
-                                {% endif %}
-                            {% endfor %}
-													</select>
-												</span> 
-										</li>
-										{% endfor %}
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- /Schedule Widget -->
-				
-				<!-- Submit Section -->
-			<div class="submit-section proceed-btn text-right">
-				
-				<button type="submit" name="proceed" class="btn btn-primary submit-btn">Proceed</button>
-				
-			</div>
-			</form>
-				<!-- /Submit Section -->
-				
-			</div>
-
-
-
-		</div>
-	</div>
-
-</div>		
+                    <!-- Schedule Header -->
+                    <div class="schedule-header">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- Day Slot -->
+                                <div class="day-slot">
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="schedule-cont">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="time-slot ">
+                                    <ul class="clearfix ">
+                                            <form action="{% url 'confirm_booking' doctor.id %}" method="POST">
+                                                {% csrf_token %}
+                                                <li style="margin-right: 50px;">
+                                                    <span>
+                                                        <select name="from_to" id="" style="width: 180px; height:30px;">
+                                                            <option value="" selected disabled>Available Time Slots</option>
+                                                            {% for time_slot in appoint_time_doctor %}
+                                                                    <option value="{{ time_slot.appointment_date|date:"D, M d, Y" }}-{{ time_slot.from_to }}">({{ time_slot.appointment_date|date:"D, M d, Y" }})-{{ time_slot.from_to }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </span> 
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                   </div>
+                               </div>
+                            <div class="submit-section proceed-btn text-right">
+                        <button type="submit" class="btn btn-primary submit-btn">Proceed</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+            
+      <div>       
 <!-- /Page Content -->
 <footer class="footer">
 				
@@ -197,33 +170,16 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-3 col-md-6">
-                
-                    <!-- Footer Widget -->
                     <div class="footer-widget footer-about">
                         <div class="footer-logo">
                             <img src="{% static '/assets/img/logo.png'%}" alt="logo">
                         </div>
                         <div class="footer-about-content">
                             <p>Make Heathcare Better Together</p>
-                            
                         </div>
                     </div>
-                    <!-- /Footer Widget -->
-                    
                 </div>
-                
-                <div class="col-lg-3 col-md-6">
-                
-                    
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div>
-                </div>
+            </div>
                     <!-- Footer Widget -->
                     <div class="footer-widget footer-contact">
                         <h2 class="footer-title">Contact Us</h2>
@@ -243,7 +199,7 @@
                     </div>
                     <!-- /Footer Widget -->
                     
-                </div>
+               
                 
             </div>
         </div>
@@ -251,18 +207,7 @@
     <!-- /Footer Top -->
     
     <!-- Footer Bottom -->
-    <div class="footer-bottom">
-        <div class="container-fluid">
-        
-            
-                        
-                    </div>
-                </div>
-            </div>
-            <!-- /Copyright -->
-            
-        </div>
-    </div>
+    
     <!-- /Footer Bottom -->
     
 </footer>

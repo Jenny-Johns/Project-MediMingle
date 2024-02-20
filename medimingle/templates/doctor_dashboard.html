@@ -60,14 +60,7 @@
 									<div class="appointment-tab">
 									
 										<!-- Appointment Tab -->
-										<ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded">
-											<li class="nav-item">
-												<a class="nav-link active" href="#upcoming-appointments" data-toggle="tab">Upcoming</a>
-											</li>
-											<li class="nav-item">
-												<a class="nav-link" href="#today-appointments" data-toggle="tab">Today</a>
-											</li> 
-										</ul>
+										
 										<!-- /Appointment Tab -->
 										
 										<div class="tab-content">
@@ -80,56 +73,38 @@
 															<table class="table table-hover table-center mb-0">
 																<thead>
 																	<tr>
-																		<th>Patient Name</th>
-																		<th>Type</th>
-																		{% comment %} <th>Appt Date</th> {% endcomment %}
-																		<th>Action</th>
-																		
-																		{% comment %} <th class="text-center">Paid Amount</th> {% endcomment %}
-																		<th></th>
+																		<th>Patient</th>
+																		<th>Date/Time</th>
+																		<th>Status</th>
+																		<th>Actions</th>
 																	</tr>
 																</thead>
 																<tbody>
-																	{% for patient_appointment in patient_appointment %}
-                                          
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				{{ patient_appointment.patient.user.first_name }}<span>#PT{{patient_appointment.patient.id}}</span></a>
-																			</h2>
-																		</td>
-																		<!-- <td>{{patient_appointment.date_created}} <span class="d-block text-info"></span></td> -->
-																		<!-- <td>General</td> -->
-																		<td>New Patient</td>
-																		<!-- <td class="text-center">{{patient_appointment.date_created|time}}</td> -->
-																		<!-- <td class="text-center">$150</td> -->
-																		<td class="text-left">
-                                                
-																			<div class="table-action">
-																				<!-- <a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a> -->
-																				<form action="{% url 'doctor_dashboard' %}" method="post">
-																					{% csrf_token %}
-																				{% if patient_appointment.is_active %}
-																					<a href="#" >
-																						<input type="hidden" name="status" value="{{patient_appointment.id}}">
-																						<button type="submit" class="btn btn-sm bg-success-light"><i class="fas fa-check"></i> Accepted
-																						</button>
-																					</a>
+																	{% for appointment in appointments %}
+																		<tr>
+																			<td>{{ appointment.patient }}</td>
+																			<td>{{ appointment.appointment_datetime}}</td>
+																			<td>
+																				{% if appointment.is_confirmed %}
+																				  Confirmed
 																				{% else %}
-																				<a href="#" >
-																					<input type="hidden" name="status" value="{{patient_appointment.id}}">
-																					<button type="submit" class="btn btn-sm bg-primary-light"><i class="fas fa-check"></i> Accept
-																					</button>
-																				</a>
+																				  Pending
 																				{% endif %}
-																			</form>
-																			</div>
-																			
-																		</td>
-																		{% comment %} <td>{{patient_appointment.user.consulting_fee}} {% endcomment %}
-																	</tr>
+																				<td>
+																					{% if not appointment.is_confirmed %}
+																						<form action="{% url 'confirm_appointment' appointment.id %}" method="post">
+																							{% csrf_token %}
+																							<button type="submit" class="btn btn-success" name="action" value="approve">Approve</button>
+																							<button type="submit" class="btn btn-danger" name="action" value="reject">Reject</button>
+																						</form>
+																						{% elif appointment.is_confirmed %}
+																							{% comment %} <form action="{% url 'reschedule_appointment' appointment.id %}" method="post"> {% endcomment %}
+																								{% csrf_token %}
+																								<button type="submit" class="btn btn-primary" name="action" value="reschedule">Reschedule</button>
+																							</form>
+																					{% endif %}
+																				</td>
+																		</tr>
 																	{% endfor %}
 																</tbody>
 															</table>		

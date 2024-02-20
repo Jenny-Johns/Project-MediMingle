@@ -4,10 +4,10 @@
 					<div class="page-header">
 						<div class="row">
 							<div class="col-sm-12">
-								<h3 class="page-title">List of Patient</h3>
+								<h3 class="page-title">List of Appointments</h3>
 								<ul class="breadcrumb">
 									<li class="breadcrumb-item"><a href="{% url 'adminpage' %}">Dashboard</a></li>
-									<li class="breadcrumb-item active">Patient</li>
+									<li class="breadcrumb-item active">Appointment</li>
 								</ul>
 							</div>
 						</div>
@@ -25,40 +25,21 @@
 											<thead>
 												<tr>
 													<th>SlNo</th>
-													<th>Username</th>
-													<th>First Name</th>
-													<th>Last Name</th>
-													<th>Email</th>
-													<th>Phone Number</th>
-													{% comment %} <th>User Type</th> {% endcomment %}
-													<th>Active</th>
-													<th>Action</th>
+													<th>Doctor Name</th>
+													<th>Patient Name</th>
+													<th>Date</th>
+													<th>Status</th>
+													
 												</tr>
 											</thead>
 											<tbody>
-												{% for user in pat %}
+												{% for user in users %}
 												<tr>
 													<td>{{ forloop.counter }}</td> 
-													<td>{{ user.username }}</td>
-													<td>{{ user.first_name }}</td>
-													<td>{{ user.last_name }}</td>
-													<td>{{ user.email }}</td>
-													<td>{{ user.phone_number }}</td>
-													{% comment %} <td>{{ user.user_type }}</td> {% endcomment %}
-													<td>{{ user.is_active }}</td>
-													<td>
-														{% if user.is_active %}
-															<form method="post" action="{% url 'deactivate_user_pat' user.id %}">
-																{% csrf_token %}
-																<button type="submit" class="btn btn-outline-danger">Deactivate</button>
-															</form>
-														{% else %}
-															<form method="post" action="{% url 'activate_user_pat' user.id %}">
-																{% csrf_token %}
-																<button type="submit" class="btn btn-outline-success">Activate</button>
-															</form>
-														{% endif %}
-													</td>
+													<td>{{ user.doctor.user.get_full_name }}</td>
+													<td>{{ user.patient.user.get_full_name }}</td>
+													<td>{{ user.appointment_datetime }}</td>
+													<td>{{ user.is_confirmed }}</td>													
 												</tr>
 											{% empty %}
 												<tr>

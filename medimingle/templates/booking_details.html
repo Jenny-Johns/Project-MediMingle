@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+</head>
+<body>
+    <h1>Booking Details</h1>
+    <p>Doctor: Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</p>
+    <p>Patient: {{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}</p>
+    <p>Appointment Date and Time: {{ appointment.appointment_datetime }}</p>
+    <p>Status: {% if appointment.is_confirmed %}Confirmed{% else %}Pending{% endif %}</p>
+</body>
+</html>

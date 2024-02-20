@@ -30,7 +30,7 @@ class Doctor(models.Model):
     gender = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
-    consulting_fee = models.IntegerField(null=True, blank=True)
+    consulting_fee = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
     registration_number = models.CharField(max_length=50, null=True, blank=True)
     certificate = models.FileField(upload_to='certificates/', null=True, blank=True)
     def __str__(self):
@@ -163,3 +163,27 @@ class Prescription(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
     uploaded_date = models.DateTimeField(default=datetime.now, blank=True)
     
+
+
+
+
+class AppointmentTime(models.Model):
+    day = models.CharField(max_length=50, null=True)
+    time_from = models.CharField(max_length=50, null=True)
+    time_to = models.CharField(max_length=50, null=True)
+    from_to = models.CharField(max_length=50, null=True)
+    appointment_date = models.DateField(null=True)
+    month = models.CharField(max_length=50, null=True)
+    date = models.CharField(max_length=50, null=True)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return self.day
+
+class Appointment(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    # slot=models.ForeignKey(AppointmentTime,on_delete=models.CASCADE,null=True)
+    appointment_datetime = models.CharField(max_length=20,null=True)
+    is_confirmed = models.BooleanField(default=False)
+    def __str__(self):
+        return self.appointment_datetime

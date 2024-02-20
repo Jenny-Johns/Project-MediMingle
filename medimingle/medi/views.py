@@ -6,7 +6,7 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,PatientAppointment
+from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,PatientAppointment,Appointment
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
@@ -18,6 +18,8 @@ from .choices import category, fromTimeChoice,toTimeChoice
 from django.utils import timezone
 from datetime import datetime
 from datetime import datetime, timedelta
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 # for pdf
 from django.http import FileResponse
@@ -47,13 +49,45 @@ from medi.tokens import account_activation_token
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import PatientAppointment
 
+from django.shortcuts import get_list_or_404
+import razorpay
 
 
 
 from django.db.models import Count
 from datetime import date
 
+
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
+from django.shortcuts import render, redirect
+from .models import Appointment
+
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from .models import Doctor
+import random
+import string
+
+# views.py
+
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import tbl_user, Doctor
+
+import secrets
+import string
 # Create your views here.
 def index(request):
     return render(request,'index.html')
@@ -204,12 +238,14 @@ def logout(request):
 def patient_dashboard(request):
     current_user = request.user
     current_patient = get_object_or_404(Patient, user=current_user)
-    current_appointment = PatientAppointment.objects.filter(patient=current_patient)
+    patient_appointments = Appointment.objects.filter(patient=request.user.patient)
     doc = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
     context={
         'patient': current_patient,
-        'current_appointment':current_appointment,
+        'appointments':patient_appointments,
     }
+    
+
     return render(request,'patient_dashboard.html',context)
 
 @never_cache   
@@ -218,8 +254,8 @@ def doctor_dashboard(request):
     current_user = request.user
     current_doctor = get_object_or_404(Doctor, user=current_user)
     specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
+    doctor_appointments = Appointment.objects.filter(doctor=request.user.doctor)
 
-    patient_appointment = PatientAppointment.objects.filter(doctor=current_doctor)
     if request.method == 'POST':
         patient_id = request.POST['status']
         accepted_patient = MedicalHistory.objects.get(id=patient_id)
@@ -234,8 +270,9 @@ def doctor_dashboard(request):
         "pat_count":pat_count,
         "doctor": current_doctor,
         'specialization':specialization,
-        'patient_appointment':patient_appointment,
+        'appointments': doctor_appointments
     }
+    
     return render(request,'doctor_dashboard.html',context) 
 
 def status(request, patient_id):
@@ -417,6 +454,18 @@ def total_user_list(request):
     }
     return render(request,'total_user_list.html',context)
 
+
+@never_cache
+@login_required(login_url='signin')
+def appointment_list(request):
+    users = Appointment.objects.all()
+    context={
+        "users":users
+    }
+    return render(request,'appointment_list.html',context)
+
+
+
 @never_cache
 @login_required(login_url='signin')
 def view_doctor_details(request, doctor_id):
@@ -443,7 +492,7 @@ def deactivate_user(request, user_id):
     user = get_object_or_404(tbl_user, id=user_id)
     user.is_active = False
     user.save()
-    return redirect('adminpage')
+    return redirect('doctor_list')
 
 
 @never_cache
@@ -453,8 +502,28 @@ def activate_user(request, user_id):
     user = get_object_or_404(tbl_user, id=user_id)
     user.is_active = True
     user.save()
-    return redirect('adminpage')
+    return redirect('doctor_list')
 
+
+
+@never_cache
+@login_required(login_url='signin')
+@require_POST
+def deactivate_user_pat(request, user_id):
+    user = get_object_or_404(tbl_user, id=user_id)
+    user.is_active = False
+    user.save()
+    return redirect('patient_list')
+
+
+@never_cache
+@login_required(login_url='signin')
+@require_POST
+def activate_user_pat(request, user_id):
+    user = get_object_or_404(tbl_user, id=user_id)
+    user.is_active = True
+    user.save()
+    return redirect('patient_list')
 @never_cache
 @login_required(login_url='signin')
 
@@ -548,26 +617,15 @@ def schedule_timings(request):
     }
 
     if request.method == "POST":
-        # Get the selected date and starting time
         appointment_date = request.POST.get('appointment_date')
         time_from = request.POST.get('time_from')
-
-        # Convert the selected date string to a datetime object
         appointment_date_obj = datetime.strptime(appointment_date, '%Y-%m-%d').date()
-
-        # Convert the selected starting time string to a datetime object
         time_from_obj = datetime.strptime(time_from, '%H:%M').time()
-
-        # Calculate the ending time by adding 30 minutes to the starting time
         ending_time_obj = (datetime.combine(datetime.today(), time_from_obj) + timedelta(minutes=30)).time()
         t = f"{time_from}-{ending_time_obj}"
-
-        # Check if appointment date is in the past
         if appointment_date_obj < timezone.now().date():
             messages.error(request, 'Cannot schedule slots for past dates.')
             return redirect(request.path_info)
-
-        # Check if the selected time is already scheduled for the same day
         existing_slots = AppointmentTime.objects.filter(
             doctor=doctor,
             appointment_date=appointment_date_obj,
@@ -576,8 +634,6 @@ def schedule_timings(request):
         if existing_slots.exists():
             messages.error(request, 'This time slot is already scheduled for the selected date.')
             return redirect(request.path_info)
-
-        # Check if the doctor has already scheduled 10 timings for the selected day
         num_existing_slots = AppointmentTime.objects.filter(
             doctor=doctor,
             appointment_date=appointment_date_obj
@@ -586,7 +642,6 @@ def schedule_timings(request):
             messages.error(request, 'Doctor cannot schedule more than 10 timings for a day.')
             return redirect(request.path_info)
 
-        # Create AppointmentTime object with the selected date, starting time, and ending time
         AppointmentTime.objects.create(
             day=appointment_date_obj.strftime("%A"),
             time_from=time_from_obj,
@@ -646,14 +701,20 @@ def booking(request, doctor_id):
 
     appoint_time_doctor = AppointmentTime.objects.filter(doctor=doctor)
     
-    appoint_day = appoint_time_doctor.values_list('day', flat=True).distinct()
-
+    # Construct a list of unique day names
+    unique_appoint_day = set(time_slot.day for time_slot in appoint_time_doctor)
+    appoint_day = sorted(list(unique_appoint_day))  # Sort the list for consistent ordering
+    
     context = {
         'doctor': doctor,
         'appoint_time_doctor': appoint_time_doctor,
         'appoint_day': appoint_day,
     }
     return render(request, 'booking.html', context)
+
+
+
+
 
 
 def medical_history(request):
@@ -750,14 +811,11 @@ def slot_select(request, doctor_id):
         doc_appoint.save()
 
         return redirect('booking_summary') 
+@login_required
 
-   
-# views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import PatientAppointment
 
-from django.shortcuts import get_list_or_404
-import razorpay
+
+
 @never_cache
 @login_required(login_url='signin')
 def booking_summary(request):
@@ -904,7 +962,8 @@ def profile(request, doctor_id):
 
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def doctor_search(request):
     gender_type = request.GET.get('gender_type')
     select_specialist = request.GET.getlist('select_specialist')
@@ -923,7 +982,8 @@ def doctor_search(request):
 def bill(request):
     return render(request, 'bill.html')
 
-
+@never_cache
+@login_required(login_url='signin')
 def update_consulting_fee(request, user_id):
     doctor = get_object_or_404(Doctor, user_id=user_id)
     if request.method == 'POST':
@@ -935,23 +995,12 @@ def update_consulting_fee(request, user_id):
     return redirect('doctor_list')
 
 
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.core.mail import send_mail
-from .models import Doctor
-import random
-import string
 
-# views.py
 
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import tbl_user, Doctor
 
-import secrets
-import string
 
+@never_cache
+@login_required(login_url='signin')
 def add_doctor(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -1020,4 +1069,95 @@ def send_welcome_email(email, password):
     send_mail(subject, message, email_from, recipient_list)
 
 
+
+
+
+
+
+@never_cache
+@login_required(login_url='signin')
+def confirm_booking(request, doctor_id):
+    if request.method == 'POST':
+        selected_slot = request.POST.get('from_to').split('-')
+        slot_date = selected_slot[0]
+        slot_time = selected_slot[1]
+        patient_id = request.user.patient.id
+
+
+        doctor = Doctor.objects.get(id=doctor_id)
+        doctor_name = doctor.user.get_full_name()
+
+        # Create Appointment instance
+        appointment = Appointment.objects.create(
+            doctor=doctor,
+            patient_id=patient_id,
+            appointment_datetime=slot_date,
+            is_confirmed=False  # Set as unconfirmed initially
+        )
+
+        # Construct email message
+        subject = 'New Appointment Booking'
+        email_message = (
+            f"Dear {doctor_name},\n\n"
+            f"A new appointment has been booked:\n\n"
+            # f"Doctor: {doctor_name}\n"
+            f"Date: {slot_date}\n"
+            f"Time: {slot_time}\n"
+            f"Patient: {request.user.get_full_name()}\n\n"
+            "Thank you.\n"
+        )
+
+        # Send email to the doctor
+        from_email = 'medimingle@gmail.com'  # Replace with your email address
+        to_email = doctor.user.email
+        send_mail(subject, email_message, from_email, [to_email])
+        messages.success(request, "An email has been sent to the corresponding doctor. Please wait for their response.")
+
+
+        context = {
+            'slot_time': slot_time,
+            'slot_date': slot_date,
+            'doctor_name': doctor_name,
+            'appointment': appointment,
+            'email_message': email_message,
+        }
+        return render(request, 'confirm_booking.html', context)
+    else:
+        # Handle GET request
+        pass
+
+
+@never_cache
+@login_required(login_url='signin')
+def confirm_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    if appointment.doctor != request.user.doctor:
+        return redirect('doctor_dashboard')  # Redirect if not authorized
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'approve':
+            appointment.is_confirmed = True
+            appointment.save()
+
+            subject = 'Appointment Confirmation'
+            message = f'Your appointment with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been confirmed.'
+            from_email = 'medimingle@gmail.com'  # Your email address
+            to_email = appointment.patient.user.email
+            send_mail(subject, message, from_email, [to_email])
+
+        elif action == 'reject':
+            appointment.delete()
         
+        return redirect('doctor_dashboard')  # Redirect to doctor dashboard after action
+    else:
+        return redirect('doctor_dashboard')
+
+
+
+
+
+
+

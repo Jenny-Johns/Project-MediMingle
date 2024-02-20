@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Slot</title>
+</head>
+<body>
+    <h1>Book Slot</h1>
+    <h2>Doctor: {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h2>
+    
+    <form id="dateForm" method="GET">
+        <label for="date">Select Date:</label>
+        <select id="date" name="date">
+            {% for slot in doctor_slots %}
+                {% comment %} Format the date value to YYYY-MM-DD format {% endcomment %}
+                {% with slot.appointment_date|date:"Y-m-d" as formatted_date %}
+                    <option value="{{ formatted_date }}">{{ formatted_date }}</option>
+                {% endwith %}
+            {% endfor %}
+        </select>
+        <input type="submit" value="Select Date">
+    </form>
+    
+    <div id="timeSlots">
+        {% if selected_date %}
+            <h3>Available Time Slots for {{ selected_date }}</h3>
+            <ul>
+                {% for slot in doctor_slots %}
+                    {% if slot.appointment_date == selected_date %}
+                        <li>
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="time_slot" value="{{ slot.pk }}">
+                                <button type="submit">{{ slot.from_to }}</button>
+                            </form>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>

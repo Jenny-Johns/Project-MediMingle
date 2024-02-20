@@ -1,0 +1,32 @@
+{% load static %}
+{% include "includes/pat_header.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+</head>
+
+<div class="col-md-7 col-lg-8 col-xl-9">
+    <div class="card">
+       
+        <div class="card-body pt-0">
+         
+    <h2 class="mt-5">Booking Details</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <p class="card-text">Doctor: {{ doctor_name }}</p>
+            <p class="card-text">Date: {{ slot_date }}</p>    
+            <p class="card-text">Time: {{ slot_time }}</p>
+        </div>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <h4{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+</div>
+</html>

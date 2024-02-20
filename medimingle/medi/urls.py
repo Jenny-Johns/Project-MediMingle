@@ -35,6 +35,8 @@ urlpatterns = [
     path('adminpage/',views.adminpage,name='adminpage'),
     path('patient_list',views.patient_list,name='patient_list'),
     path('doctor_list',views.doctor_list,name='doctor_list'),
+    path('appointment_list',views.appointment_list,name='appointment_list'),
+
     path('total_user_list',views.total_user_list,name='total_user_list'),
     # path('login_view',views.login_view,name='login_view'),
     path('patient_change_password/',views.patient_change_password,name='patient_change_password'),
@@ -63,8 +65,16 @@ urlpatterns = [
 
     path('deactivate_user/<int:user_id>/', views.deactivate_user, name='deactivate_user'),
     path('activate_user/<int:user_id>/', views.activate_user, name='activate_user'),
+    path('deactivate_user_pat/<int:user_id>/', views.deactivate_user_pat, name='deactivate_user_pat'),
+    path('activate_user_pat/<int:user_id>/', views.activate_user_pat, name='activate_user_pat'),
+
     path('doc_suggest/',views.doc_suggest,name="doc_suggest"),
      path('add_doctor/', views.add_doctor, name='add_doctor'),
+
+
+    path('confirm_booking/<int:doctor_id>/', views.confirm_booking, name='confirm_booking'),
+    path('confirm_appointment/<int:appointment_id>/', views.confirm_appointment, name='confirm_appointment'),
+
 
 
 ]
