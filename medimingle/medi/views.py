@@ -6,7 +6,7 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,Appointment,Notification
+from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,Appointment,Notification,Billing
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
@@ -190,7 +190,14 @@ def user_login(request):
                         if user.user_type == 'doctor':
                             return redirect('doctor_dashboard')
                         else:
-                            return redirect('patient_dashboard')
+                            if user.user_type == 'patient':
+                                unpaid_bills = Billing.objects.filter(patient=user.patient, is_bill_paid=False)
+                                if unpaid_bills.exists():
+                                    return redirect('view_due_details')
+                                else:
+                                    return redirect('patient_dashboard')
+                            else:
+                                return redirect('patient_dashboard')
                     else:
                         messages.warning(request, "Email not verified. Please verify your email and login.")
                 else:
@@ -245,7 +252,10 @@ def patient_dashboard(request):
     context={
         'patient': current_patient,
         'appointments':patient_appointments,
-        'n_count':n_count
+        'n_count':n_count,
+        'notifications': notifications,
+        'doc':doc
+
     }
     
 
@@ -1046,6 +1056,7 @@ def confirm_booking(request, doctor_id):
 
         doctor = Doctor.objects.get(id=doctor_id)
         doctor_name = doctor.user.get_full_name()
+        fee=doctor.consulting_fee
 
         # Create Appointment instance
         appointment = Appointment.objects.create(
@@ -1083,6 +1094,7 @@ def confirm_booking(request, doctor_id):
             'doctor_name': doctor_name,
             'appointment': appointment,
             'email_message': email_message,
+            'fee':fee
         }
         return render(request, 'confirm_booking.html', context)
     else:
@@ -1116,6 +1128,13 @@ def confirm_appointment(request, appointment_id):
                 message=message
             )
 
+            Billing.objects.create(
+                doctor=appointment.doctor,
+                patient=appointment.patient,
+                appointment=appointment,
+                amount=appointment.doctor.consulting_fee, 
+            )
+
         elif action == 'reject':
             appointment.delete()
             subject = 'Cancellation'
@@ -1135,7 +1154,60 @@ def confirm_appointment(request, appointment_id):
 
 
 
+def view_due_details(request):
+    patient = request.user.patient
+    unpaid_bills = Billing.objects.filter(patient=patient, is_bill_paid=False)
 
+    if unpaid_bills.exists():
+        billing_id = unpaid_bills.first().id
+        appointments_with_fee = []
+        for bill in unpaid_bills:
+            appointment = bill.appointment
+            appointment_details = {
+                'date': appointment.appointment_datetime,
+                'consulting_fee': appointment.doctor.consulting_fee,
+                # Add other appointment details as needed
+            }
+            appointments_with_fee.append(appointment_details)
+        return redirect('make_payment', billing_id=billing_id )
+    else:
+        return redirect(request, 'patient_dashboard')
+
+def make_payment(request, billing_id):
+    billing = get_object_or_404(Billing, id=billing_id)
+    unpaid_bills = Billing.objects.filter(is_bill_paid=False)
+
+    if request.method == 'POST':
+        billing.is_bill_paid = True
+        billing.save()
+
+        # Redirect to patient dashboard
+        return redirect('patient_dashboard')
+
+    else:
+        appointments_with_fee = []
+        for bill in unpaid_bills:
+            appointment = bill.appointment
+            appointment_details = {
+                'date': appointment.appointment_datetime,
+                'consulting_fee': appointment.doctor.consulting_fee,
+                # Add other appointment details as needed
+            }
+            appointments_with_fee.append(appointment_details)
+        # Initialize Razorpay client with your API key and secret
+        client = razorpay.Client(auth=('rzp_test_GfzsM6qWehBGju','4ZZkYgLAtHFGy89EjiHpDCyE'))
+
+        # Create a Razorpay order
+        order_data = {
+            'amount': int(billing.amount * 100),  # Amount in paise
+            'currency': 'INR',
+            'receipt': 'order_rcptid_11',  # Replace with your receipt id
+            'payment_capture': 1  # Auto-capture payments
+        }
+        razorpay_order = client.order.create(data=order_data)
+
+        # Pass the order ID to the payment page
+        return render(request, 'payment.html', {'order_id': razorpay_order['id']})
 
 
 

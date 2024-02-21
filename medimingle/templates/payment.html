@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Page</title>
+</head>
+<body>
+    <h1>Due Details</h1>
+    <ul>
+        {% for appointment in appointments_with_fee %}
+        <li>
+            Date: {{ appointment.date }}<br>
+            Consulting Fee: {{ appointment.consulting_fee }}
+        </li>
+        {% endfor %}
+    </ul>
+    <!-- Add Razorpay payment form here -->
+    <form method="post" id="paymentForm">        
+        {% csrf_token %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+                data-key="rzp_test_GfzsM6qWehBGju"
+                data-amount="{{ billing.amount|floatformat:"-2" }}" 
+                data-currency="INR"
+                data-order_id="{{ order_id }}"
+                data-buttontext="Pay Now"
+                data-name="MediMingle"
+                data-description="Payment for Appointment"
+                data-image="https://example.com/your_logo.jpg"
+                data-prefill.email="{{ request.user.email }}"
+                data-theme.color="#F37254">
+            </script>
+            <input type="hidden" custom="Hidden Element" name="hidden">
+        </form>
+        <button onclick="payNow()">Pay Now</button>
+    
+        <script>
+            function payNow() {
+                document.getElementById('paymentForm').submit();
+            }
+        </script>
+</body>
+</html>

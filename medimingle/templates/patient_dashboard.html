@@ -53,7 +53,8 @@
 																{% else %}
 																  Pending
 																{% endif %}
-															  </td>														</tr>
+															  </td>	
+														</tr>
 													{% endfor %}
 												</tbody>
 											</table>
@@ -207,6 +208,21 @@
 		<!-- /Main Wrapper -->
 	  
 		<!-- jQuery -->
+
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				// Function to clear notifications
+				function clearNotifications() {
+					var notificationList = document.querySelector(".notification-list");
+					notificationList.innerHTML = ""; // Remove all notification items
+				}
+		
+				// Event listener for the "Clear Notifications" button
+				document.getElementById("clear-notifications").addEventListener("click", function() {
+					clearNotifications(); // Call the function to clear notifications
+				});
+			});
+		</script>
 		<script src="{% static '/assets/js/jquery.min.js'%}"></script>
 		
 		<!-- Bootstrap Core JS -->

@@ -177,3 +177,24 @@ class Notification(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.timestamp
+    
+
+
+
+class Billing(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)  
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(auto_now_add=True)
+    is_bill_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Billing for {self.doctor} by {self.patient}"
+    
+# class Payment(models.Model):
+#     billing = models.ForeignKey(Billing, on_delete=models.CASCADE)
+#     amount = models.DecimalField(max_digits=10, decimal_places=2)
+#     date = models.DateField(auto_now_add=True)
+
+    

@@ -1,0 +1,22 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Due Details</title>
+</head>
+<body>
+    <h1>Due Details</h1>
+    <ul>
+        {% for appointment in appointments_with_fee %}
+        <li>
+            Date: {{ appointment.date }}<br>
+            Consulting Fee: {{ appointment.consulting_fee }}
+        </li>
+        {% endfor %}
+    </ul>
+    <form method="post" action="{% url 'make_payment' bill.id %}">
+        {% csrf_token %}
+        <!-- Add payment form fields here -->
+        <input type="submit" value="Pay Now">
+    </form>
+</body>
+</html>
