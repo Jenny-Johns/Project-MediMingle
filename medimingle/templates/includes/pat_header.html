@@ -70,6 +70,41 @@
 							<div class="header-contact-img">
 								<i  style="color: white;" class="far fa-hospital"></i>							
 							</div>
+						</li>
+						<li class="nav-item dropdown noti-dropdown">
+							<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+								<i class="fas fa-bell" style="color: white;"></i> 
+								<span class="badge badge-pill" style="color: red;">{{ n_count }}</span>
+							</a>
+							<div class="dropdown-menu notifications">
+								<div class="topnav-dropdown-header">
+									<span class="notification-title">Notifications</span>
+								</div>
+								<div class="noti-content">
+									<ul class="notification-list">
+										{% for notification in notifications %}
+										<li class="notification-message">
+											<a href="#">
+												<div class="media">
+													<!-- Add any additional HTML elements or classes here -->
+													<div class="media-body">
+														<!-- Display the notification message -->
+														<p class="noti-details">{{ notification.message }}</p>
+														<p class="noti-details">{{ notification.timestamp}}</p>
+
+														<!-- You can add additional details such as timestamp if needed -->
+													</div>
+												</div>
+											</a>
+										</li>
+										{% endfor %}
+									</ul>
+								</div>
+								<div class="topnav-dropdown-footer">
+									<a href="#">View all Notifications</a>
+								</div>
+							</div>
+						</li>
 							<div class="header-contact-detail">
 								<div class="header-contact-detail">
 									{% if user.is_authenticated %}

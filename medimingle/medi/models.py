@@ -66,17 +66,7 @@ class Experience(models.Model):
     def __str__(self):
         return self.hospital_name
 
-class AppointmentTime(models.Model):
-    day = models.CharField(max_length=50, null=True)
-    time_from = models.CharField(max_length=50, null=True)
-    time_to = models.CharField(max_length=50, null=True)
-    from_to = models.CharField(max_length=50, null=True)
-    appointment_date = models.DateField(null=True)
-    month = models.CharField(max_length=50, null=True)
-    date = models.CharField(max_length=50, null=True)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
-    def __str__(self):
-        return self.day
+
 
 class Patient(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
@@ -102,14 +92,7 @@ class PrescriptionStatus(models.Model):
     def __int__(self):
         return self.id
 
-class PatientAppointment(models.Model):
-    appoint_date = models.DateField(max_length=50, null=True)
-    appoint_time = models.CharField(max_length=50, null=True)
-    appoint_day = models.CharField(max_length=50, null=True)
-    doctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING, null=True)
-    patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
-    month = models.CharField(max_length=50, null=True)
-    date = models.CharField(max_length=50, null=True)
+
     
 
 
@@ -182,8 +165,15 @@ class AppointmentTime(models.Model):
 class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    # slot=models.ForeignKey(AppointmentTime,on_delete=models.CASCADE,null=True)
     appointment_datetime = models.CharField(max_length=20,null=True)
     is_confirmed = models.BooleanField(default=False)
     def __str__(self):
         return self.appointment_datetime
+    
+class Notification(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
+    message = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.timestamp

@@ -72,8 +72,8 @@
 															
 														<form method="post" action="{% url 'update_consulting_fee' user.id %}">
 																{% csrf_token %}
-																<input type="decimal" name="consulting_fee" min="100" max="500" value="{{ user.doctor.consulting_fee }}">
-																<button type="submit" class="btn btn-outline-primary">Update Fee</button>
+																<input type="decimal" class="form-control" name="consulting_fee" min="100" max="500" value="{{ user.doctor.consulting_fee }}">
+																<button type="submit" class=" form-control btn btn-outline-primary">Update Fee</button>
 															</form> 
 															
 														</td>

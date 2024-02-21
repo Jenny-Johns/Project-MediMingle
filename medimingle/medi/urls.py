@@ -40,7 +40,7 @@ urlpatterns = [
     path('total_user_list',views.total_user_list,name='total_user_list'),
     # path('login_view',views.login_view,name='login_view'),
     path('patient_change_password/',views.patient_change_password,name='patient_change_password'),
-    path('slot_select/<int:doctor_id>/', views.slot_select, name='slot_select'),
+    # path('slot_select/<int:doctor_id>/', views.slot_select, name='slot_select'),
     path('booking_summary', views.booking_summary,name='booking_summary'),
     path('doctor/<int:doctor_id>/', views.view_doctor_details, name='view_doctor_details'),
     path('pat_doc_view/<int:doctor_id>/', views.pat_doc_view, name='pat_doc_view'),
@@ -49,7 +49,7 @@ urlpatterns = [
     path('activate/<str:uidb64>/<str:token>/', activate_account, name='account_activation'),
     path('update_consulting_fee/<int:user_id>/', views.update_consulting_fee, name='update_consulting_fee'),
 
- 
+
     path('success',views.success,name='success'),
    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
    path('block_user/<int:user_id>/', views.block_user, name='block_user'),

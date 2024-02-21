@@ -101,6 +101,7 @@
 																							{% comment %} <form action="{% url 'reschedule_appointment' appointment.id %}" method="post"> {% endcomment %}
 																								{% csrf_token %}
 																								<button type="submit" class="btn btn-primary" name="action" value="reschedule">Reschedule</button>
+																								
 																							</form>
 																					{% endif %}
 																				</td>
@@ -252,6 +253,20 @@
 		<!-- /Main Wrapper -->
 	  
 		<!-- jQuery -->
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				// Function to clear notifications
+				function clearNotifications() {
+					var notificationList = document.querySelector(".notification-list");
+					notificationList.innerHTML = ""; // Remove all notification items
+				}
+		
+				// Event listener for the "Clear Notifications" button
+				document.getElementById("clear-notifications").addEventListener("click", function() {
+					clearNotifications(); // Call the function to clear notifications
+				});
+			});
+		</script>
 		<script src="{% static '/assets/js/jquery.min.js' %}"></script>
 		
 		<!-- Bootstrap Core JS -->

@@ -6,7 +6,7 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,PatientAppointment,Appointment
+from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,Appointment,Notification
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
@@ -49,7 +49,6 @@ from medi.tokens import account_activation_token
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import PatientAppointment
 
 from django.shortcuts import get_list_or_404
 import razorpay
@@ -240,9 +239,13 @@ def patient_dashboard(request):
     current_patient = get_object_or_404(Patient, user=current_user)
     patient_appointments = Appointment.objects.filter(patient=request.user.patient)
     doc = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
+    notifications = Notification.objects.filter(patient=current_patient)
+    n_count=notifications.count()
+
     context={
         'patient': current_patient,
         'appointments':patient_appointments,
+        'n_count':n_count
     }
     
 
@@ -255,7 +258,8 @@ def doctor_dashboard(request):
     current_doctor = get_object_or_404(Doctor, user=current_user)
     specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
     doctor_appointments = Appointment.objects.filter(doctor=request.user.doctor)
-
+    notifications = Notification.objects.filter(doctor=current_doctor)
+    n_count=notifications.count()
     if request.method == 'POST':
         patient_id = request.POST['status']
         accepted_patient = MedicalHistory.objects.get(id=patient_id)
@@ -270,19 +274,15 @@ def doctor_dashboard(request):
         "pat_count":pat_count,
         "doctor": current_doctor,
         'specialization':specialization,
-        'appointments': doctor_appointments
+        'appointments': doctor_appointments,
+        'notifications': notifications,
+        "n_count":n_count
+
     }
     
     return render(request,'doctor_dashboard.html',context) 
 
-def status(request, patient_id):
-    current_user = request.user
-    current_doctor = get_object_or_404(Doctor,user=current_user)
-    patient = Patient.objects.get(id=patient_id, doctor=current_doctor)
-    patientMedicalHistory = PatientAppointment.objects.get(patient=patient)
-    patientMedicalHistory.is_active = True
-    patientMedicalHistory.save()
-    return redirect('doctor_dashboard')
+
 @never_cache   
 @login_required(login_url='signin')
 def homepage(request):
@@ -370,16 +370,19 @@ def adminpage(request):
     users=tbl_user.objects.exclude(is_superuser='1')
     doctors = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
     patients = tbl_user.objects.filter(user_type='patient').exclude(is_superuser=True)
+    appointment=Appointment.objects.all()
     user_count=users.count()
     doc_count=doctors.count()
     pat_count=patients.count()
+    appoint_count=appointment.count()
     context = {
         "doctors": doctors,
         "patients": patients,
         "users":users,
         "user_count":user_count,
         "doc_count":doc_count,
-        "pat_count":pat_count
+        "pat_count":pat_count,
+        "appoint_count":appoint_count
     }
     
     return render(request,'adminpage.html',context)
@@ -701,10 +704,8 @@ def booking(request, doctor_id):
 
     appoint_time_doctor = AppointmentTime.objects.filter(doctor=doctor)
     
-    # Construct a list of unique day names
     unique_appoint_day = set(time_slot.day for time_slot in appoint_time_doctor)
-    appoint_day = sorted(list(unique_appoint_day))  # Sort the list for consistent ordering
-    
+    appoint_day = sorted(list(unique_appoint_day))  
     context = {
         'doctor': doctor,
         'appoint_time_doctor': appoint_time_doctor,
@@ -718,7 +719,6 @@ def booking(request, doctor_id):
 
 
 def medical_history(request):
-
     current_user = request.user
     try:
         current_doctor = get_object_or_404(Doctor, user=current_user)
@@ -775,52 +775,12 @@ def appointments(request):
     }
     return render(request, 'appointments.html', context)
 
-# def patient_appointment(request, doctor_id):
-#     current_user = request.user
-#     current_patient = get_object_or_404(Patient, user=current_user)
-    
-#     doctor = Doctor.objects.get(id=doctor_id)
-
-#     if request.method == "POST":
-        
-#         from_to = str(request.POST['from_to'])
-#         print("from_to day:", from_to)
-        
-#         splitted_from_to = from_to.split(',')
-#         print("Split: ", splitted_from_to[1])
-
-#         doc_appoint = PatientAppointment(appoint_day=splitted_from_to[1], appoint_time=splitted_from_to[0], doctor=doctor, patient=current_patient)
-#         doc_appoint.save()
-#         return redirect('history') 
-@never_cache
-@login_required(login_url='signin')
-def slot_select(request, doctor_id):
-    current_user = request.user
-    current_patient = get_object_or_404(Patient, user=current_user)
-    
-    doctor = Doctor.objects.get(id=doctor_id)
-
-    if request.method == "POST":
-        
-        from_to = str(request.POST['from_to'])
-        
-        splitted_from_to = from_to.split(',')
-
-        
-        doc_appoint = PatientAppointment(appoint_day=splitted_from_to[1], appoint_time=splitted_from_to[0], doctor=doctor, patient=current_patient)
-        doc_appoint.save()
-
-        return redirect('booking_summary') 
-@login_required
-
-
-
 
 @never_cache
 @login_required(login_url='signin')
 def booking_summary(request):
     current_user = request.user
-    appointments = get_list_or_404(PatientAppointment, patient__user=current_user)
+    appointments = get_list_or_404(Appointment, patient__user=current_user)
     if appointments:
         appointment = appointments[0]
     else:
@@ -844,7 +804,7 @@ def booking_summary(request):
 @login_required(login_url='signin')
 def success(request):
     current_user = request.user
-    appointments = get_list_or_404(PatientAppointment, patient__user=current_user)
+    appointments = get_list_or_404(Appointment, patient__user=current_user)
     if appointments:
         appointment = appointments[0]
     else:
@@ -1100,7 +1060,6 @@ def confirm_booking(request, doctor_id):
         email_message = (
             f"Dear {doctor_name},\n\n"
             f"A new appointment has been booked:\n\n"
-            # f"Doctor: {doctor_name}\n"
             f"Date: {slot_date}\n"
             f"Time: {slot_time}\n"
             f"Patient: {request.user.get_full_name()}\n\n"
@@ -1112,6 +1071,10 @@ def confirm_booking(request, doctor_id):
         to_email = doctor.user.email
         send_mail(subject, email_message, from_email, [to_email])
         messages.success(request, "An email has been sent to the corresponding doctor. Please wait for their response.")
+        Notification.objects.create(
+            doctor=doctor,
+            message=f"A new appointment has been booked for {slot_date} at {slot_time} by {request.user.get_full_name()}"
+        )
 
 
         context = {
@@ -1147,9 +1110,24 @@ def confirm_appointment(request, appointment_id):
             from_email = 'medimingle@gmail.com'  # Your email address
             to_email = appointment.patient.user.email
             send_mail(subject, message, from_email, [to_email])
+            messages.success(request, "Your appointment has been confirmed.")
+            Notification.objects.create(
+                patient=appointment.patient,
+                message=message
+            )
 
         elif action == 'reject':
             appointment.delete()
+            subject = 'Cancellation'
+            message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been rejected by the doctor due to some reasons.'
+            from_email = 'medimingle@gmail.com'  # Your email address
+            to_email = appointment.patient.user.email
+            send_mail(subject, message, from_email, [to_email])
+            Notification.objects.create(
+                patient=appointment.patient,
+                message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been rejected by the doctor due to some reasons.'
+            )
+         
         
         return redirect('doctor_dashboard')  # Redirect to doctor dashboard after action
     else:

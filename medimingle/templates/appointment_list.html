@@ -39,7 +39,11 @@
 													<td>{{ user.doctor.user.get_full_name }}</td>
 													<td>{{ user.patient.user.get_full_name }}</td>
 													<td>{{ user.appointment_datetime }}</td>
-													<td>{{ user.is_confirmed }}</td>													
+													<td>{% if user.is_confirmed %}
+														Confirmed
+													  {% else %}
+														Pending
+													  {% endif %}</td>												
 												</tr>
 											{% empty %}
 												<tr>
