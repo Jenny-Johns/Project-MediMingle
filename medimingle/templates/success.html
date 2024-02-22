@@ -72,15 +72,15 @@
         <ul class="nav header-navbar-rht">
             <li class="nav-item contact-item">
                 <div class="header-contact-img">
-                    <i class="far fa-hospital"></i>							
+                    <i class="far fa-hospital" style="color: white;"></i>							
                 </div>
                 <div class="header-contact-detail">
                     {% if user.is_authenticated %}
-                        <p class="contact-header">Welcome | {{ user.first_name }}</p>
+                        <p style="color: white;" class="contact-header">Welcome | {{ user.first_name }}</p>
                         {% if user.user_type == 'doctor' %}
-                            <p class="contact-info-header"><a href="{% url 'doctor_dashboard' %}">Dashboard</a></p>
+                            <p class="contact-info-header"><a href="{% url 'doctor_dashboard' %} " style="color: white;">Dashboard</a></p>
                         {% else %}
-                        <p class="contact-info-header"><a href="{% url 'patient_dashboard' %}">Dashboard</a></p>
+                        <p class="contact-info-header"><a href="{% url 'patient_dashboard' %}" style="color: white;">Dashboard</a></p>
                         {% endif %}
                         
                     {% else  %}
@@ -104,12 +104,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Summary</title>
+    <style>
+        body {
+            padding: 20px;
+        }
+        .receipt {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .receipt-header {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+        .receipt-header h1 {
+            margin-bottom: 0;
+        }
+        .receipt-content p {
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Booking Summary</h1>
-    <p>Doctor: {{ appointment.doctor }}</p>
-    <p>Appointment Date: {{ appointment.appoint_date }}</p>
-    <p>Appointment Time: {{ appointment.appoint_time }}</p>
-    <p>Consulting Fee: {{ appointment.doctor.consulting_fee }}</p>
+    <div class="container">
+        <div class="receipt">
+            <div class="receipt-header">
+                <h1 class="text-center">Booking Receipt</h1>
+            </div>
+            <div class="receipt-content">
+                <p><strong>Doctor Name:</strong> {{ appointment.doctor }}</p>
+                <p><strong>Patient Name:</strong> {{ appointment.patient }}</p>
+                <p><strong>Billing Date:</strong> {{ appointment.date }}</p>
+                <p><strong>Consulting Fee:</strong> {{ appointment.amount }}</p>
+                <a href="{% url 'generate_receipt' appointment.id %}" class="btn btn-primary">Download Receipt</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

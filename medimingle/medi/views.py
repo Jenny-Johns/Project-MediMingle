@@ -27,6 +27,13 @@ import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
+from easy_pdf.views import PDFTemplateView
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.template import Context
+from xhtml2pdf import pisa
+from django.http import HttpResponse
+
 
 # for email verification
 from django.core.mail import send_mail
@@ -84,12 +91,41 @@ from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import tbl_user, Doctor
-
+from django.db import models
+from django.db.models import Q
 import secrets
 import string
 # Create your views here.
+
+from django.db.models import Q
+from django.shortcuts import render
+from .models import Doctor
+
 def index(request):
-    return render(request,'index.html')
+    if request.method == 'POST':
+        query = request.POST.get('search_query')
+
+        if query:
+            doctors = Doctor.objects.filter(
+                Q(user__first_name__icontains=query) | Q(user__email__icontains=query) |
+                Q(city__icontains=query) | Q(gender__icontains=query) |
+                Q(consulting_fee__icontains=query) | Q(doctorspecialization__specialized_category__icontains=query)
+            )
+
+            if doctors.exists():
+                context = {'doctors': doctors, 'search_performed': True}
+            else:
+                context = {'no_record_message': 'No records found.', 'search_performed': True}
+        else:
+            # If the search query is empty, don't perform the search and don't show the message
+            context = {'search_performed': False}
+    else:
+        # For GET requests, simply render the template without any context
+        context = {'search_performed': False}
+
+    return render(request, 'index.html', context)
+
+
 
 @never_cache   
 def register(request):
@@ -124,6 +160,7 @@ def register(request):
             # user.save();
             current_site = get_current_site(request)
             activation_link = f"{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{account_activation_token.make_token(user)}/"
+            print(activation_link)
 
             # Send activation email
             subject = 'Activate Your Medimingle Account'
@@ -248,13 +285,15 @@ def patient_dashboard(request):
     doc = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
     notifications = Notification.objects.filter(patient=current_patient)
     n_count=notifications.count()
+    bill=Billing.objects.filter(patient=current_patient)
 
     context={
         'patient': current_patient,
         'appointments':patient_appointments,
         'n_count':n_count,
         'notifications': notifications,
-        'doc':doc
+        'doc':doc,
+        'bill':bill
 
     }
     
@@ -612,7 +651,6 @@ def pat_doc_view(request, doctor_id):
 
 @never_cache
 @login_required(login_url='signin')
-
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
 
@@ -814,7 +852,7 @@ def booking_summary(request):
 @login_required(login_url='signin')
 def success(request):
     current_user = request.user
-    appointments = get_list_or_404(Appointment, patient__user=current_user)
+    appointments = get_list_or_404(Billing, patient__user=current_user)
     if appointments:
         appointment = appointments[0]
     else:
@@ -1182,7 +1220,7 @@ def make_payment(request, billing_id):
         billing.save()
 
         # Redirect to patient dashboard
-        return redirect('patient_dashboard')
+        return redirect('success')
 
     else:
         appointments_with_fee = []
@@ -1210,4 +1248,28 @@ def make_payment(request, billing_id):
         return render(request, 'payment.html', {'order_id': razorpay_order['id']})
 
 
+def generate_receipt(request, bill_id):
+    bill = Billing.objects.get(id=bill_id)
 
+    return render(request, 'receipt_template.html', {'bill': bill})
+
+
+
+def generate_receipt_pdf(request, bill_id):
+    # Retrieve the bill object from the database
+    bill = Billing.objects.get(id=bill_id)
+    
+    # Render the template with the bill data
+    template = get_template('receipt_template.html')
+    context = {'bill': bill}
+    html = template.render(context)
+    
+    # Generate PDF using the rendered HTML
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="receipt_{bill_id}.pdf"'
+    
+    pisaStatus = pisa.CreatePDF(
+       html, dest=response)
+    
+    # Return the PDF as response
+    return response

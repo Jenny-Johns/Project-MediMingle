@@ -100,31 +100,72 @@
 					 
 						<!-- Search -->
 						<div class="search-box">
-							<form action="templateshub.net">
-								{% comment %} <div class="form-group search-location">
-									<input type="text" class="form-control" placeholder="Search Location">
-									<span class="form-text">Based on your Location</span>
-								</div> {% endcomment %}
+							<form method="post">
+								{% csrf_token %}
 								<div class="col-lg-3 col-md-6" style="text-align: right;">
 									
 									<a href="{% url 'doc_suggest' %}" class="btn btn-primary">Discover Your Doctor</a>
-									<span  class="form-text">Confused on which doctor to consult? We'll help you.</span>
+									{% comment %} <span  class="form-text">Confused on which doctor to consult? We'll help you.</span> {% endcomment %}
 									
 								</div>
 								<div class="form-group search-info">
-									<input type="text" class="form-control" placeholder="Search Doctors">
+									<input type="text" name="search_query" class="form-control" placeholder="Search Doctors">
 									{% comment %} <span class="form-text">Ex : Dental or Sugar Check up etc</span> {% endcomment %}
 								</div>
 								<button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i> <span>Search</span></button>
 							</form>
 							
 						</div>
+						{% if search_performed %}
+						{% if doctors %}
+						{% for doctor in doctors %}
+							<div class="card">
+								<div class="card-body">
+									<div class="doctor-widget">
+										<div class="doc-info-left">
+											<div class="doctor-img">
+												<a href="{% url 'login'  %}">
+													<img src="{{ doctor.profile_image.url }}" class="img-fluid" alt="{{ doctor.user.name }}">
+												</a>
+											</div>
+											<div class="doc-info-cont">
+												<h4 class="doc-name"><a href="{% url 'login' %}">Dr.{{ doctor.user.first_name }} {{ doctor.user.last_name }}</a></h4>
+												<p class="doc-speciality">
+													{% for specialization in doctor.doctorspecialization_set.all %}
+														{{ specialization.specialized_category }}
+														{% if not forloop.last %}, {% endif %}
+													{% endfor %}
+												</p>
+												<p><i class="fas fa-map-marker-alt"></i> {{ doctor.city }}</p>
+												<p><i class="far fa-money-bill-alt"></i> {{ doctor.consulting_fee }}</p>
+												<div class="rating">
+													<!-- Display rating stars here -->
+												</div>
+											</div>
+										</div>
+										<div class="doc-info-right">
+											
+											<div class="clinic-booking">
+												<a class="view-pro-btn" href="{% url 'login'  %}">View Profile</a>
+												<a class="apt-btn" href="{% url 'login'  %}">Book Appointment</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+					{% else %}
+						<p>No records found.</p>
+					{% endif %}
+
+					{% endif %}
 					</div>
-						
+					
 					</div>
-							
+					
 				</div>
-				
+			
+
 			</section>
 			<!-- /Home Banner -->
 			  

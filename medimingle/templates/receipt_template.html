@@ -1,0 +1,152 @@
+<!-- booking_summary.html -->
+{% load static %}
+<!DOCTYPE html> 
+<html lang="en">
+
+	
+<head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+		<title>Medimingle</title>
+		
+		<!-- Favicons -->
+		<!--<link rel="icon" type="image/png" href="{% static '/assets/img/favicon.png'%}">-->
+		<link rel="icon" type="image/png" sizes="16x16" href="{% static '/favicon-16x16.png' %}">
+
+		
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/bootstrap.min.css'%}">
+		
+		<!-- Fontawesome CSS -->
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/fontawesome.min.css'%}">
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/all.min.css'%}">
+		
+		<!-- Main CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/style.css'%}">
+		
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.min.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+	
+	</head>
+	<body>
+
+		<!-- Main Wrapper -->
+		<div class="main-wrapper">
+		
+			<!-- Header -->
+			{% load static %}
+<!--Header -->
+<header class="header">
+    <nav class="navbar navbar-expand-lg header-nav">
+        <div class="navbar-header">
+            <a id="mobile_btn" href="javascript:void(0);">
+                <span class="bar-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </a>
+            <a href="index-2.html" class="navbar-brand logo">
+                <img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+            </a>
+        </div>
+        <div class="main-menu-wrapper">
+            <div class="menu-header">
+                <a href="index-2.html" class="menu-logo">
+                    <img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+                </a>
+                <a id="menu_close" class="menu-close" href="javascript:void(0);">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <ul class="main-nav">
+                
+				
+                
+            </ul>		 
+        </div>		 
+        <ul class="nav header-navbar-rht">
+            <li class="nav-item contact-item">
+                <div class="header-contact-img">
+                    <i class="far fa-hospital" style="color: white;"></i>							
+                </div>
+                <div class="header-contact-detail">
+                    {% if user.is_authenticated %}
+                        <p style="color: white;" class="contact-header">Welcome | {{ user.first_name }}</p>
+                        {% if user.user_type == 'doctor' %}
+                            <p class="contact-info-header"><a href="{% url 'doctor_dashboard' %} " style="color: white;">Dashboard</a></p>
+                        {% else %}
+                        <p class="contact-info-header"><a href="{% url 'patient_dashboard' %}" style="color: white;">Dashboard</a></p>
+                        {% endif %}
+                        
+                    {% else  %}
+
+                    {% endif %}
+                </div>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link header-login" href="{% url 'logout' %}">logout</a>
+            </li>
+            <!--<li class="nav-item">
+                <a class="nav-link header-register" href="{% url 'register' %}">Register</a>
+            </li>-->
+        </ul>
+    </nav>
+</header>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Summary</title>
+    <style>
+        body {
+            padding: 20px;
+        }
+        .receipt {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .receipt-header {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+        .receipt-header h1 {
+            margin-bottom: 0;
+        }
+        .receipt-content p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="receipt">
+            <div class="receipt-header">
+                <h1 class="text-center">Booking Receipt</h1>
+            </div>
+            <div class="receipt-content">
+                <p><strong>Doctor Name:</strong> {{ bill.doctor }}</p>
+                <p><strong>Patient Name:</strong> {{ bill.patient }}</p>
+                <p><strong>Billing Date:</strong> {{ bill.date }}</p>
+                <p><strong>Consulting Fee:</strong> {{ bill.amount }}</p>
+            </div>
+            <div class="receipt-footer">
+                <form action="{% url 'generate_receipt_pdf' bill.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm bg-info-light"><i class="fas fa-download"></i> Download PDF</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

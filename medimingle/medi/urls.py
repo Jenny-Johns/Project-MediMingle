@@ -78,4 +78,9 @@ urlpatterns = [
     path('view_due_details/', views.view_due_details, name='view_due_details'),
     path('make_payment/<int:billing_id>/', views.make_payment, name='make_payment'),
 
+    path('generate-receipt/<int:bill_id>/', views.generate_receipt, name='generate_receipt'),
+    path('generate-receipt/', views.generate_receipt, name='generate_receipt'),
+path('generate-receipt-pdf/<int:bill_id>/', views.generate_receipt_pdf, name='generate_receipt_pdf'),
+
+
 ]
