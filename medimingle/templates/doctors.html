@@ -104,7 +104,7 @@
 						<div class="col-md-12 col-lg-4 col-xl-3 theiaStickySidebar">
 						
 							<!-- Search Filter -->
-							<div class="card search-filter">
+							{% comment %} <div class="card search-filter">
 								<div class="card-header">
 									<h4 class="card-title mb-0">Search Filter</h4>
 								</div>
@@ -170,7 +170,7 @@
 											</div>	
 									 </form>	
 								</div>
-							</div>
+							</div> {% endcomment %}
 							<!-- /Search Filter -->
 							
 						</div>
@@ -185,14 +185,13 @@
 									<div class="doctor-widget">
 										<div class="doc-info-left">
 											<div class="doctor-img">
-												<a href="{% url 'profile' doctor.id %}">
 													<img src="{{ doctor.profile_image.url }}" class="img-fluid" alt="User Image">
 												</a>
 											</div>
 											<div class="doc-info-cont">
-												<h4 class="doc-name"><a href="{% url 'profile' doctor.id %}">Dr. {{doctor.user.first_name}} {{doctor.user.last_name}}</a></h4>
+												<h4 class="doc-name">Dr. {{doctor.user.first_name}} {{doctor.user.last_name}}</a></h4>
 												<p class="doc-speciality"></p>
-												<h5 class="doc-department"></h5>
+												<h5 class="doc-department">{{ doctor.doctorspecialization.specialized_category }}</h5>
 												<div class="rating">
 													<i class="fas fa-star filled"></i>
 													<i class="fas fa-star filled"></i>
@@ -212,9 +211,10 @@
 											</div>
 											<div class="clinic-booking">
 												<a class="apt-btn" name="book" href="{% url 'booking' doctor.id %}">Book Appointment</a>
-							
+												<a class="apt-btn" href="{% url 'doctor_profile' doctor.id %}">View Profile</a>
+                    
+
 									
-												{% comment %} <a class="view-pro-btn" href="{% url 'pat_doc_view' doctor.id %}">View Profile</a> {% endcomment %}
 											</div>
 										</div>
 									</div>

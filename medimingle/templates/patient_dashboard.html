@@ -45,7 +45,7 @@
 												<tbody>
 													{% for appointment in appointments %}
 														<tr>
-															<td>{{ appointment.doctor }}</td>
+															<td>Dr.{{ appointment.doctor }}</td>
 															<td>{{ appointment.appointment_datetime }}</td>
 															<td>
 																{% if appointment.is_confirmed %}

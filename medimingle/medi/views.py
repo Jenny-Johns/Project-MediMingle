@@ -172,36 +172,6 @@ def register(request):
             return render(request,'register.html')
         
  
-"""
-@never_cache
-def user_login(request):
-    if request.user.is_authenticated:
-        return redirect('homepage')
-    else:
-        if request.method == 'POST':
-            email = request.POST['email']
-            password = request.POST['password']
-            user = authenticate(request, username=email, password = password)
-            if user is not None and user.is_active:
-                login(request, user)
-                request.session['username'] = user.username
-                if user.is_superuser:
-                    return redirect('adminpage')
-                elif user.user_type == 'doctor':
-                    return redirect('doctor_dashboard')
-                else:
-                    return redirect('patient_dashboard')
-            elif user is not None and not user.is_active:
-                messages.error(request, "Admin has blocked your account")
-                return redirect('signin')
-            elif user is not None and not user.is_email_verified:
-                messages.info(request, "Email not verified.")
-            else:
-                messages.info(request,"Invalid Credentials")
-                return redirect('signin')
-        response = render(request,"signin.html")
-        response['Cache-Control'] = 'no-store,must-revalidate'
-        return response"""
 
 
 @never_cache
@@ -341,6 +311,15 @@ def homepage(request):
     }
     return render(request,'homepage.html',context)
 
+@never_cache
+@login_required(login_url='signin')
+def doctors(request):
+    doctors = Doctor.objects.all()
+
+    context = {
+        'doctors':doctors,
+    }
+    return render(request, 'doctors.html', context)
 
 @never_cache   
 @login_required(login_url='signin')
@@ -518,20 +497,6 @@ def appointment_list(request):
 
 
 
-@never_cache
-@login_required(login_url='signin')
-def view_doctor_details(request, doctor_id):
-    doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
-    doctor_details = {
-        'basic_info': doctor,
-        'profile': doctor.doctor,
-        'specializations': DoctorSpecialization.objects.filter(doctor=doctor.doctor),
-        'qualifications': Qualification.objects.filter(doctor=doctor.doctor),
-        'experiences': Experience.objects.filter(doctor=doctor.doctor),
-    }
-    context = {'doctor_details': doctor_details}
-    return render(request, 'view_doctor_details.html', context)
-
 
 def doc_suggest(request):
     return render(request,'doc_suggest.html')
@@ -576,8 +541,7 @@ def activate_user_pat(request, user_id):
     user.is_active = True
     user.save()
     return redirect('patient_list')
-@never_cache
-@login_required(login_url='signin')
+
 
 
 
@@ -636,6 +600,20 @@ def patient_change_password(request):
 
 @never_cache
 @login_required(login_url='signin')
+def pat_doc_view_home(request, doctor_id):
+    doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
+    doctor_details = {
+        'basic_info': doctor,
+        'profile': doctor.doctor,
+        'specializations': DoctorSpecialization.objects.filter(doctor=doctor.doctor),
+        'qualifications': Qualification.objects.filter(doctor=doctor.doctor),
+        'experiences': Experience.objects.filter(doctor=doctor.doctor),
+    }
+    context = {'doctor_details': doctor_details}
+    return render(request, 'pat_doc_view.html', context)
+
+@never_cache
+@login_required(login_url='signin')
 def pat_doc_view(request, doctor_id):
     doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
     doctor_details = {
@@ -648,6 +626,28 @@ def pat_doc_view(request, doctor_id):
     context = {'doctor_details': doctor_details}
     return render(request, 'pat_doc_view.html', context)
 
+@never_cache
+@login_required(login_url='signin')
+def view_doctor_details(request, doctor_id):
+    doctor = get_object_or_404(tbl_user, id=doctor_id, user_type='doctor')
+    doctor_details = {
+        'basic_info': doctor,
+        'profile': doctor.doctor,
+        'specializations': DoctorSpecialization.objects.filter(doctor=doctor.doctor),
+        'qualifications': Qualification.objects.filter(doctor=doctor.doctor),
+        'experiences': Experience.objects.filter(doctor=doctor.doctor),
+    }
+    context = {'doctor_details': doctor_details}
+    return render(request, 'view_doctor_details.html', context)
+
+@never_cache
+@login_required(login_url='signin')
+def view_doctor_profile(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    specializations = doctor.doctorspecialization_set.all()
+    qualifications = doctor.qualification_set.all()
+    experiences = doctor.experience_set.all()
+    return render(request, 'doctor_profile.html', {'doctor': doctor, 'specializations': specializations, 'qualifications': qualifications, 'experiences': experiences})
 
 @never_cache
 @login_required(login_url='signin')
@@ -728,7 +728,6 @@ def delete_slot(request, slot_id):
 
 @never_cache
 @login_required(login_url='signin')
-
 def view_slot(request):
     doctor = get_object_or_404(Doctor, user=request.user)
     scheduled_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('appointment_date', 'time_from')
@@ -848,6 +847,7 @@ def booking_summary(request):
 
 
     return render(request, 'booking_summary.html', context)
+
 @never_cache
 @login_required(login_url='signin')
 def success(request):
@@ -921,15 +921,7 @@ def history(request):
     }
     return render(request, 'medical_history.html', context)
 
-@never_cache
-@login_required(login_url='signin')
-def doctors(request):
-    doctors = Doctor.objects.all()
 
-    context = {
-        'doctors':doctors,
-    }
-    return render(request, 'doctors.html', context)
 
 @never_cache
 @login_required(login_url='signin')
@@ -952,20 +944,7 @@ def profile(request, doctor_id):
     return render(request, 'profile.html', context)
 
 
-@never_cache
-@login_required(login_url='signin')
-# def doctor_search(request):
-#     doctors = Doctor.objects.order_by('-date_joined') #A hyphen "-" in front of "check_in" indicates descending order. 
 
-#     if 'gender_type' in request.GET:
-#         gender_type = request.GET['gender_type']
-#         if gender_type:
-#             doctors = doctors.filter(gender__iexact=gender_type)
-            
-#     context = {
-#         'doctors':doctors,
-#     }
-#     return render(request, 'doctor_search.html', context)
 
 
 
@@ -1191,7 +1170,8 @@ def confirm_appointment(request, appointment_id):
         return redirect('doctor_dashboard')
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def view_due_details(request):
     patient = request.user.patient
     unpaid_bills = Billing.objects.filter(patient=patient, is_bill_paid=False)
@@ -1211,6 +1191,8 @@ def view_due_details(request):
     else:
         return redirect(request, 'patient_dashboard')
 
+@never_cache
+@login_required(login_url='signin')
 def make_payment(request, billing_id):
     billing = get_object_or_404(Billing, id=billing_id)
     unpaid_bills = Billing.objects.filter(is_bill_paid=False)

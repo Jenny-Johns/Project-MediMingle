@@ -1,0 +1,73 @@
+<!-- doctor_profile.html -->
+{% load static %}
+{% include 'includes/main_header.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile</title>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Doctor Widget -->
+        <div class="card">
+            <div class="card-body">
+                <div class="doctor-widget">
+                    <div class="doc-info-left">
+                        <div class="doctor-img">
+                           <img src="{{ doctor.profile_image.url }}" alt="Doctor Image" class="img-fluid profile-img">
+                        </div>
+                        <div class="doc-info-cont">
+                            <h4 class="doc-name">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h4>
+                            {% for specialization in specializations %}
+                            <p class="doc-speciality">{{ specialization.specialized_category }}</p>
+                            {% endfor %}
+                            <div class="rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="d-inline-block average-rating">(35)</span>
+                            </div>
+                            <p><strong>Gender:</strong> {{ doctor.gender }}</p>
+                            <p><strong>Description:</strong> {{ doctor.description }}</p>
+
+                        </div>
+                    </div>
+                    <div class="doc-info-right">
+                        <div class="clini-infos">
+                            <ul>
+                                <li><i class="fas fa-map-marker-alt"></i>{{ doctor.city }}</li>
+                                <li><i class="far fa-money-bill-alt"></i> {{ doctor.consulting_fee }} </li>
+                                <p><strong>Registration Number:</strong> {{ doctor.registration_number }}</p>
+
+                            </ul>
+                        </div>
+                        <div class="clinic-booking">
+                            <a class="apt-btn" href="{% url 'booking' doctor.id %}">Book Appointment</a>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <h3>Qualifications</h3>
+                <ul class="list-group">
+                    {% for qualification in qualifications %}
+                        <li class="list-group-item">{{ qualification.qualification_degree }} - {{ qualification.institution_name }} (Completed: {{ qualification.years_of_completion|date:"Y" }})</li>
+                    {% endfor %}
+                </ul>
+                <h3>Experiences</h3>
+                <ul class="list-group">
+                    {% for experience in experiences %}
+                        <li class="list-group-item">{{ experience.designation }} at {{ experience.hospital_name }} (From: {{ experience.worked_from|date:"M Y" }} - To: {% if experience.worked_to %}{{ experience.worked_to|date:"M Y" }}{% else %}Present{% endif %})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
