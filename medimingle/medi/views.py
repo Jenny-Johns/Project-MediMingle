@@ -649,72 +649,48 @@ def view_doctor_profile(request, doctor_id):
     experiences = doctor.experience_set.all()
     return render(request, 'doctor_profile.html', {'doctor': doctor, 'specializations': specializations, 'qualifications': qualifications, 'experiences': experiences})
 
-@never_cache
-@login_required(login_url='signin')
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.utils.dateparse import parse_date
+
+from .models import AppointmentTime
+from .models import Doctor  # Import the Doctor model if not imported already
+
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
-
-    starting_times = {
-        '08:00': '8:00 AM',
-        '08:30': '8:30 AM',
-        '09:00': '9:00 AM',
-        '10:30': '10:30 AM',
-        '11:00': '11:00 AM',
-        '02:00': '2:00 PM',
-        '02:30': '2:30 PM',
-        '03:00': '3:00 PM',
-        '03:30': '3:30 PM',
-        '04:00': '4:00 PM'    
-    }
-
-    if request.method == "POST":
-        appointment_date = request.POST.get('appointment_date')
-        time_from = request.POST.get('time_from')
-        appointment_date_obj = datetime.strptime(appointment_date, '%Y-%m-%d').date()
-        time_from_obj = datetime.strptime(time_from, '%H:%M').time()
-        ending_time_obj = (datetime.combine(datetime.today(), time_from_obj) + timedelta(minutes=30)).time()
-        t = f"{time_from}-{ending_time_obj}"
-        if appointment_date_obj < timezone.now().date():
-            messages.error(request, 'Cannot schedule slots for past dates.')
-            return redirect(request.path_info)
-        existing_slots = AppointmentTime.objects.filter(
-            doctor=doctor,
-            appointment_date=appointment_date_obj,
-            time_from=time_from_obj
-        )
-        if existing_slots.exists():
-            messages.error(request, 'This time slot is already scheduled for the selected date.')
-            return redirect(request.path_info)
-        num_existing_slots = AppointmentTime.objects.filter(
-            doctor=doctor,
-            appointment_date=appointment_date_obj
-        ).count()
-        if num_existing_slots >= 10:
-            messages.error(request, 'Doctor cannot schedule more than 10 timings for a day.')
-            return redirect(request.path_info)
-
-        AppointmentTime.objects.create(
-            day=appointment_date_obj.strftime("%A"),
-            time_from=time_from_obj,
-            time_to=ending_time_obj,
-            from_to=t,
-            appointment_date=appointment_date_obj,
-            date=appointment_date_obj.strftime("%d"),
-            month=appointment_date_obj.strftime("%B"),
-            doctor=doctor
-        )
-
-        messages.success(request, 'Slot added successfully.')
-        return redirect(request.path_info)
-
-    context = {
-        'doctor': doctor,
-        'starting_times': starting_times,
-    }
-
-    return render(request, 'schedule_timings.html', context)
-
-
+    if request.method == 'POST':
+        date_str = request.POST.get('date')
+        date = parse_date(date_str)  # Convert date string to date object
+        
+        if not date:
+            messages.error(request, "Invalid date format.")
+            return redirect('schedule_timings')  # Redirect back to the same page
+        
+        slots_selected = request.POST.getlist('slots')
+        
+        if len(slots_selected) < 1 or len(slots_selected) > 10:
+            messages.error(request, "Please select slots.")
+            return redirect('schedule_timings')  # Redirect back to the same page
+        
+        for slot_time in slots_selected:
+            # Create an AppointmentTime instance for each selected slot
+            appointment_time = AppointmentTime.objects.create(
+                day=date.strftime("%A"),
+                from_to=slot_time,
+                appointment_date=date,
+                month=date.strftime("%B"),
+                date=date,
+                doctor=doctor
+            )
+            appointment_time.save()
+        
+        messages.success(request, 'Slots added successfully.')
+        return redirect('schedule_timings')  # Redirect back to the same page
+    
+    return render(request, 'schedule_timings.html')
 
 
 @never_cache
@@ -729,17 +705,26 @@ def delete_slot(request, slot_id):
 @never_cache
 @login_required(login_url='signin')
 def view_slot(request):
-    doctor = get_object_or_404(Doctor, user=request.user)
-    scheduled_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('appointment_date', 'time_from')
+    # Assuming you have a way to identify the currently logged-in doctor
+    doctor = request.user.doctor
 
-    unique_days = scheduled_slots.values_list('day', flat=True).distinct()
+    # Retrieve all slots for the respective doctor
+    doctor_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('day', 'appointment_date')
 
-    context = {
-        'doctor': doctor,
-        'unique_days': unique_days,
-        'scheduled_slots': scheduled_slots,
-    }
-    return render(request, "view_slot.html", context)
+    # Group slots by days
+    grouped_slots = {}
+    for slot in doctor_slots:
+        day = slot.day
+        if day not in grouped_slots:
+            grouped_slots[day] = []
+        grouped_slots[day].append(slot)
+
+    # Rearrange days in the order from Sunday to Saturday
+    ordered_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    ordered_grouped_slots = {day: grouped_slots.get(day, []) for day in ordered_days}
+
+    context = {'grouped_slots': ordered_grouped_slots}
+    return render(request, 'view_slot.html', context)
 
 
 @never_cache

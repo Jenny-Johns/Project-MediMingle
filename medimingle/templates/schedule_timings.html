@@ -102,30 +102,38 @@
 																				</div>
 																			</div>
 																		</form> {% endcomment %}
-																		<form id="appointment-form" action="{% url 'schedule_timings' %}" method="POST">
-																			{% csrf_token %}
-																			<div class="form-row">
-																				<div class="col-md-3 mb-3">
-																					<label for="">Date</label>
-																					<input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
-																				</div>
-																				<div class="col-md-3 mb-3">
-																					<label for="">Starting Time</label>
-																					<div>
-																						<!-- Use checkboxes for time selection -->
-																						{% for key, value in starting_times.items %}
-																							<div class="form-check">
-																								<input class="form-check-input" type="checkbox" id="time_{{ key }}" name="time_from" value="{{ key }}">
-																								<label class="form-check-label" for="time_{{ key }}">{{ value }}</label>
-																							</div>
-																						{% endfor %}
-																					</div>
-																				</div>
-																				<div class="col-md-2" style="margin-top: 35px;">
-																					<button type="submit" class="btn btn-primary submit-btn" id="submit-btn">Save</button>
-																				</div>
-																			</div>
-																		</form>
+																		<form action="{% url 'schedule_timings' %}" method="POST">
+																		{% csrf_token %}
+																		<label for="date">Select Date:</label>
+																		<input type="date" id="date" name="date" required><br><br>
+																		
+																		<input type="checkbox" id="slot1" name="slots" value="8:00am-8:30am">
+																		<label for="slot1">8:00am - 8:30am</label><br>
+																		
+																		<input type="checkbox" id="slot2" name="slots" value="8:30am-9:00am">
+																		<label for="slot2">8:30am - 9:00am</label><br>
+																		<input type="checkbox" id="slot3" name="slots" value="9:00am-9:30am">
+																		<label for="slot3">9:00am - 9:30am</label><br>
+																		<input type="checkbox" id="slot4" name="slots" value="9:30am-10:00am">
+																		<label for="slot4">9:30am - 10:00am</label><br>
+																		<input type="checkbox" id="slot5" name="slots" value="10:00am-10:30am">
+																		<label for="slot5">10:00am - 10:30am</label><br>
+																		<input type="checkbox" id="slot6" name="slots" value="10:30am-11:00am">
+																		<label for="slot6">10:30am - 11:00am</label><br>
+																		<input type="checkbox" id="slot7" name="slots" value="11:00am-11:30am">
+																		<label for="slot7">11:00am - 11:30am</label><br>
+																		<input type="checkbox" id="slot8" name="slots" value="2:30pm-3:00pm">
+																		<label for="slot8">2:30pm - 3:00pm</label><br>
+																		<input type="checkbox" id="slot9" name="slots" value="3:00pm-3:30pm">
+																		<label for="slot9">3:00pm - 3:30pm</label><br>
+																		<input type="checkbox" id="slot10" name="slots" value="3:30pm-4:00pm">
+																		<label for="slot10">3:30pm - 4:00pm</label><br>
+																		<!-- Add more time slots here -->
+																		
+																		<br>
+																		<button type="submit" class="btn btn-success">Add</button>
+																	</form>
+																		
 																		
 																
 																		
@@ -235,32 +243,7 @@
 		<!-- jQuery -->
 
 
-		<script>
-			document.addEventListener("DOMContentLoaded", function () {
-				var dateInput = document.getElementById("appointment_date");
-				var timeInput = document.getElementById("time_from");
-				var submitBtn = document.getElementById("submit-btn");
-				var form = document.getElementById("appointment-form");
 		
-				dateInput.addEventListener("input", validateForm);
-				timeInput.addEventListener("change", validateForm);
-		
-				form.addEventListener("submit", function(event) {
-					if (!dateInput.value || !timeInput.value) {
-						event.preventDefault();
-						alert("Please enter both date and starting time");
-					}
-				});
-		
-				function validateForm() {
-					if (dateInput.value && timeInput.value) {
-						submitBtn.disabled = false;
-					} else {
-						submitBtn.disabled = true;
-					}
-				}
-			});
-		</script>
 		<script src="{% static "/assets/js/jquery.min.js" %}"></script>
 		
 		<!-- Bootstrap Core JS -->
