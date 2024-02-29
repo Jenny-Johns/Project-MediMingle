@@ -659,14 +659,61 @@ from django.utils.dateparse import parse_date
 from .models import AppointmentTime
 from .models import Doctor  # Import the Doctor model if not imported already
 
+# def schedule_timings(request):
+#     doctor = get_object_or_404(Doctor, user=request.user)
+#     if request.method == 'POST':
+#         date_str = request.POST.get('date')
+#         date = parse_date(date_str)  # Convert date string to date object
+        
+#         if not date:
+#             messages.error(request, "Invalid date format.")
+#             return redirect('schedule_timings')  # Redirect back to the same page
+        
+#         slots_selected = request.POST.getlist('slots')
+        
+#         if len(slots_selected) < 1 or len(slots_selected) > 10:
+#             messages.error(request, "Please select slots.")
+#             return redirect('schedule_timings')  # Redirect back to the same page
+        
+#         for slot_time in slots_selected:
+#             # Create an AppointmentTime instance for each selected slot
+#             appointment_time = AppointmentTime.objects.create(
+#                 day=date.strftime("%A"),
+#                 from_to=slot_time,
+#                 appointment_date=date,
+#                 month=date.strftime("%B"),
+#                 date=date,
+#                 doctor=doctor
+#             )
+#             appointment_time.save()
+        
+#         messages.success(request, 'Slots added successfully.')
+#         return redirect('schedule_timings')  # Redirect back to the same page
+    
+#     return render(request, 'schedule_timings.html')
+
+from django.db.models import Q
+
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
+    
     if request.method == 'POST':
         date_str = request.POST.get('date')
-        date = parse_date(date_str)  # Convert date string to date object
+        selected_date = parse_date(date_str)  # Convert date string to date object
         
-        if not date:
+        if not selected_date:
             messages.error(request, "Invalid date format.")
+            return redirect('schedule_timings')  # Redirect back to the same page
+        
+        today = date.today()
+        max_date = today + timedelta(days=365)  # Calculate max date (one year from today)
+        
+        if selected_date < today:
+            messages.error(request, "Please select a future date.")
+            return redirect('schedule_timings')  # Redirect back to the same page
+        
+        if selected_date > max_date:
+            messages.error(request, "Please select a date within the next year.")
             return redirect('schedule_timings')  # Redirect back to the same page
         
         slots_selected = request.POST.getlist('slots')
@@ -675,14 +722,25 @@ def schedule_timings(request):
             messages.error(request, "Please select slots.")
             return redirect('schedule_timings')  # Redirect back to the same page
         
+        # Check if slots already exist for the selected date and doctor
+        existing_slots = AppointmentTime.objects.filter(
+            doctor=doctor,
+            appointment_date=selected_date,
+            from_to__in=slots_selected
+        )
+        
+        if existing_slots.exists():
+            messages.error(request, "Slots already exist for the selected date.")
+            return redirect('schedule_timings')  # Redirect back to the same page
+        
+        # Create new slots
         for slot_time in slots_selected:
-            # Create an AppointmentTime instance for each selected slot
             appointment_time = AppointmentTime.objects.create(
-                day=date.strftime("%A"),
+                day=selected_date.strftime("%A"),
                 from_to=slot_time,
-                appointment_date=date,
-                month=date.strftime("%B"),
-                date=date,
+                appointment_date=selected_date,
+                month=selected_date.strftime("%B"),
+                date=selected_date,
                 doctor=doctor
             )
             appointment_time.save()
@@ -1065,6 +1123,7 @@ def confirm_booking(request, doctor_id):
             doctor=doctor,
             patient_id=patient_id,
             appointment_datetime=slot_date,
+            appointment_time=slot_time,
             is_confirmed=False  # Set as unconfirmed initially
         )
 

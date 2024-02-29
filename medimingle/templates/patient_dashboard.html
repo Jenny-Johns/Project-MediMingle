@@ -38,7 +38,8 @@
 												<thead>
 													<tr>
 														<th>Doctor</th>
-														<th>Date/Time</th>
+														<th>Date</th>
+														<th>Time</th>
 														<th>Status</th>
 													</tr>
 												</thead>
@@ -47,6 +48,7 @@
 														<tr>
 															<td>Dr.{{ appointment.doctor }}</td>
 															<td>{{ appointment.appointment_datetime }}</td>
+															<td>{{ appointment.appointment_time }}</td>
 															<td>
 																{% if appointment.is_confirmed %}
 																  Confirmed
@@ -98,10 +100,17 @@
 															{% endif %}
 														</td>
 														<td>
-															<form action="{% url 'generate_receipt' bill.id %}" method="post">
-																{% csrf_token %}
-																<button type="submit" class="btn btn-sm bg-info-light" name="action" value="View"><i class="far fa-eye"></i>View Receipt</button>
-															</form>
+															{% if bill.is_bill_paid %}
+																<form action="{% url 'generate_receipt' bill.id %}" method="post">
+																	{% csrf_token %}
+																	<button type="submit" class="btn btn-sm bg-info-light" name="action" value="View"><i class="far fa-eye"></i> View Receipt</button>
+																</form>
+															{% else %}
+																<form action="{% url 'make_payment' bill.id %}" method="post">
+																	{% csrf_token %}
+																	<button type="submit" class="btn btn-sm bg-success" name="action" value="Pay Now"><i class="far fa-credit-card"></i> Pay Now</button>
+																</form>
+															{% endif %}
 														</td>
 														</tr>
 														{% endfor %}

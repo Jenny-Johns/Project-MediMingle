@@ -15,7 +15,6 @@
     </ul>
     <form method="post" action="{% url 'make_payment' bill.id %}">
         {% csrf_token %}
-        <!-- Add payment form fields here -->
         <input type="submit" value="Pay Now">
     </form>
 </body>

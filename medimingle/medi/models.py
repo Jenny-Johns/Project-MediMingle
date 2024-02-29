@@ -70,7 +70,7 @@ class Experience(models.Model):
 
 class Patient(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
-    profile_image = models.ImageField(upload_to='patient/',default='default.png')
+    profile_image = models.ImageField(upload_to='doctor/',default='patient8.jpg')
     city  = models.CharField(max_length=100, null=True,blank=True)
     state  = models.CharField(max_length=100, null=True)
     country  = models.CharField(max_length=100, null=True)
@@ -164,6 +164,7 @@ class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     appointment_datetime = models.CharField(max_length=20,null=True)
+    appointment_time = models.CharField(max_length=20,null=True)
     is_confirmed = models.BooleanField(default=False)
     def __str__(self):
         return self.appointment_datetime
