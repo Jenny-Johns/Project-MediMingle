@@ -117,16 +117,6 @@ class ProfileUpdateForm(forms.ModelForm):
 
 
 
-
-"""class UserForm(UserChangeForm):
-    email = forms.EmailField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
-
-    class Meta:
-        model = tbl_user
-        fields = ['first_name', 'last_name', 'email', 'phone_number']"""
-
-
-# 
 class DoctorForm(forms.ModelForm):
     GENDER_CHOICES = [
         ('Male', 'Male'),
@@ -163,10 +153,6 @@ class DoctorForm(forms.ModelForm):
         fields = ['city', 'profile_image', 'gender', 'registration_number','certificate','description']
  
     
-# class DoctorSpecializationForm(forms.ModelForm):
-#     class Meta:
-#         model = DoctorSpecialization
-#         fields = ['specialized_category']
 class DoctorSpecializationForm(forms.ModelForm):
     SPECIALIZATION_CHOICES = [
         ('Cardiologist', 'Cardiologist'),

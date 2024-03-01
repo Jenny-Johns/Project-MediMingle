@@ -206,9 +206,9 @@
 					<div class="patient-details">
 						<h3>
 					
-						{% for spec in specialization %}
+						{% comment %} {% for spec in specialization %}
 						{{ spec.specialized_category }}
-						{% endfor %}</h3>
+						{% endfor %}</h3> {% endcomment %}
 						
 					</div><h3>Dr. {{user.first_name}} {{ user.last_name }}</h3>
 					
