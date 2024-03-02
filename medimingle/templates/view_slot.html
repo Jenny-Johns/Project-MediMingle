@@ -55,7 +55,7 @@
         {% endfor %}
     </h6>
 {% endif %}
-<div class="container">
+{% comment %} <div class="container">
     <div class="row">
         <div class="col">
 			{% for day, slots in grouped_slots.items %}
@@ -70,7 +70,54 @@
         {% endfor %}
         </div>
     </div>
+</div> {% endcomment %}
+
+<div class="card booking-schedule schedule-widget">
+    <!-- Schedule Header -->
+    <div class="schedule-header">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Day Slot -->
+                <div class="day-slot">
+                    <ul>
+                        {% for appointment_date, slots in grouped_slots.items %}
+                        <li>
+                            <span>{{ appointment_date }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- /Day Slot -->
+            </div>
+        </div>
+    </div>
+    <!-- /Schedule Header -->
+
+    <!-- Schedule Content -->
+    <div class="schedule-cont">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Time Slot -->
+                <div class="time-slot">
+                    <ul class="clearfix">
+                        {% for appointment_date, slots in grouped_slots.items %}
+                        <li>
+                            {% for slot in slots %}
+                            <a class="timing" href="#">
+                                <span>{{ slot.from_to }}</span>
+                            </a>
+                            {% endfor %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- /Time Slot -->
+            </div>
+        </div>
+    </div>
+    <!-- /Schedule Content -->
 </div>
+<!-- /Schedule Widget -->
 
 
 							</div>

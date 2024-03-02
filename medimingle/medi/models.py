@@ -151,7 +151,7 @@ class Prescription(models.Model):
 
 class AppointmentTime(models.Model):
     day = models.CharField(max_length=50, null=True)
-    from_to = models.CharField(max_length=50, null=True)
+    from_to = models.CharField(max_length=50, null=True) # Time
     appointment_date = models.DateField(null=True)
     month = models.CharField(max_length=50, null=True)
     date = models.CharField(max_length=50, null=True)

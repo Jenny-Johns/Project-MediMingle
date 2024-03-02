@@ -762,26 +762,44 @@ def delete_slot(request, slot_id):
 
 @never_cache
 @login_required(login_url='signin')
+# def view_slot(request):
+#     # Assuming you have a way to identify the currently logged-in doctor
+#     doctor = request.user.doctor
+
+#     # Retrieve all slots for the respective doctor
+#     doctor_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('day', 'appointment_date')
+
+#     # Group slots by days
+#     grouped_slots = {}
+#     for slot in doctor_slots:
+#         day = slot.day
+#         if day not in grouped_slots:
+#             grouped_slots[day] = []
+#         grouped_slots[day].append(slot)
+
+#     # Rearrange days in the order from Sunday to Saturday
+#     ordered_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+#     ordered_grouped_slots = {day: grouped_slots.get(day, []) for day in ordered_days}
+
+#     context = {'grouped_slots': ordered_grouped_slots}
+#     return render(request, 'view_slot.html', context)
+
+
 def view_slot(request):
-    # Assuming you have a way to identify the currently logged-in doctor
     doctor = request.user.doctor
 
     # Retrieve all slots for the respective doctor
-    doctor_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('day', 'appointment_date')
+    doctor_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('appointment_date', 'from_to')
 
-    # Group slots by days
+    # Group slots by appointment date
     grouped_slots = {}
     for slot in doctor_slots:
-        day = slot.day
-        if day not in grouped_slots:
-            grouped_slots[day] = []
-        grouped_slots[day].append(slot)
+        appointment_date = slot.appointment_date.strftime("%d %b %Y")
+        if appointment_date not in grouped_slots:
+            grouped_slots[appointment_date] = []
+        grouped_slots[appointment_date].append(slot)
 
-    # Rearrange days in the order from Sunday to Saturday
-    ordered_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    ordered_grouped_slots = {day: grouped_slots.get(day, []) for day in ordered_days}
-
-    context = {'grouped_slots': ordered_grouped_slots}
+    context = {'grouped_slots': grouped_slots}
     return render(request, 'view_slot.html', context)
 
 
