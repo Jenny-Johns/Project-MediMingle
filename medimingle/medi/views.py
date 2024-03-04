@@ -1263,7 +1263,6 @@ def make_payment(request, billing_id):
         billing.is_bill_paid = True
         billing.save()
 
-        # Redirect to patient dashboard
         return redirect('success')
 
     else:

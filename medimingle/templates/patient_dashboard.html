@@ -106,7 +106,7 @@
 																	<button type="submit" class="btn btn-sm bg-info-light" name="action" value="View"><i class="far fa-eye"></i> View Receipt</button>
 																</form>
 															{% else %}
-																<form action="{% url 'make_payment' bill.id %}" method="post">
+																<form action="{% url 'view_due_details'  %}" method="post">
 																	{% csrf_token %}
 																	<button type="submit" class="btn btn-sm bg-success" name="action" value="Pay Now"><i class="far fa-credit-card"></i> Pay Now</button>
 																</form>
