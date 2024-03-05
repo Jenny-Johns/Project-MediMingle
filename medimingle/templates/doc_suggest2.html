@@ -112,98 +112,28 @@
 									<div class="col-md-12 col-lg-6 login-right">
 										<div class="container">
 											<h1 class="mt-5">Symptom Assessment</h1>
-											<form action="#" method="post" id="questionnaireForm">
-												{% csrf_token %}
-									
-												<div class="question form-group" id="question1">
-													<label for="age">What is your age?</label>
-													<select class="form-control" name="age" id="age">
-														<option value="">Select Age Range</option>
-														<option value="1-15">1-15</option>
-														<option value="16-20">16-20</option>
-														<option value="21-30">21-30</option>
-														<option value="31-40">31-40</option>
-														<option value="41-60">41-60</option>
-														<option value="greater than 60">Greater than 60</option>
-														<!-- Add more age ranges as needed -->
-													</select>
-												</div>
-												
-												<div class="question form-group" id="question2" style="display: none;">
-													<label for="height">What is your height?</label>
-													<select class="form-control" name="height" id="height">
-														<option value="">Select Height Range</option>
-														<option value="less than 5 feet">Less than 5 feet</option>
-														<option value="5-5.5 feet">5-5.5 feet</option>
-														<option value="5.5-6 feet">5.5-6 feet</option>
-														<option value="greater than 6 feet">Greater than 6 feet</option>
-														<!-- Add more height ranges as needed -->
-													</select>
-												</div>
-												
-												<div class="question form-group" id="question3" style="display: none;">
-													<label for="weight">What is your weight?</label>
-													<select class="form-control" name="weight" id="weight">
-														<option value="">Select Weight Range</option>
-														<option value="less than 50 kg">Less than 50 kg</option>
-														<option value="50-60 kg">50-60 kg</option>
-														<option value="60-70 kg">60-70 kg</option>
-														<option value="70-80 kg">70-80 kg</option>
-														<option value="greater than 80 kg">Greater than 80 kg</option>
-														<!-- Add more weight ranges as needed -->
-													</select>
-												</div>
-											
-												<button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">Submit</button>
-											</form>
+                                            <form action="#" method="post">
+                                                {% csrf_token %}
+                                            
+                                                <label for="gender">Gender:</label>
+                                                <select name="gender" id="gender">
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                            
+                                                <label for="symptom">Enter your symptom:</label>
+                                                <input type="text" name="symptom" id="symptom">
+                                            
+                                                <button type="submit">Submit</button>
+                                            </form>
 										</div>										
 										
 									</div>
 									{% if message %}
     <p style="color: green; font-weight: bold; font-size: 18px;">{{ message }}</p>
 {% endif %}
-									{% if pediatricians %}
-											<div class="container">
-												<h2 class="mt-5 mb-4">Discoverd Doctors</h2>
-												{% for doctor in pediatricians %}
-													<div class="card mb-3">
-														<div class="card-body">
-															<div class="doctor-widget">
-																<div class="doc-info-left">
-																	<div class="doctor-img">
-																		<a href="{% url 'login'  %}">
-																			<img src="{{ doctor.profile_image.url }}" class="img-fluid" alt="{{ doctor.user.name }}">
-																		</a>
-																	</div>
-																	<div class="doc-info-cont">
-																		<h4 class="doc-name"><a href="{% url 'login' %}">Dr.{{ doctor.user.first_name }} {{ doctor.user.last_name }}</a></h4>
-																		<p class="doc-speciality">
-																			{% for specialization in doctor.doctorspecialization_set.all %}
-																				{{ specialization.specialized_category }}
-																				{% if not forloop.last %}, {% endif %}
-																			{% endfor %}
-																		</p>
-																		<p><i class="fas fa-map-marker-alt"></i> {{ doctor.city }}</p>
-																		<p><i class="far fa-money-bill-alt"></i> {{ doctor.consulting_fee }}</p>
-																		<div class="rating">
-																			<!-- Display rating stars here -->
-																		</div>
-																	</div>
-																</div>
-																<div class="doc-info-right">
-																	<div class="clinic-booking">
-																		<a class="view-pro-btn" href="{% url 'signin'  %}">View Profile</a>
-																		<a class="apt-btn" href="{% url 'signin'  %}">Book Appointment</a>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												{% endfor %}
-											</div>
-										{% else %}
-											<p>{{ message }}</p>
-										{% endif %}
+									
 
 								</div>
 							</div>

@@ -71,6 +71,8 @@ urlpatterns = [
     path('activate_user_pat/<int:user_id>/', views.activate_user_pat, name='activate_user_pat'),
 
     path('doc_suggest/',views.doc_suggest,name="doc_suggest"),
+    path('doc_suggest2/',views.doc_suggest2,name="doc_suggest2"),
+
      path('add_doctor/', views.add_doctor, name='add_doctor'),
 
 

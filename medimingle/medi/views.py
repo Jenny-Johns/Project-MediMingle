@@ -6,7 +6,7 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,Appointment,Notification,Billing
+from .models import Doctor, Patient, QuestionnaireResponse, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,Appointment,Notification,Billing
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
@@ -498,8 +498,7 @@ def appointment_list(request):
 
 
 
-def doc_suggest(request):
-    return render(request,'doc_suggest.html')
+
 
 
 @never_cache
@@ -1316,3 +1315,43 @@ def generate_receipt_pdf(request, bill_id):
     
     # Return the PDF as response
     return response
+
+
+
+
+
+
+
+
+#...............Seminar...................#
+
+def doc_suggest(request):
+    if request.method == 'POST':
+        age_range = request.POST.get('age')
+        height = request.POST.get('height')
+        weight = request.POST.get('weight')
+        age_lower, age_upper = map(int, age_range.split('-'))
+        
+
+        if age_lower  < 15:
+            # Retrieve the list of doctors specialized as pediatricians
+            pediatricians = Doctor.objects.filter(doctorspecialization__specialized_category='Pediatrician')
+
+            # Save the questionnaire responses and doctor details in the database
+            response = QuestionnaireResponse.objects.create(age=age_range, height=height, weight=weight)
+            response.save()
+
+            # Pass the list of pediatrician doctors and the message to the template
+            return render(request, 'doc_suggest.html', {'pediatricians': pediatricians, 'message': "You should consult a pediatrician."})
+
+        else:
+            # Redirect to another page or return some other response
+           return redirect('doc_suggest')
+
+    # else:
+    #     return HttpResponse("Error: Form submission method not allowed!")
+    return render(request,'doc_suggest.html')
+
+
+def doc_suggest2(request):
+    return render(request,'doc_suggest2.html')

@@ -195,4 +195,10 @@ class Billing(models.Model):
 #     amount = models.DecimalField(max_digits=10, decimal_places=2)
 #     date = models.DateField(auto_now_add=True)
 
+#...................Seminar...................#
     
+
+class QuestionnaireResponse(models.Model):
+    age = models.CharField(max_length=20)
+    height = models.CharField(max_length=20)
+    weight = models.CharField(max_length=20)
