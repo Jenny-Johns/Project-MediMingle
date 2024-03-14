@@ -142,8 +142,8 @@
                                                         <select name="from_to" id="" style="width: 180px; height:30px;">
                                                             <option value="" selected disabled>Available Time Slots</option>
                                                             {% for time_slot in appoint_time_doctor %}
-                                                                    <option value="{{ time_slot.appointment_date|date:"D, M d, Y" }}-{{ time_slot.from_to }}">({{ time_slot.appointment_date|date:"D, M d, Y" }})-{{ time_slot.from_to }}</option>
-                                                            {% endfor %}
+        <option value="{{ time_slot.appointment_date|date:'Y-m-d' }}-{{ time_slot.from_to }}">({{ time_slot.appointment_date|date:'Y-m-d' }},{{ time_slot.from_to }})</option>
+    {% endfor %}
                                                         </select>
                                                     </span> 
                                                 </li>

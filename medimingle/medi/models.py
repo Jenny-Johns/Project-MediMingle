@@ -162,7 +162,7 @@ class AppointmentTime(models.Model):
 class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    appointment_datetime = models.CharField(max_length=20,null=True)
+    appointment_datetime = models.DateField(null=True)
     appointment_time = models.CharField(max_length=20,null=True)
     is_confirmed = models.BooleanField(default=False)
     def __str__(self):

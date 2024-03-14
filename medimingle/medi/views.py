@@ -1125,15 +1125,25 @@ def send_welcome_email(email, password):
 @login_required(login_url='signin')
 def confirm_booking(request, doctor_id):
     if request.method == 'POST':
-        selected_slot = request.POST.get('from_to').split('-')
-        slot_date = selected_slot[0]
-        slot_time = selected_slot[1]
-        patient_id = request.user.patient.id
+        selected_slot = request.POST.get('from_to')
+        print("Selected slot:", selected_slot)  # Add this line for debugging
+        date_and_time_range = selected_slot.split('-')
+        print("Split result:", date_and_time_range)  # Add this line for debugging
+        if len(date_and_time_range) >= 4:  # Ensure there are at least four parts
+            slot_date = '-'.join(date_and_time_range[:3]).strip()  # Extracting the date part
+            slot_time = '-'.join(date_and_time_range[3:]).strip()  # Extracting the time range part
+            patient_id = request.user.patient.id
+            print("Slot date:", slot_date)  # Add this line for debugging
+            print("Slot time:", slot_time)  # Add this line for debugging
+
+
+
 
 
         doctor = Doctor.objects.get(id=doctor_id)
         doctor_name = doctor.user.get_full_name()
         fee=doctor.consulting_fee
+    
 
         # Create Appointment instance
         appointment = Appointment.objects.create(
@@ -1319,9 +1329,29 @@ def generate_receipt_pdf(request, bill_id):
 
 
 
+def reschedule_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    if request.method == 'POST':
+        new_date = request.POST.get('new_date')
+        new_time = request.POST.get('new_time')
+        appointment.appointment_datetime = new_date
+        appointment.appointment_time = new_time
+        appointment.save()
+        
+        # Send email notification to the patient
+        send_reschedule_email(appointment.patient.user.email, appointment)
+        messages.success(request, 'Appointment rescheduled successfully.')
+        # Redirect back to doctor dashboard or any other desired page
+        return redirect('doctor_dashboard')  # Replace 'doctor_dashboard' with your actual URL name
+    
+    return render(request, 'reschedule_appointment.html', {'appointment': appointment})
 
-
-
+def send_reschedule_email(patient_email, appointment):
+    subject = 'Appointment Rescheduled'
+    message = f"Your appointment with {appointment.doctor.user.get_full_name()} has been rescheduled to {appointment.appointment_datetime} at {appointment.appointment_time}."
+    sender_email = 'your_email@example.com'  # Replace with your email
+    send_mail(subject, message, sender_email, [patient_email])
 
 #...............Seminar...................#
 

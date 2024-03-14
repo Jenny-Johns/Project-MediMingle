@@ -99,12 +99,9 @@
 																							<button type="submit" class="btn btn-success" name="action" value="approve">Approve</button>
 																							<button type="submit" class="btn btn-danger" name="action" value="reject">Reject</button>
 																						</form>
-																						{% elif appointment.is_confirmed %}
-																							{% comment %} <form action="{% url 'reschedule_appointment' appointment.id %}" method="post"> {% endcomment %}
-																								{% csrf_token %}
-																								<button type="submit" class="btn btn-primary" name="action" value="reschedule">Reschedule</button>
-																								
-																							</form>
+																						{% else %}
+																						<a href="{% url 'reschedule_appointment' appointment.id %}" class="btn btn-primary">Reschedule</a>
+
 																					{% endif %}
 																				</td>
 																		</tr>
