@@ -59,7 +59,8 @@ from django.conf import settings
 
 from django.shortcuts import get_list_or_404
 import razorpay
-
+from datetime import datetime, timedelta
+from django.utils.timezone import now
 
 
 from django.db.models import Count
@@ -698,21 +699,15 @@ def schedule_timings(request):
     
     if request.method == 'POST':
         date_str = request.POST.get('date')
-        selected_date = parse_date(date_str)  # Convert date string to date object
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
         
-        if not selected_date:
-            messages.error(request, "Invalid date format.")
-            return redirect('schedule_timings')  # Redirect back to the same page
-        
-        today = date.today()
-        max_date = today + timedelta(days=365)  # Calculate max date (one year from today)
-        
-        if selected_date < today:
+        if selected_date <= now().date():
             messages.error(request, "Please select a future date.")
             return redirect('schedule_timings')  # Redirect back to the same page
         
+        max_date = now().date() + timedelta(days=7)  # Max date (today + 7 days)
         if selected_date > max_date:
-            messages.error(request, "Please select a date within the next year.")
+            messages.error(request, "Please select a date within the next week.")
             return redirect('schedule_timings')  # Redirect back to the same page
         
         slots_selected = request.POST.getlist('slots')

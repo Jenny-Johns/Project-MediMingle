@@ -47,9 +47,7 @@
 																		<form action="{% url 'schedule_timings' %}" method="POST">
 																		{% csrf_token %}
 																		<label for="date">Select Date:</label>
-																		<input type="date" id="date" name="date" required><br><br>
-																		
-																		<input type="checkbox" id="slot1" name="slots" value="8:00am-8:30am">
+																		<input type="date" id="date" name="date" min="{{ max_date }}" required><br><br>																		<input type="checkbox" id="slot1" name="slots" value="8:00am-8:30am">
 																		<label for="slot1">8:00am - 8:30am</label><br>
 																		
 																		<input type="checkbox" id="slot2" name="slots" value="8:30am-9:00am">
