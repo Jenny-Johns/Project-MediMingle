@@ -693,7 +693,8 @@ from .models import Doctor  # Import the Doctor model if not imported already
 #     return render(request, 'schedule_timings.html')
 
 from django.db.models import Q
-
+@never_cache
+@login_required(login_url='signin')
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
     
@@ -1324,13 +1325,40 @@ def generate_receipt_pdf(request, bill_id):
 
 
 
+from datetime import datetime, timedelta
+@never_cache
+@login_required(login_url='signin')
 def reschedule_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
+    doctor = appointment.doctor
     
     if request.method == 'POST':
-        new_date = request.POST.get('new_date')
+        new_date_str = request.POST.get('new_date')
         new_time = request.POST.get('new_time')
-        appointment.appointment_datetime = new_date
+        
+        # Convert new_date_str to a datetime object
+        new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
+        
+        # Check if the new date is within 7 days from today
+        today = datetime.now().date()
+        max_date = today + timedelta(days=7)
+        if new_date > max_date:
+            messages.error(request, 'You can only select a date within 7 days from today.')
+            return redirect('reschedule_appointment', appointment_id=appointment_id)
+        
+    
+        # Check if the selected date and time combination already exists
+        existing_slot = Appointment.objects.filter(
+            Q(doctor=appointment.doctor) &
+            Q(appointment_datetime=new_date_str) &
+            Q(appointment_time=new_time)
+        ).exclude(id=appointment_id).exists()  # Exclude the current appointment
+        
+        if existing_slot:
+            messages.error(request, 'This slot is already booked.')
+            return redirect('reschedule_appointment', appointment_id=appointment_id)
+        
+        appointment.appointment_datetime = new_date_str
         appointment.appointment_time = new_time
         appointment.save()
         
@@ -1341,6 +1369,7 @@ def reschedule_appointment(request, appointment_id):
         return redirect('doctor_dashboard')  # Replace 'doctor_dashboard' with your actual URL name
     
     return render(request, 'reschedule_appointment.html', {'appointment': appointment})
+
 
 def send_reschedule_email(patient_email, appointment):
     subject = 'Appointment Rescheduled'
