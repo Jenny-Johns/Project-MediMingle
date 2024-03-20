@@ -1,0 +1,8 @@
+<!-- edit_slot.html -->
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="new_from_to">New Time Slot:</label>
+    <input type="text" id="new_from_to" name="new_from_to" value="{{ slot.from_to }}" required>
+    <button type="submit">Update</button>
+</form>

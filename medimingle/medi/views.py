@@ -798,6 +798,27 @@ def view_slot(request):
     return render(request, 'view_slot.html', context)
 
 
+
+def edit_slot(request, slot_id):
+    slot = get_object_or_404(AppointmentTime, id=slot_id)
+    
+    if request.method == 'POST':
+        new_from_to = request.POST.get('new_from_to')
+        slot.from_to = new_from_to
+        slot.save()
+        return redirect('view_slot')
+    
+    return render(request, 'edit_slot.html', {'slot': slot})
+
+def delete_slot(request, slot_id):
+    slot = get_object_or_404(AppointmentTime, id=slot_id)
+    
+    if request.method == 'POST':
+        slot.delete()
+        return redirect('view_slot')
+    
+    return render(request, 'delete_slot.html', {'slot': slot})
+
 @never_cache
 @login_required(login_url='signin') 
 def booking(request, doctor_id):

@@ -1,0 +1,7 @@
+<!-- delete_slot.html -->
+
+<form method="POST">
+    {% csrf_token %}
+    <p>Are you sure you want to delete the slot "{{ slot.from_to }}"?</p>
+    <button type="submit">Delete</button>
+</form>

@@ -103,9 +103,13 @@
                         {% for appointment_date, slots in grouped_slots.items %}
                         <li>
                             {% for slot in slots %}
-                            <a class="timing" href="#">
+                            <div class="slot-container">
                                 <span>{{ slot.from_to }}</span>
-                            </a>
+                                <div class="slot-actions">
+                                    <a href="{% url 'edit_slot' slot.id %}" class="btn btn-rounded btn-outline-primary">Edit</a>
+                                    <a href="{% url 'delete_slot' slot.id %}" class="btn btn-rounded btn-outline-danger">Delete</a>
+                                </div>
+                            </div>
                             {% endfor %}
                         </li>
                         {% endfor %}
@@ -117,6 +121,7 @@
     </div>
     <!-- /Schedule Content -->
 </div>
+
 <!-- /Schedule Widget -->
 
 
