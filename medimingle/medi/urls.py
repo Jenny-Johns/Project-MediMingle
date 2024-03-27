@@ -87,6 +87,7 @@ path('reschedule_appointment/<int:appointment_id>/', views.reschedule_appointmen
 path('generate-receipt-pdf/<int:bill_id>/', views.generate_receipt_pdf, name='generate_receipt_pdf'),
 path('edit_slot/<int:slot_id>/', views.edit_slot, name='edit_slot'),
     path('delete_slot/<int:slot_id>/', views.delete_slot, name='delete_slot'),
+    path('my_doctors/', views.my_doctors, name='my_doctors'),
 
 
 ]

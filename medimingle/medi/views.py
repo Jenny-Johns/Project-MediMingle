@@ -252,7 +252,7 @@ def logout(request):
 def patient_dashboard(request):
     current_user = request.user
     current_patient = get_object_or_404(Patient, user=current_user)
-    patient_appointments = Appointment.objects.filter(patient=request.user.patient)
+    appointments = Appointment.objects.filter(patient=request.user.patient)
     doc = tbl_user.objects.filter(user_type='doctor').exclude(is_superuser=True)
     notifications = Notification.objects.filter(patient=current_patient)
     n_count=notifications.count()
@@ -260,7 +260,7 @@ def patient_dashboard(request):
 
     context={
         'patient': current_patient,
-        'appointments':patient_appointments,
+        'appointments':appointments,
         'n_count':n_count,
         'notifications': notifications,
         'doc':doc,
@@ -273,34 +273,55 @@ def patient_dashboard(request):
 
 @never_cache   
 @login_required(login_url='signin')
+# def doctor_dashboard(request):
+#     current_user = request.user
+#     current_doctor = get_object_or_404(Doctor, user=current_user)
+#     specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
+#     doctor_appointments = Appointment.objects.filter(doctor=request.user.doctor)
+#     notifications = Notification.objects.filter(doctor=current_doctor)
+#     n_count=notifications.count()
+#     doctor_appointments = Appointment.objects.filter(doctor=current_doctor)
+#     pat=tbl_user.objects.filter(user_type='patient').exclude(is_superuser=True)
+#     pat_count=pat.count()
+#     context={
+#         "pat":pat,
+#         "pat_count":pat_count,
+#         "doctor": current_doctor,
+#         'specialization':specialization,
+#         'appointments': doctor_appointments,
+#         'notifications': notifications,
+#         "n_count":n_count
+
+#     }
+    
+#     return render(request,'doctor_dashboard.html',context) 
+
+
 def doctor_dashboard(request):
     current_user = request.user
     current_doctor = get_object_or_404(Doctor, user=current_user)
     specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
-    doctor_appointments = Appointment.objects.filter(doctor=request.user.doctor)
+    
+    # Fetch appointments from Appointment model related to the current doctor
+    doctor_appointments = Appointment.objects.filter(doctor=current_doctor)
+    
     notifications = Notification.objects.filter(doctor=current_doctor)
-    n_count=notifications.count()
-    if request.method == 'POST':
-        patient_id = request.POST['status']
-        accepted_patient = MedicalHistory.objects.get(id=patient_id)
-        accepted_patient.is_active = True
-        accepted_patient.save()
-        return redirect('doctor_dashboard')
+    n_count = notifications.count()
 
-    pat=tbl_user.objects.filter(user_type='patient').exclude(is_superuser=True)
-    pat_count=pat.count()
-    context={
-        "pat":pat,
-        "pat_count":pat_count,
+    pat = tbl_user.objects.filter(user_type='patient').exclude(is_superuser=True)
+    pat_count = pat.count()
+
+    context = {
+        "pat": pat,
+        "pat_count": pat_count,
         "doctor": current_doctor,
-        'specialization':specialization,
+        'specialization': specialization,
         'appointments': doctor_appointments,
         'notifications': notifications,
-        "n_count":n_count
-
+        "n_count": n_count
     }
     
-    return render(request,'doctor_dashboard.html',context) 
+    return render(request, 'doctor_dashboard.html', context)
 
 
 @never_cache   
@@ -1270,7 +1291,7 @@ def view_due_details(request):
         for bill in unpaid_bills:
             appointment = bill.appointment
             appointment_details = {
-                'date': appointment.appointment_datetime,
+                'date': appointment.appointment_time_slot.appointment_date,
                 'consulting_fee': appointment.doctor.consulting_fee,
                 # Add other appointment details as needed
             }
@@ -1430,3 +1451,12 @@ def doc_suggest(request):
 
 def doc_suggest2(request):
     return render(request,'doc_suggest2.html')
+
+
+
+def my_doctors(request):
+    patient = request.user.patient
+    appointments = Appointment.objects.filter(patient=patient)
+    doctors = [appointment.doctor for appointment in appointments]
+    context = {'doctors': doctors, 'appointments': appointments}
+    return render(request, 'my_doctors.html', context)
