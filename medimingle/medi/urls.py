@@ -20,7 +20,7 @@ urlpatterns = [
 
     path('doctor_dashboard/',views.doctor_dashboard,name='doctor_dashboard'),
     # path('doctor_specialization/',views.doctor_specialization, name='doctor_specialization'),
-    path('history/', views.history, name='history'),
+    # path('history/', views.history, name='history'),
     path('doctors/',views.doctors, name='doctors'),
     path('doctors/<int:doctor_id>/', views.view_doctor_profile, name='doctor_profile'),
     path('profile/<int:doctor_id>/', views.profile, name='profile'),
@@ -42,7 +42,6 @@ urlpatterns = [
     # path('login_view',views.login_view,name='login_view'),
     path('patient_change_password/',views.patient_change_password,name='patient_change_password'),
     # path('slot_select/<int:doctor_id>/', views.slot_select, name='slot_select'),
-    path('booking_summary', views.booking_summary,name='booking_summary'),
     path('doctor/<int:doctor_id>/', views.view_doctor_details, name='view_doctor_details'),
     path('pat_doc_view/<int:doctor_id>/', views.pat_doc_view, name='pat_doc_view'),
     path('pat_doc_view_home/<int:doctor_id>/', views.pat_doc_view, name='pat_doc_view_home'),
@@ -84,10 +83,11 @@ path('reschedule_appointment/<int:appointment_id>/', views.reschedule_appointmen
 
     path('generate-receipt/<int:bill_id>/', views.generate_receipt, name='generate_receipt'),
     path('generate-receipt/', views.generate_receipt, name='generate_receipt'),
-path('generate-receipt-pdf/<int:bill_id>/', views.generate_receipt_pdf, name='generate_receipt_pdf'),
-path('edit_slot/<int:slot_id>/', views.edit_slot, name='edit_slot'),
+    path('generate-receipt-pdf/<int:bill_id>/', views.generate_receipt_pdf, name='generate_receipt_pdf'),
+    path('edit_slot/<int:slot_id>/', views.edit_slot, name='edit_slot'),
     path('delete_slot/<int:slot_id>/', views.delete_slot, name='delete_slot'),
     path('my_doctors/', views.my_doctors, name='my_doctors'),
+    path('medical_data/', views.medical_data, name='medical_data'),
 
 
 ]

@@ -6,9 +6,7 @@
 									<div class="card">
 										<div class="card-body">
 											<h4 class="card-title">Schedule Timings</h4>
-											<div class="profile-box">
-												<div class="row">
-												</div>     
+											<div class="profile-box">    
 												<div class="row">
 													<div class="col-md-12">
 														<div class="card schedule-widget mb-0">
@@ -17,7 +15,6 @@
 																<!-- Schedule Nav -->
 																<div class="schedule-nav">
 																	<ul class="nav nav-tabs nav-justified">
-																		
 																		{% if messages %}
 																<h6 class="messages">
 																  {% for message in messages %}
@@ -25,69 +22,149 @@
 																  {% endfor %}
 																</h6>
 															  {% endif %}
-																		
 																	</ul>
 																</div>
 																<!-- /Schedule Nav -->
-																
 															</div>
-															
 															<!-- Schedule Content -->
 															<div class="tab-content schedule-cont">
-															
 																<!-- Monday Slot -->
 																<div id="slot_monday" class="tab-pane fade show active">
 																	<h4 class="card-title d-flex justify-content-between">
 																		<span>Time Slots</span> 
 																	</h4>
-																	
 																	<!-- Slot List -->
 																	<div class="col-md-12">
-																		
 																		<form action="{% url 'schedule_timings' %}" method="POST">
-																		{% csrf_token %}
-																		<label for="date">Select Date:</label>
-																		<input type="date" id="date" name="date" min="{{ max_date }}" required><br><br>																		<input type="checkbox" id="slot1" name="slots" value="8:00am-8:30am">
-																		<label for="slot1">8:00am - 8:30am</label><br>
-																		
-																		<input type="checkbox" id="slot2" name="slots" value="8:30am-9:00am">
-																		<label for="slot2">8:30am - 9:00am</label><br>
-																		<input type="checkbox" id="slot3" name="slots" value="9:00am-9:30am">
-																		<label for="slot3">9:00am - 9:30am</label><br>
-																		<input type="checkbox" id="slot4" name="slots" value="9:30am-10:00am">
-																		<label for="slot4">9:30am - 10:00am</label><br>
-																		<input type="checkbox" id="slot5" name="slots" value="10:00am-10:30am">
-																		<label for="slot5">10:00am - 10:30am</label><br>
-																		<input type="checkbox" id="slot6" name="slots" value="10:30am-11:00am">
-																		<label for="slot6">10:30am - 11:00am</label><br>
-																		<input type="checkbox" id="slot7" name="slots" value="11:00am-11:30am">
-																		<label for="slot7">11:00am - 11:30am</label><br>
-																		<input type="checkbox" id="slot8" name="slots" value="2:30pm-3:00pm">
-																		<label for="slot8">2:30pm - 3:00pm</label><br>
-																		<input type="checkbox" id="slot9" name="slots" value="3:00pm-3:30pm">
-																		<label for="slot9">3:00pm - 3:30pm</label><br>
-																		<input type="checkbox" id="slot10" name="slots" value="3:30pm-4:00pm">
-																		<label for="slot10">3:30pm - 4:00pm</label><br>
-																		<!-- Add more time slots here -->
-																		
-																		<br>
-																		<button type="submit" class="btn btn-success">Add</button>
-																	</form>
-																		
-																		
-																
-																		
+																			{% csrf_token %}
+																			<label for="date">Select Date:</label>
+																			<input type="date" id="date" name="date" min="{{ max_date }}" required><br><br>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot1" name="slots" value="8:00am-8:30am">
+																				<label for="slot1">8:00am - 8:30am</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot2" name="slots" value="8:30am-9:00am">
+																				<label for="slot2">8:30am - 9:00am</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot3" name="slots" value="9:00am-9:30am">
+																				<label for="slot3">9:00am - 9:30am</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot4" name="slots" value="9:30am-10:00am">
+																				<label for="slot4">9:30am - 10:00am</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot5" name="slots" value="10:00am-10:30am">
+																				<label for="slot5">10:00am - 10:30am</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot6" name="slots" value="10:30am-11:00am">
+																				<label for="slot6">10:30am - 11:00am</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot7" name="slots" value="11:00am-11:30am">
+																				<label for="slot7">11:00am - 11:30am</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot8" name="slots" value="2:30pm-3:00pm">
+																				<label for="slot8">2:30pm - 3:00pm</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot9" name="slots" value="3:00pm-3:30pm">
+																				<label for="slot9">3:00pm - 3:30pm</label><br>
+																			</div>
+																			
+																			<div class="form-check-inline">
+																				<input type="checkbox" id="slot10" name="slots" value="3:30pm-4:00pm">
+																				<label for="slot10">3:30pm - 4:00pm</label><br>
+																			</div>
+																			<!-- Add more time slots here -->
+																			
+																			<br>
+																			<button type="submit" class="btn btn-success">Add</button>
+																		</form>
 																	</div>
-																	<!-- /Slot List -->
+																</div>
+																<h4 class="card-title">Scheduled Slots</h4>
+																{% if messages %}
+																	<h6 class="messages">
+																		{% for message in messages %}
+																			<h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+																		{% endfor %}
+																	</h6>
+																{% endif %}
+																<div class="container">
+																	<div class="row">
+																		<div class="col">
+																			{% for day, slots in grouped_slots.items %}
+																		<div>
+																			<button class="btn btn-rounded btn-outline-primary toggle-button" onclick="toggleSlots('{{ day }}')">{{ day }}</button>
+																			<div class="slots" id="{{ day }}">
+																				{% for slot in slots %}
+																				<button class="btn btn-light">{{ slot.appointment_date }} - {{ slot.from_to }}</button>
+																				{% endfor %}
+																			</div>
+																		</div>
+																		{% endfor %}
+																		</div>
+																	</div>
 																</div>
 															</div>
-															<!-- /Schedule Content -->
-															
+																</div>
+															</div>
 														</div>
 													</div>
 												</div>
-											</div>
-										</div>
+																	<!-- /Slot List -->
+																	{% comment %} <div class="container">
+																		<h4 class="card-title">Scheduled Timings</h4>
+																	<div class="row">
+																		<div class="col-md-12">
+																			<!-- Time Slot -->
+																			<div class="card schedule-cont">
+																				<div class="card-body">
+																					<ul class="list-unstyled">
+																						{% for appointment_date, slots in grouped_slots.items %}
+																						<li>
+																							<h3>{{ appointment_date }}</h3>
+																							{% for slot in slots %}
+																							<div class="slot-container d-flex justify-content-between align-items-center mb-3">
+																								<div>
+																									<span>{{ slot.from_to }}</span>
+																								</div>
+																								<div class="slot-actions">
+																									<a href="{% url 'edit_slot' slot.id %}" class="btn btn-sm btn-outline-primary btn-lg">Edit</a>
+																									<a href="{% url 'delete_slot' slot.id %}" class="btn btn-sm btn-outline-danger btn-lg ml-2">Delete</a>
+																								</div>
+																							</div>
+																							{% endfor %}
+																						</li>
+																						{% endfor %}
+																					</ul>
+																				</div>
+																			</div>
+																			<!-- /Time Slot -->
+																		</div>
+																	</div>
+																</div>
+
+
+																</div>
+															</div> {% endcomment %}
+															<!-- /Schedule Content -->
+															
+														
 									</div>
 								</div>
 							</div>

@@ -199,12 +199,6 @@ def user_login(request):
                             return redirect('doctor_dashboard')
                         else:
                             if user.user_type == 'patient':
-                                unpaid_bills = Billing.objects.filter(patient=user.patient, is_bill_paid=False)
-                                if unpaid_bills.exists():
-                                    return redirect('view_due_details')
-                                else:
-                                    return redirect('patient_dashboard')
-                            else:
                                 return redirect('patient_dashboard')
                     else:
                         messages.warning(request, "Email not verified. Please verify your email and login.")
@@ -763,8 +757,18 @@ def schedule_timings(request):
         
         messages.success(request, 'Slots added successfully.')
         return redirect('schedule_timings')  # Redirect back to the same page
-    
-    return render(request, 'schedule_timings.html')
+    doctor_slots = AppointmentTime.objects.filter(doctor=doctor, is_booked=False).order_by('appointment_date', 'from_to')
+
+    # Group slots by appointment date
+    grouped_slots = {}
+    for slot in doctor_slots:
+        appointment_date = slot.appointment_date.strftime("%d %b %Y")
+        if appointment_date not in grouped_slots:
+            grouped_slots[appointment_date] = []
+        grouped_slots[appointment_date].append(slot)
+
+    context = {'grouped_slots': grouped_slots}
+    return render(request, 'schedule_timings.html', context)
 
 
 @never_cache
@@ -776,36 +780,12 @@ def delete_slot(request, slot_id):
     return redirect('view_slot')
 
 
-@never_cache
-@login_required(login_url='signin')
-# def view_slot(request):
-#     # Assuming you have a way to identify the currently logged-in doctor
-#     doctor = request.user.doctor
-
-#     # Retrieve all slots for the respective doctor
-#     doctor_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('day', 'appointment_date')
-
-#     # Group slots by days
-#     grouped_slots = {}
-#     for slot in doctor_slots:
-#         day = slot.day
-#         if day not in grouped_slots:
-#             grouped_slots[day] = []
-#         grouped_slots[day].append(slot)
-
-#     # Rearrange days in the order from Sunday to Saturday
-#     ordered_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-#     ordered_grouped_slots = {day: grouped_slots.get(day, []) for day in ordered_days}
-
-#     context = {'grouped_slots': ordered_grouped_slots}
-#     return render(request, 'view_slot.html', context)
-
 
 def view_slot(request):
     doctor = request.user.doctor
 
     # Retrieve all slots for the respective doctor
-    doctor_slots = AppointmentTime.objects.filter(doctor=doctor).order_by('appointment_date', 'from_to')
+    doctor_slots = AppointmentTime.objects.filter(doctor=doctor, is_booked=False).order_by('appointment_date', 'from_to')
 
     # Group slots by appointment date
     grouped_slots = {}
@@ -847,7 +827,7 @@ def booking(request, doctor_id):
     current_patient = get_object_or_404(Patient, user=current_user)
     doctor = Doctor.objects.get(id=doctor_id)
 
-    appoint_time_doctor = AppointmentTime.objects.filter(doctor=doctor)
+    appoint_time_doctor = AppointmentTime.objects.filter(doctor=doctor, is_booked=False)
     
     unique_appoint_day = set(time_slot.day for time_slot in appoint_time_doctor)
     appoint_day = sorted(list(unique_appoint_day))  
@@ -863,88 +843,45 @@ def booking(request, doctor_id):
 
 
 
-def medical_history(request):
-    current_user = request.user
-    try:
-        current_doctor = get_object_or_404(Doctor, user=current_user)
-    except:
-        raise ValueError('no doctor found')
-    buf = io.BytesIO()
-    c = Canvas.Canvas(buf, pagesize=letter, bottomup=0)
-    textob = c.beginText()
-    textob.setTextOrigin(inch, inch)
-    textob.setFont("Helvetica", 14)
 
-    history = MedicalHistory.objects.filter(doctor=current_doctor)
+# def appointments(request):
+#     current_user = request.user
+#     current_doctor = Doctor.objects.get(user=current_user)
 
-    lines = []
-
-    for hist in history:
-        lines.append("********* MediHelp *************")
-        lines.append(" ")
-        lines.append("========== Patient Medical History ===============")
-        lines.append("First Name: "+hist.first_name)
-        lines.append("Last Name: "+hist.last_name)
-        lines.append("Reason For Visit: "+hist.reason)
-        lines.append("Height: "+hist.weight)
-        lines.append("Age: "+hist.age)
-        lines.append("Gender: "+str(hist.gender))
-        lines.append("Blood Group: "+hist.blood_group)
-        lines.append("Previous Operation: "+hist.previous_operation)
-        lines.append("Current Medicaion: "+hist.current_medication)
-        lines.append("Other Illness: "+hist.other_illness)
-        lines.append("Other Information: "+hist.other_information)
-        lines.append("==========================================")
-        
-
-    for line in lines:
-        textob.textLine(line)
-    
-    c.drawText(textob)
-    c.showPage()
-    c.save()
-    buf.seek(0)
-
-    return FileResponse(buf, as_attachment=True, filename='medical_history.pdf')
-
-def appointments(request):
-    current_user = request.user
-    current_doctor = Doctor.objects.get(user=current_user)
-
-    appointment = MedicalHistory.objects.filter(doctor=current_doctor)
-    specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
-    context = {
-        'current_doctor':current_doctor,
-        'appointment':appointment,
-        'specialization':specialization,
-    }
-    return render(request, 'appointments.html', context)
+#     appointment = MedicalHistory.objects.filter(doctor=current_doctor)
+#     specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
+#     context = {
+#         'current_doctor':current_doctor,
+#         'appointment':appointment,
+#         'specialization':specialization,
+#     }
+#     return render(request, 'appointments.html', context)
 
 
-@never_cache
-@login_required(login_url='signin')
-def booking_summary(request):
-    current_user = request.user
-    appointments = get_list_or_404(Appointment, patient__user=current_user)
-    if appointments:
-        appointment = appointments[0]
-    else:
-        appointment = None
+# @never_cache
+# @login_required(login_url='signin')
+# def booking_summary(request):
+#     current_user = request.user
+#     appointments = get_list_or_404(Appointment, patient__user=current_user)
+#     if appointments:
+#         appointment = appointments[0]
+#     else:
+#         appointment = None
 
-    context = {
-        'appointment': appointment,
-    }
+#     context = {
+#         'appointment': appointment,
+#     }
 
-    if request.method=='POST':
-        amount=10000
-        order_currency='INR'
-        client=razorpay.Client(
-            auth=('rzp_test_GfzsM6qWehBGju','4ZZkYgLAtHFGy89EjiHpDCyE')
-        )
-        payment=client.order.create({'amount':amount,'currency':'INR','payment_capture':'1'})
+#     if request.method=='POST':
+#         amount=10000
+#         order_currency='INR'
+#         client=razorpay.Client(
+#             auth=('rzp_test_GfzsM6qWehBGju','4ZZkYgLAtHFGy89EjiHpDCyE')
+#         )
+#         payment=client.order.create({'amount':amount,'currency':'INR','payment_capture':'1'})
 
 
-    return render(request, 'booking_summary.html', context)
+#     return render(request, 'booking_summary.html', context)
 
 @never_cache
 @login_required(login_url='signin')
@@ -962,62 +899,62 @@ def success(request):
     return render(request,"success.html",context)
 
 
-def history(request):
-    #doctor = Doctor.objects.get(id=doctor_id)
-    #doctor_id = Doctor.objects.get(id=doctor_id)
-    current_user = request.user
-    current_patient = get_object_or_404(Patient, user=current_user)
-    patient = MedicalHistory.objects.filter(patient=current_patient)
+# def history(request):
+#     #doctor = Doctor.objects.get(id=doctor_id)
+#     #doctor_id = Doctor.objects.get(id=doctor_id)
+#     current_user = request.user
+#     current_patient = get_object_or_404(Patient, user=current_user)
+#     patient = MedicalHistory.objects.filter(patient=current_patient)
 
-    first_name = current_patient.user.first_name
-    last_name = current_patient.user.last_name
-    gender = current_patient.gender
-    #doctor = Doctor.objects.get(id=doctor_id)
-    # medical_historyForm = MedicalHistory.objects.all()
+#     first_name = current_patient.user.first_name
+#     last_name = current_patient.user.last_name
+#     gender = current_patient.gender
+#     #doctor = Doctor.objects.get(id=doctor_id)
+#     # medical_historyForm = MedicalHistory.objects.all()
 
-    if request.method == 'POST':
-        medical_history_entries = MedicalHistory.objects.filter(patient=current_patient, is_processing=False)
+#     if request.method == 'POST':
+#         medical_history_entries = MedicalHistory.objects.filter(patient=current_patient, is_processing=False)
 
-        if medical_history_entries.exists():
-            # If there is exactly one matching entry, use it
-            if medical_history_entries.count() == 1:
-                medical_history = medical_history_entries.first()
-            else:
-                # Handle the case where there are multiple entries
-                # You might want to log a warning or take some other action
-                print("Warning: Multiple MedicalHistory entries found for the same patient.")
-                medical_history = medical_history_entries.first()
-        else:
-            # If there are no matching entries, create a new one
-            medical_history = MedicalHistory(patient=current_patient, is_processing=False)
+#         if medical_history_entries.exists():
+#             # If there is exactly one matching entry, use it
+#             if medical_history_entries.count() == 1:
+#                 medical_history = medical_history_entries.first()
+#             else:
+#                 # Handle the case where there are multiple entries
+#                 # You might want to log a warning or take some other action
+#                 print("Warning: Multiple MedicalHistory entries found for the same patient.")
+#                 medical_history = medical_history_entries.first()
+#         else:
+#             # If there are no matching entries, create a new one
+#             medical_history = MedicalHistory(patient=current_patient, is_processing=False)
 
-    # Rest of the code...
+#     # Rest of the code...
        
-        form = MedicalHistoryForm(request.POST)
-        if form.is_valid():
+#         form = MedicalHistoryForm(request.POST)
+#         if form.is_valid():
 
-            medical_history.first_name = first_name
-            medical_history.last_name = last_name
-            medical_history.gender = gender
-            medical_history.reason = form.cleaned_data['reason']
-            # height = form.cleaned_data['height']
-            medical_history.blood_group = request.POST['blood_group']
-            medical_history.weight = form.cleaned_data['weight']
-            medical_history.age = form.cleaned_data['age']
-            medical_history.previous_operation = form.cleaned_data['previous_operation']
-            medical_history.current_medication = form.cleaned_data['current_medication']
-            medical_history.other_illness = form.cleaned_data['other_illness']
-            medical_history.other_information = form.cleaned_data['other_information']
-            medical_history.is_processing = True
-            medical_history.save()
-            return redirect('patient_dashboard')
-    else:
-        form = MedicalHistoryForm()
+#             medical_history.first_name = first_name
+#             medical_history.last_name = last_name
+#             medical_history.gender = gender
+#             medical_history.reason = form.cleaned_data['reason']
+#             # height = form.cleaned_data['height']
+#             medical_history.blood_group = request.POST['blood_group']
+#             medical_history.weight = form.cleaned_data['weight']
+#             medical_history.age = form.cleaned_data['age']
+#             medical_history.previous_operation = form.cleaned_data['previous_operation']
+#             medical_history.current_medication = form.cleaned_data['current_medication']
+#             medical_history.other_illness = form.cleaned_data['other_illness']
+#             medical_history.other_information = form.cleaned_data['other_information']
+#             medical_history.is_processing = True
+#             medical_history.save()
+#             return redirect('patient_dashboard')
+#     else:
+#         form = MedicalHistoryForm()
 
-    context = {
-        'form':form,
-    }
-    return render(request, 'medical_history.html', context)
+#     context = {
+#         'form':form,
+#     }
+#     return render(request, 'medical_history.html', context)
 
 
 
@@ -1164,6 +1101,10 @@ def send_welcome_email(email, password):
 def confirm_booking(request, doctor_id):
     if request.method == 'POST':
         selected_slot = request.POST.get('from_to')
+
+        print("Selected slot:", selected_slot)  # Add this line for debugging
+
+
         print("Selected slot:", selected_slot)  # Add this line for debugging
         date_and_time_range = selected_slot.split('-')
         print("Split result:", date_and_time_range)  # Add this line for debugging
@@ -1181,12 +1122,14 @@ def confirm_booking(request, doctor_id):
         doctor = Doctor.objects.get(id=doctor_id)
         doctor_name = doctor.user.get_full_name()
         fee=doctor.consulting_fee
-    
+        appointment_time_slot = AppointmentTime.objects.get(doctor=doctor, from_to=slot_time,appointment_date=slot_date)
+
 
         # Create Appointment instance
         appointment = Appointment.objects.create(
             doctor=doctor,
             patient_id=patient_id,
+            appointment_time_slot=appointment_time_slot,
             appointment_datetime=slot_date,
             appointment_time=slot_time,
             is_confirmed=False  # Set as unconfirmed initially
@@ -1208,6 +1151,10 @@ def confirm_booking(request, doctor_id):
         to_email = doctor.user.email
         send_mail(subject, email_message, from_email, [to_email])
         messages.success(request, "An email has been sent to the corresponding doctor. Please wait for their response.")
+
+
+        appointment_time_slot.is_booked = True
+        appointment_time_slot.save()
         Notification.objects.create(
             doctor=doctor,
             message=f"A new appointment has been booked for {slot_date} at {slot_time} by {request.user.get_full_name()}"
@@ -1460,3 +1407,8 @@ def my_doctors(request):
     doctors = [appointment.doctor for appointment in appointments]
     context = {'doctors': doctors, 'appointments': appointments}
     return render(request, 'my_doctors.html', context)
+
+
+
+def medical_data(request):
+    return render(request, 'medical_data.html')

@@ -13,112 +13,59 @@
 	}
 </style>
 <div class="col-md-7 col-lg-8 col-xl-9">
-<div class="row">
-	<div class="col-sm-12">
-		<div class="card">
-			<div class="card-body">
-				{% comment %} <h4 class="card-title">Scheduled Slots</h4>
-				{% if messages %}
-				<h6 class="messages">
-				{% for message in messages %}
-				<h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
-				{% endfor %}
-			    </h6>
-				{% endif %}
-				<div class="profile-box">     
-					<div class="row">
-						<div class="col-md-12">
-							<div class="card schedule-widget mb-0">
-								<div class="schedule-header">
-									<div class="schedule-nav">
-										<div class="doc-times">
-											{% if scheduled_slots %}
-												{% for slot in scheduled_slots %}
-													<div class="doc-slot-list">
-														{{ slot.time_from }} - {{ slot.time_to }}
-														<a href="{% url 'delete_slot' slot.id %}" class="delete_schedule">
-															<i class="fa fa-times"></i> Delete
-														</a>	
-													</div>
-												{% endfor %}
-											{% else %}
-												<p class="text-muted mb-0">No slots available</p>
-											{% endif %}
-										</div>
-									</div>
-								</div> {% endcomment %}
-								<h4 class="card-title">Scheduled Slots</h4>
-{% if messages %}
-    <h6 class="messages">
-        {% for message in messages %}
-            <h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
-        {% endfor %}
-    </h6>
-{% endif %}
-{% comment %} <div class="container">
-    <div class="row">
-        <div class="col">
-			{% for day, slots in grouped_slots.items %}
-        <div>
-            <button class="btn btn-rounded btn-outline-primary toggle-button" onclick="toggleSlots('{{ day }}')">{{ day }}</button>
-            <div class="slots" id="{{ day }}">
-                {% for slot in slots %}
-                <button class="btn btn-light">{{ slot.appointment_date }} - {{ slot.from_to }}</button>
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-        </div>
-    </div>
-</div> {% endcomment %}
+	<div class="appointments">
+		<div class="col-sm-8">
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title">Scheduled Slots</h4>
+					{% if messages %}
+					<h6 class="messages">
+					{% for message in messages %}
+					<h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+					{% endfor %}
+					</h6>
+					{% endif %}
+				
+								
 
-<div class="card booking-schedule schedule-widget">
-    <!-- Schedule Header -->
-    <div class="schedule-header">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- Day Slot -->
-                <div class="day-slot">
-                    <ul>
-                        {% for appointment_date, slots in grouped_slots.items %}
-                        <li>
-                            <span>{{ appointment_date }}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <!-- /Day Slot -->
-            </div>
-        </div>
-    </div>
-    <!-- /Schedule Header -->
 
-    <!-- Schedule Content -->
-    <div class="schedule-cont">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- Time Slot -->
-                <div class="time-slot">
-                    <ul class="clearfix">
-                        {% for appointment_date, slots in grouped_slots.items %}
-                        <li>
-                            {% for slot in slots %}
-                            <div class="slot-container">
-                                <span>{{ slot.from_to }}</span>
-                                <div class="slot-actions">
-                                    <a href="{% url 'edit_slot' slot.id %}" class="btn btn-rounded btn-outline-primary">Edit</a>
-                                    <a href="{% url 'delete_slot' slot.id %}" class="btn btn-rounded btn-outline-danger">Delete</a>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <!-- /Time Slot -->
-            </div>
-        </div>
-    </div>
+  
+		
+				<!-- Time Slot -->
+				<div class="card schedule-cont">
+					<div class="card-body theiaStickySidebar">
+						<table class="table table-hover table-center mb-0">
+							<thead>
+								<tr>
+									<th scope="col">Details</th>
+									<th scope="col">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for appointment_date, slots in grouped_slots.items %}
+								<tr>
+									<td colspan="2"><h3>{{ appointment_date }}</h3></td>
+								</tr>
+								{% for slot in slots %}
+								<tr>
+									<td>{{ slot.from_to }}</td>
+									<td>
+										<a href="{% url 'edit_slot' slot.id %}" class="btn btn-sm btn-outline-primary btn-lg">Edit</a>
+										<a href="{% url 'delete_slot' slot.id %}" class="btn btn-sm btn-outline-danger btn-lg ml-2">Delete</a>
+									</td>
+								</tr>
+								{% endfor %}
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+				<!-- /Time Slot -->
+			</div>
+		</div>
+	</div>
+	
     <!-- /Schedule Content -->
 </div>
 

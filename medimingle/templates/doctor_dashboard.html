@@ -84,8 +84,8 @@
 																	{% for appointment in appointments %}
 																	<tr>
 																		<td>{{ appointment.patient }}</td>
-																		<td>{{ appointment.appointment_time_slot.appointment_date }}</td>
-    																	<td>{{ appointment.appointment_time_slot.from_to }}</td>
+																		<td>{{ appointment.appointment_datetime }}</td>
+    																	<td>{{ appointment.appointment_time }}</td>
 
 																		<td>
 																			{% if appointment.is_confirmed %}

@@ -1,0 +1,196 @@
+{% load static %}
+{% include "includes/pat_header.html" %}
+						<!-- /Profile Sidebar -->
+						
+						<div class="col-md-7 col-lg-8 col-xl-9">
+							<div class="card">
+								<div class="card-body">
+                                    <h1 class="mt-5 mb-4 text-center">Medical Data Form</h1>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <div class="form-group row">
+                                            <label for="weight" class="col-sm-3 col-form-label">Weight (kg):</label>
+                                            <div class="col-sm-9">
+                                                <input type="number" class="form-control" id="weight" name="weight" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="height" class="col-sm-3 col-form-label">Height (cm):</label>
+                                            <div class="col-sm-9">
+                                                <input type="number" class="form-control" id="height" name="height" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="age" class="col-sm-3 col-form-label">Age:</label>
+                                            <div class="col-sm-9">
+                                                <input type="number" class="form-control" id="age" name="age" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="blood_group" class="col-sm-3 col-form-label">Blood Group:</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="blood_group" name="blood_group" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="reason_for_consultation" class="col-sm-3 col-form-label">Reason for Consultation:</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" id="reason_for_consultation" name="reason_for_consultation" rows="4" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="previous_medical_condition" class="col-sm-3 col-form-label">Previous Medical Condition:</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" id="previous_medical_condition" name="previous_medical_condition" rows="4" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="diabetic_patient" class="col-sm-3 col-form-label">Diabetic Patient:</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="diabetic_patient" name="diabetic_patient" required>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-9 offset-sm-3">
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                            </div>
+                                        </div>
+                                    </form>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>		
+			<!-- /Page Content -->
+   
+			<!-- Footer -->
+			<footer class="footer">
+				
+				<!-- Footer Top -->
+				<div class="footer-top">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-about">
+									<div class="footer-logo">
+										<img src="{% static '/assets/img/logo.png' %}" alt="logo">
+									</div>
+									<div class="footer-about-content">
+										<p>Making Healthcare Better Together</p>
+										<div class="social-icon">
+											
+										</div>
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-menu">
+									
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-menu">
+									
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-contact">
+									<h2 class="footer-title">Contact Us</h2>
+									<div class="footer-contact-info">
+										
+										<p>
+											<i class="fas fa-phone-alt"></i>
+											7606741729
+										</p>
+										<p class="mb-0">
+											<i class="fas fa-envelope"></i>
+											medimingle@gmail.com
+										</p>
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<!-- /Footer Top -->
+				
+				<!-- Footer Bottom -->
+                <div class="footer-bottom">
+					<div class="container-fluid">
+					
+						<!-- Copyright -->
+						<div class="copyright">
+							<div class="row">
+								
+								<div class="col-md-6 col-lg-6">
+								
+									<!-- Copyright Menu -->
+									
+									<!-- /Copyright Menu -->
+									
+								</div>
+							</div>
+						</div>
+						<!-- /Copyright -->
+						
+					</div>
+				</div>
+				<!-- /Footer Bottom -->
+				
+			</footer>
+			<!-- /Footer -->
+		   
+		</div>
+		<!-- /Main Wrapper -->
+	  
+		<!-- jQuery -->
+		<script src="{% static '/assets/js/jquery.min.js' %}"></script>
+		
+		<!-- Bootstrap Core JS -->
+		<script src="{% static '/assets/js/popper.min.js' %}"></script>
+		<script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
+		
+		<!-- Select2 JS -->
+		<script src="{% static '/assets/plugins/select2/js/select2.min.js' %}"></script>
+		
+		<!-- Datetimepicker JS -->
+		<script src="{% static '/assets/js/moment.min.js' %}"></script>
+		<script src="{% static '/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+		
+		<!-- Sticky Sidebar JS -->
+        <script src="{% static '/assets/plugins/theia-sticky-sidebar/ResizeSensor.js' %}"></script>
+        <script src="{% static '/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js' %}"></script>
+		
+		<!-- Custom JS -->
+		<script src="{% static '/assets/js/script.js' %}"></script>
+		
+	</body>
+
+<!-- doccure/profile-settings.html  30 Nov 2019 04:12:18 GMT -->
+</html>

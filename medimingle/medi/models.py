@@ -93,19 +93,20 @@ class PrescriptionStatus(models.Model):
 
 
     
-
-
-class MedicalRecords(models.Model):
-    medical_insurance =  models.FileField(upload_to='insurance/%Y/% m/% d/')
-    date_created = models.DateTimeField(default=datetime.now, blank=True)
-    
-    patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
-
-    class Meta:
-        verbose_name_plural = "MedicalRecords"
+class MedicalHistory(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    weight = models.FloatField()
+    height = models.FloatField()
+    age = models.IntegerField()
+    blood_group = models.CharField(max_length=10)
+    reason_for_consultation = models.TextField()
+    previous_medical_condition = models.TextField()
+    diabetic_patient = models.CharField(max_length=3, choices=(('Yes', 'Yes'), ('No', 'No')))
 
     def __str__(self):
-        return self.patient.user.first_name
+        return f'Medical history of {self.patient.user.first_name}'
+
+
 
 
 class MedicalHistory(models.Model):
@@ -172,19 +173,22 @@ class Prescription(models.Model):
 
 class AppointmentTime(models.Model):
     day = models.CharField(max_length=50, null=True)
-    from_to = models.CharField(max_length=50, null=True) # Time
+    from_to = models.CharField(max_length=50, null=True) 
     appointment_date = models.DateField(null=True)
     month = models.CharField(max_length=50, null=True)
     date = models.CharField(max_length=50, null=True)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
+    is_booked=models.BooleanField(default=False)
     def __str__(self):
-        return self.day
+        return self.date
 
 
 class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     appointment_time_slot = models.ForeignKey(AppointmentTime, on_delete=models.CASCADE,null=True)
+    appointment_datetime=models.CharField(max_length=50, null=True)
+    appointment_time=models.CharField(max_length=50, null=True)
     is_confirmed = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.doctor} - {self.appointment_time_slot.appointment_date}"
