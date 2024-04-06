@@ -6,13 +6,13 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient, QuestionnaireResponse, tbl_user, AppointmentTime,DoctorSpecialization,MedicalHistory,Qualification,Experience,Appointment,Notification,Billing
+from .models import Doctor, Patient, QuestionnaireResponse, tbl_user, AppointmentTime,DoctorSpecialization,Qualification,Experience,Appointment,Notification,Billing
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
 from django.contrib.auth.decorators import login_required
 from .forms import UserProfileUpdateForm,ProfileUpdateForm,ConsultingFeeForm
-from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,DoctorForm,MedicalHistoryForm
+from .forms import  DoctorSpecializationForm, QualificationForm, ExperienceForm,DoctorForm
 from django.views.decorators.http import require_POST
 from .choices import category, fromTimeChoice,toTimeChoice
 from django.utils import timezone
@@ -264,32 +264,6 @@ def patient_dashboard(request):
     
 
     return render(request,'patient_dashboard.html',context)
-
-@never_cache   
-@login_required(login_url='signin')
-# def doctor_dashboard(request):
-#     current_user = request.user
-#     current_doctor = get_object_or_404(Doctor, user=current_user)
-#     specialization = DoctorSpecialization.objects.filter(doctor=current_doctor)
-#     doctor_appointments = Appointment.objects.filter(doctor=request.user.doctor)
-#     notifications = Notification.objects.filter(doctor=current_doctor)
-#     n_count=notifications.count()
-#     doctor_appointments = Appointment.objects.filter(doctor=current_doctor)
-#     pat=tbl_user.objects.filter(user_type='patient').exclude(is_superuser=True)
-#     pat_count=pat.count()
-#     context={
-#         "pat":pat,
-#         "pat_count":pat_count,
-#         "doctor": current_doctor,
-#         'specialization':specialization,
-#         'appointments': doctor_appointments,
-#         'notifications': notifications,
-#         "n_count":n_count
-
-#     }
-    
-#     return render(request,'doctor_dashboard.html',context) 
-
 
 def doctor_dashboard(request):
     current_user = request.user
