@@ -1385,4 +1385,31 @@ def my_doctors(request):
 
 
 def medical_data(request):
+    if request.method == 'POST':
+        weight = request.POST.get('weight')
+        height = request.POST.get('height')
+        age = request.POST.get('age')
+        blood_group = request.POST.get('blood_group')
+        reason_for_consultation = request.POST.get('reason_for_consultation')
+        previous_medical_condition = request.POST.get('previous_medical_condition')
+        diabetic_patient = request.POST.get('diabetic_patient')
+
+        # Fetch patient object for the current user
+        current_patient = Patient.objects.get(user=request.user)
+
+        # Save medical data to database
+        MedicalHistory.objects.create(
+            patient=current_patient,
+            weight=weight,
+            height=height,
+            age=age,
+            blood_group=blood_group,
+            reason_for_consultation=reason_for_consultation,
+            previous_medical_condition=previous_medical_condition,
+            diabetic_patient=diabetic_patient
+        )
+
+        messages.success(request, 'Medical data saved successfully!')
+        return redirect('medical_data')  # Redirect to the same page after form submission to clear the form
+
     return render(request, 'medical_data.html')

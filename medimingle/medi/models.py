@@ -92,10 +92,12 @@ class PrescriptionStatus(models.Model):
         return self.id
 
 
-    
-class MedicalData(models.Model):
+
+
+
+class MedicalHistory(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    weight = models.FloatField()
+    weight = models.CharField(max_length=20, null=True)
     height = models.FloatField()
     age = models.IntegerField()
     blood_group = models.CharField(max_length=3, choices=(('O+', 'O+'),('O-', 'O-'), ('A+', 'A+'),('A-', 'A-'),('B+', 'B+'),('B-', 'B-'),('AB+', 'AB+'),('AB-', 'AB-')))
@@ -105,32 +107,6 @@ class MedicalData(models.Model):
 
     def __str__(self):
         return f'Medical history of {self.patient.user.first_name}'
-
-
-
-
-class MedicalHistory(models.Model):
-    first_name = models.CharField(max_length=20, null=True)
-    last_name = models.CharField(max_length=20, null=True)
-    reason =  models.CharField(max_length=200, blank=True)
-    ever_had = models.CharField(max_length=200,blank=True)
-    
-    weight = models.CharField(max_length=20, null=True)
-    age = models.CharField(max_length=10, null=True)
-    gender = models.CharField(max_length=20, null=True)
-    blood_group  = models.CharField(max_length=50, null=True)
-    previous_operation = models.CharField(max_length=200,blank=True)
-    current_medication = models.CharField(max_length=200,blank=True)
-    other_illness = models.CharField(max_length=200,blank=True)
-    other_information = models.CharField(max_length=200,blank=True)
-    is_processing = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
-    date_created = models.DateTimeField(default=datetime.now, blank=True)
-
-    patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
-    class Meta:
-        verbose_name_plural = "MedicalHistories"
 
 
 
