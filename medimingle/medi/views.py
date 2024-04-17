@@ -1,5 +1,4 @@
 import datetime
-from tkinter import Canvas
 from django.http import FileResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth.models import auth
