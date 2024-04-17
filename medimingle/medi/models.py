@@ -97,10 +97,8 @@ class PrescriptionStatus(models.Model):
 
 class MedicalHistory(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    weight = models.CharField(max_length=20, null=True)
-    height = models.FloatField()
-    age = models.IntegerField()
-    blood_group = models.CharField(max_length=3, choices=(('O+', 'O+'),('O-', 'O-'), ('A+', 'A+'),('A-', 'A-'),('B+', 'B+'),('B-', 'B-'),('AB+', 'AB+'),('AB-', 'AB-')))
+    weight = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
+    height = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
     reason_for_consultation = models.TextField()
     previous_medical_condition = models.TextField()
     diabetic_patient = models.CharField(max_length=3, choices=(('Yes', 'Yes'), ('No', 'No')))

@@ -1,65 +1,61 @@
 {% load static %}
 {% include "includes/pat_header.html" %}
 						<!-- /Profile Sidebar -->
-						
+						<style>
+							.error-message {
+								color: red;
+								font-size: 0.8rem;
+							}
+							.valid-input {
+								border-color: green !important;
+							}
+							.invalid-input {
+								border-color: red !important;
+							}
+						</style>
 						<div class="col-md-7 col-lg-8 col-xl-9">
 							<div class="card">
 								<div class="card-body">
                                     <h1 class="mt-5 mb-4 text-center">Medical Data Form</h1>
-                                    <form method="post">
-                                        {% csrf_token %}
-                                        <div class="form-group row">
-                                            <label for="weight" class="col-sm-3 col-form-label">Weight (kg):</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" class="form-control" id="weight" name="weight" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="height" class="col-sm-3 col-form-label">Height (cm):</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" class="form-control" id="height" name="height" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="age" class="col-sm-3 col-form-label">Age:</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" class="form-control" id="age" name="age" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="blood_group" class="col-sm-3 col-form-label">Blood Group:</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="blood_group" name="blood_group" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="reason_for_consultation" class="col-sm-3 col-form-label">Reason for Consultation:</label>
-                                            <div class="col-sm-9">
-                                                <textarea class="form-control" id="reason_for_consultation" name="reason_for_consultation" rows="4" required></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="previous_medical_condition" class="col-sm-3 col-form-label">Previous Medical Condition:</label>
-                                            <div class="col-sm-9">
-                                                <textarea class="form-control" id="previous_medical_condition" name="previous_medical_condition" rows="4" required></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="diabetic_patient" class="col-sm-3 col-form-label">Diabetic Patient:</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="diabetic_patient" name="diabetic_patient" required>
-                                                    <option value="Yes">Yes</option>
-                                                    <option value="No">No</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-sm-9 offset-sm-3">
-                                                <button type="submit" class="btn btn-primary">Submit</button>
-                                            </div>
-                                        </div>
-                                    </form>
-									
+									<form method="post" id="medical-data-form">
+										{% csrf_token %}
+										<div class="form-group form-focus">
+											<input type="number" class="form-control floating" name="weight" id="weight" required>
+											<label class="focus-label">Weight (kg)</label>
+											<span class="error-message" id="weight-error"></span>
+										</div>
+								
+										<div class="form-group form-focus">
+											<input type="number" class="form-control floating" name="height" id="height" required>
+											<label class="focus-label">Height (cm)</label>
+											<span class="error-message" id="height-error"></span>
+										</div>
+								
+										<div class="form-group form-focus">
+											<textarea class="form-control" name="reason_for_consultation" id="reason_for_consultation" rows="4" required></textarea>
+											<label class="focus-label">Reason for Consultation</label>
+											<span class="error-message" id="reason_for_consultation-error"></span>
+										</div>
+								
+										<div class="form-group form-focus">
+											<textarea class="form-control" name="previous_medical_condition" id="previous_medical_condition" rows="4" required></textarea>
+											<label class="focus-label">Previous Medical Condition</label>
+											<span class="error-message" id="previous_medical_condition-error"></span>
+										</div>
+								
+										<div class="form-group form-focus">
+											<select class="form-control" name="diabetic_patient" id="diabetic_patient" required>
+												<option value="Yes">Yes</option>
+												<option value="No">No</option>
+											</select>
+											<label class="focus-label">Diabetic Patient</label>
+											<span class="error-message" id="diabetic_patient-error"></span>
+										</div>
+								
+										<button class="btn btn-primary" type="submit">Submit</button>
+										<div id="error-message" class="mt-3 text-danger"></div>
+									</form>
+									<div id="success-message" class="d-none alert alert-success mt-3">Form submitted successfully!</div>
 								</div>
 							</div>
 						</div>
@@ -168,8 +164,126 @@
 		   
 		</div>
 		<!-- /Main Wrapper -->
-	  
-		<!-- jQuery -->
+		<script>
+			const form = document.getElementById('medical-data-form');
+			const weightInput = document.getElementById('weight');
+			const heightInput = document.getElementById('height');
+			const reasonInput = document.getElementById('reason_for_consultation');
+			const conditionInput = document.getElementById('previous_medical_condition');
+			const diabeticInput = document.getElementById('diabetic_patient');
+			
+			const weightError = document.getElementById('weight-error');
+			const heightError = document.getElementById('height-error');
+			const reasonError = document.getElementById('reason_for_consultation-error');
+			const conditionError = document.getElementById('previous_medical_condition-error');
+			const diabeticError = document.getElementById('diabetic_patient-error');
+			
+			const successMessage = document.getElementById('success-message');
+			const errorMessage = document.getElementById('error-message');
+			
+			function validateWeight() {
+				const weight = weightInput.value;
+				if (weight < 30 || weight > 150) {
+					weightError.textContent = 'Weight should be between 30 and 150 kg.';
+					weightInput.classList.remove('valid-input');
+					weightInput.classList.add('invalid-input');
+					return false;
+				} else {
+					weightError.textContent = '';
+					weightInput.classList.add('valid-input');
+					weightInput.classList.remove('invalid-input');
+					return true;
+				}
+			}
+			
+			function validateHeight() {
+				const height = heightInput.value;
+				if (height < 140 || height > 190) {
+					heightError.textContent = 'Height should be between 140 and 190 cm.';
+					heightInput.classList.remove('valid-input');
+					heightInput.classList.add('invalid-input');
+					return false;
+				} else {
+					heightError.textContent = '';
+					heightInput.classList.add('valid-input');
+					heightInput.classList.remove('invalid-input');
+					return true;
+				}
+			}
+			
+			function validateReason() {
+				const reason = reasonInput.value;
+				if (!/^[a-zA-Z]+$/.test(reason) || reason.length < 4) {
+					reasonError.textContent = 'Reason should contain only alphabets and be at least 4 characters long.';
+					reasonInput.classList.remove('valid-input');
+					reasonInput.classList.add('invalid-input');
+					return false;
+				} else {
+					reasonError.textContent = '';
+					reasonInput.classList.add('valid-input');
+					reasonInput.classList.remove('invalid-input');
+					return true;
+				}
+			}
+			
+			function validateCondition() {
+				const condition = conditionInput.value;
+				if (!/^[a-zA-Z]+$/.test(condition) || condition.length < 4) {
+					conditionError.textContent = 'Condition should contain only alphabets and be at least 4 characters long.';
+					conditionInput.classList.remove('valid-input');
+					conditionInput.classList.add('invalid-input');
+					return false;
+				} else {
+					conditionError.textContent = '';
+					conditionInput.classList.add('valid-input');
+					conditionInput.classList.remove('invalid-input');
+					return true;
+				}
+			}
+			
+			function validateDiabetic() {
+				const diabetic = diabeticInput.value;
+				if (diabetic !== 'Yes' && diabetic !== 'No') {
+					diabeticError.textContent = 'Please select a valid option.';
+					diabeticInput.classList.remove('valid-input');
+					diabeticInput.classList.add('invalid-input');
+					return false;
+				} else {
+					diabeticError.textContent = '';
+					diabeticInput.classList.add('valid-input');
+					diabeticInput.classList.remove('invalid-input');
+					return true;
+				}
+			}
+			
+			// Add event listeners for real-time validation
+			weightInput.addEventListener('input', validateWeight);
+			heightInput.addEventListener('input', validateHeight);
+			reasonInput.addEventListener('input', validateReason);
+			conditionInput.addEventListener('input', validateCondition);
+			diabeticInput.addEventListener('input', validateDiabetic);
+			
+			// Prevent the form from submitting if there are validation errors
+			form.addEventListener('submit', function (event) {
+				const isWeightValid = validateWeight();
+				const isHeightValid = validateHeight();
+				const isReasonValid = validateReason();
+				const isConditionValid = validateCondition();
+				const isDiabeticValid = validateDiabetic();
+			
+				if (!isWeightValid || !isHeightValid || !isReasonValid || !isConditionValid || !isDiabeticValid) {
+					event.preventDefault();
+					errorMessage.textContent = 'Please fix the validation errors before submitting the form.';
+				} else {
+					errorMessage.textContent = '';
+					successMessage.classList.remove('d-none');
+					setTimeout(function() {
+						successMessage.classList.add('d-none');
+					}, 3000); // Hide success message after 3 seconds
+				}
+			});
+		</script>
+		
 		<script src="{% static '/assets/js/jquery.min.js' %}"></script>
 		
 		<!-- Bootstrap Core JS -->

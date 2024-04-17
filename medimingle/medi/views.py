@@ -6,7 +6,7 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient, QuestionnaireResponse, tbl_user, AppointmentTime,DoctorSpecialization,Qualification,Experience,Appointment,Notification,Billing
+from .models import Doctor, Patient, QuestionnaireResponse, tbl_user, AppointmentTime,DoctorSpecialization,Qualification,Experience,Appointment,Notification,Billing,MedicalHistory
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
@@ -1388,8 +1388,6 @@ def medical_data(request):
     if request.method == 'POST':
         weight = request.POST.get('weight')
         height = request.POST.get('height')
-        age = request.POST.get('age')
-        blood_group = request.POST.get('blood_group')
         reason_for_consultation = request.POST.get('reason_for_consultation')
         previous_medical_condition = request.POST.get('previous_medical_condition')
         diabetic_patient = request.POST.get('diabetic_patient')
@@ -1402,14 +1400,12 @@ def medical_data(request):
             patient=current_patient,
             weight=weight,
             height=height,
-            age=age,
-            blood_group=blood_group,
             reason_for_consultation=reason_for_consultation,
             previous_medical_condition=previous_medical_condition,
             diabetic_patient=diabetic_patient
         )
 
         messages.success(request, 'Medical data saved successfully!')
-        return redirect('medical_data')  # Redirect to the same page after form submission to clear the form
+        return redirect('medical_data')  
 
     return render(request, 'medical_data.html')

@@ -196,15 +196,6 @@ class ExperienceForm(forms.ModelForm):
             'designation': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-class MedicalHistoryForm(forms.ModelForm):
-    class Meta:
-        model = MedicalHistory
-        fields = ['reason','weight','age', 'previous_operation', 'current_medication', 'other_illness','other_information']
-
-    def __init__(self, *args, **kwargs):
-        super(MedicalHistoryForm, self).__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs['class'] = 'form-control'
 
 class ConsultingFeeForm(forms.ModelForm):
     class Meta:
