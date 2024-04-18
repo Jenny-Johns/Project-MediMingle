@@ -5,7 +5,7 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient, QuestionnaireResponse, tbl_user, AppointmentTime,DoctorSpecialization,Qualification,Experience,Appointment,Notification,Billing,MedicalHistory
+from .models import Doctor, Patient,MedicalData, tbl_user,Prescription, AppointmentTime,DoctorSpecialization,Qualification,Experience,Appointment,Notification,Billing,MedicalHistory
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
@@ -250,6 +250,10 @@ def patient_dashboard(request):
     notifications = Notification.objects.filter(patient=current_patient)
     n_count=notifications.count()
     bill=Billing.objects.filter(patient=current_patient)
+
+    for appointment in appointments:
+        appointment.medical_data_exists = MedicalData.objects.filter(patient=current_patient, doctor=appointment.doctor).exists()
+
 
     context={
         'patient': current_patient,
@@ -1342,30 +1346,7 @@ def send_reschedule_email(patient_email, appointment):
 #...............Seminar...................#
 
 def doc_suggest(request):
-    if request.method == 'POST':
-        age_range = request.POST.get('age')
-        height = request.POST.get('height')
-        weight = request.POST.get('weight')
-        age_lower, age_upper = map(int, age_range.split('-'))
-        
 
-        if age_lower  < 15:
-            # Retrieve the list of doctors specialized as pediatricians
-            pediatricians = Doctor.objects.filter(doctorspecialization__specialized_category='Pediatrician')
-
-            # Save the questionnaire responses and doctor details in the database
-            response = QuestionnaireResponse.objects.create(age=age_range, height=height, weight=weight)
-            response.save()
-
-            # Pass the list of pediatrician doctors and the message to the template
-            return render(request, 'doc_suggest.html', {'pediatricians': pediatricians, 'message': "You should consult a pediatrician."})
-
-        else:
-            # Redirect to another page or return some other response
-           return redirect('doc_suggest')
-
-    # else:
-    #     return HttpResponse("Error: Form submission method not allowed!")
     return render(request,'doc_suggest.html')
 
 
@@ -1375,13 +1356,14 @@ def doc_suggest2(request):
 
 
 def my_doctors(request):
-    patient = request.user.patient
-    appointments = Appointment.objects.filter(patient=patient)
-    doctors = [appointment.doctor for appointment in appointments]
-    context = {'doctors': doctors, 'appointments': appointments}
-    return render(request, 'my_doctors.html', context)
+    current_patient = request.user.patient
+    confirmed_appointments = Appointment.objects.filter(patient=current_patient, is_confirmed=True)
+    return render(request, 'my_doctors.html', {'confirmed_appointments': confirmed_appointments})
 
-
+def my_patients(request):
+    current_doctor = request.user.doctor
+    confirmed_appointments = Appointment.objects.filter(doctor=current_doctor, is_confirmed=True)
+    return render(request, 'my_patients.html', {'confirmed_appointments': confirmed_appointments})
 
 def medical_data(request):
     if request.method == 'POST':
@@ -1408,3 +1390,135 @@ def medical_data(request):
         return redirect('medical_data')  
 
     return render(request, 'medical_data.html')
+
+
+
+def patient_details(request, patient_id):
+    # Retrieve the patient object based on the patient_id
+    patient = get_object_or_404(Patient, pk=patient_id)
+    
+    # Retrieve the medical history associated with the patient
+    medical_data = MedicalData.objects.filter(patient=patient)    
+    # Render the template with the patient and medical history objects
+    return render(request, 'patient_details.html', {'patient': patient, 'medical_data': medical_data})
+
+
+def add_medical_data(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    if request.method == 'POST':
+        # Fetch data from the form
+        reason_for_consultation = request.POST.get('reason_for_consultation')
+        previous_medical_condition = request.POST.get('previous_medical_condition')
+        any_other_illness = request.POST.get('any_other_illness')
+
+        # Create MedicalData instance
+        MedicalData.objects.create(
+            patient=request.user.patient,
+            doctor=appointment.doctor,
+            appointment=appointment,
+            reason_for_consultation=reason_for_consultation,
+            previous_medical_condition=previous_medical_condition,
+            any_other_illness=any_other_illness
+        )
+        # Set appointment's medical_data_added to True
+        appointment.medical_data_added = True
+        appointment.save()
+        messages.success(request, "Medical data added")
+        return redirect('patient_dashboard')
+
+    return render(request, 'add_medical_data.html')
+
+def view_medical_data(request, appointment_id):
+    medical_data = MedicalData.objects.filter(appointment_id=appointment_id).first()
+    return render(request, 'view_medical_data.html', {'medical_data': medical_data})
+
+def view_medical_history(request):
+    current_patient = request.user.patient
+    medical_data = MedicalData.objects.filter(patient=current_patient)
+    return render(request, 'view_medical_history.html', {'medical_data': medical_data})
+
+
+# def add_prescription(request, appointment_id):
+#     appointment = get_object_or_404(Appointment, id=appointment_id)
+#     if request.method == 'POST':
+#         medicine_name = request.POST.get('medicine_name')
+#         intake_time = request.POST.get('intake_time')
+#         days = request.POST.get('days')
+#         prescription_text = request.POST.get('prescription_text')
+
+#         prescription = Prescription.objects.create(
+#             doctor=request.user.doctor,
+#             patient=appointment.patient,
+#             appointment=appointment,
+#             medicine_name=medicine_name,
+#             intake_time=intake_time,
+#             days=days,
+#             prescription_text=prescription_text,
+#             is_uploaded=True  # Assuming prescription is uploaded automatically
+#         )
+#         return redirect('view_prescription', prescription_id=prescription.id)
+#     return render(request, 'add_prescription.html')
+
+
+# def view_prescription(request, appointment_id):
+#     prescriptions=Prescription.objects.filter(appointment_id=appointment_id).first()
+#     return render(request, 'view_prescription.html', {'prescriptions': prescriptions})
+
+
+# def edit_prescription(request, prescription_id):
+#     prescription = get_object_or_404(Prescription, id=prescription_id)
+#     if request.method == 'POST':
+#         prescription.medicine_name = request.POST.get('medicine_name')
+#         prescription.intake_time = request.POST.get('intake_time')
+#         prescription.days = request.POST.get('days')
+#         prescription.prescription_text = request.POST.get('prescription_text')
+#         prescription.save()
+#         return redirect('view_prescription', prescription_id=prescription.id)
+#     return render(request, 'edit_prescription.html', {'prescription': prescription})
+
+
+from django.shortcuts import render, redirect
+from .models import Prescription, Patient, Appointment
+
+def add_prescription(request, patient_id, appointment_id):
+    if request.method == 'POST':
+        patient = Patient.objects.get(pk=patient_id)
+        appointment = Appointment.objects.get(pk=appointment_id)
+        doctor = request.user.doctor
+        medicine_names = request.POST.getlist('medicine_name[]')
+        intake_times = request.POST.getlist('intake_time[]')
+        days_list = request.POST.getlist('days[]')
+        prescription_texts = request.POST.getlist('prescription_text[]')
+
+        # Assuming all lists have the same length
+        for i in range(len(medicine_names)):
+            prescription = Prescription.objects.create(
+                patient=patient,
+                appointment=appointment,
+                doctor=doctor,
+                medicine_name=medicine_names[i],
+                intake_time=intake_times[i],
+                days=days_list[i],
+                prescription_text=prescription_texts[i],
+                is_uploaded=True  # Convert to bool
+            )
+
+        subject = 'New Prescription Added'
+        message = f"Dear {patient.user.first_name},\n\nDr. {doctor} has added a new prescription for you.\n\nMedicine Name: {medicine_names}\nIntake Time: {intake_times}\nDays: {days_list}\nPrescription Text: {prescription_texts}\n\nSincerely,\nThe MediMingle Team"
+        from_email = 'medimingle@gmail.com'  # Replace with your email
+        to_email = [patient.user.email]  # Assuming patient has an email field
+        send_mail(subject, message, from_email, to_email, fail_silently=True)
+
+        return redirect('view_prescription', patient_id=patient_id)
+    else:
+        patient = Patient.objects.get(pk=patient_id)
+        appointment = Appointment.objects.get(pk=appointment_id)
+        return render(request, 'add_prescription.html', {'patient': patient, 'appointment': appointment})
+
+from django.shortcuts import render
+from .models import Prescription, Patient
+
+def view_prescription(request, patient_id):
+    patient = Patient.objects.get(pk=patient_id)
+    prescriptions = Prescription.objects.filter(patient=patient)
+    return render(request, 'view_prescription.html', {'patient': patient, 'prescriptions': prescriptions})

@@ -1,0 +1,29 @@
+<h1>All Prescriptions</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Medicine Name</th>
+            <th>Intake Time</th>
+            <th>Days</th>
+            <th>Prescription Text</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for prescription in prescriptions %}
+        <tr>
+            <td>{{ prescription.medicine_name }}</td>
+            <td>{{ prescription.intake_time }}</td>
+            <td>{{ prescription.days }}</td>
+            <td>{{ prescription.prescription_text }}</td>
+            <td>
+                {% if prescription.is_uploaded %}
+                    <a href="{% url 'edit_prescription' prescription.id %}" class="btn btn-primary">Edit Prescription</a>
+                {% else %}
+                    <a href="{% url 'add_prescription' patient_id=patient.id %}" class="btn btn-success">Add Prescription</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

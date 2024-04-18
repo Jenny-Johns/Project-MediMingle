@@ -83,14 +83,6 @@ class Patient(models.Model):
     def __str__(self):
         return self.user.first_name
 
-class PrescriptionStatus(models.Model):
-    is_uploaded= models.BooleanField(default=False)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
-
-    def __int__(self):
-        return self.id
-
 
 
 
@@ -108,17 +100,17 @@ class MedicalHistory(models.Model):
 
 
 
-class Prescription(models.Model):
-    name =  models.CharField(max_length=50, null=True)
-    quantity  = models.CharField(max_length=50, null=True)
-    days = models.CharField(max_length=50, null=True)
-    morning = models.CharField(max_length=10, null=True)
-    afternoon = models.CharField(max_length=10, null=True)
-    evening = models.CharField(max_length=10, null=True)
-    night = models.CharField(max_length=10, null=True)
-    doctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING, null=True)
-    patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
-    uploaded_date = models.DateTimeField(default=datetime.now, blank=True)
+# class Prescription(models.Model):
+#     name =  models.CharField(max_length=50, null=True)
+#     quantity  = models.CharField(max_length=50, null=True)
+#     days = models.CharField(max_length=50, null=True)
+#     morning = models.CharField(max_length=10, null=True)
+#     afternoon = models.CharField(max_length=10, null=True)
+#     evening = models.CharField(max_length=10, null=True)
+#     night = models.CharField(max_length=10, null=True)
+#     doctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING, null=True)
+#     patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
+#     uploaded_date = models.DateTimeField(default=datetime.now, blank=True)
     
 
 
@@ -164,6 +156,7 @@ class Appointment(models.Model):
     appointment_datetime=models.CharField(max_length=50, null=True)
     appointment_time=models.CharField(max_length=50, null=True)
     is_confirmed = models.BooleanField(default=False)
+    medical_data_added = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.doctor} - {self.appointment_time_slot.appointment_date}"
  
@@ -188,16 +181,41 @@ class Billing(models.Model):
 
     def __str__(self):
         return f"Billing for {self.doctor} by {self.patient}"
-    
-# class Payment(models.Model):
-#     billing = models.ForeignKey(Billing, on_delete=models.CASCADE)
-#     amount = models.DecimalField(max_digits=10, decimal_places=2)
-#     date = models.DateField(auto_now_add=True)
 
-#...................Seminar...................#
+
+class MedicalData(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE,null=True)
+    reason_for_consultation = models.TextField()
+    previous_medical_condition = models.TextField()
+    any_other_illness = models.TextField()
+
+    def __str__(self):
+        return f'Medical data for {self.patient.user.first_name}'
     
 
-class QuestionnaireResponse(models.Model):
-    age = models.CharField(max_length=20)
-    height = models.CharField(max_length=20)
-    weight = models.CharField(max_length=20)
+from django.db import models
+from .models import Doctor, Patient, Appointment
+
+class Prescription(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=True, blank=True)
+    medicine_name = models.CharField(max_length=100)
+    intake_time_choices = [
+        ('0-0-1', '0-0-1'),
+        ('1-1-1', '1-1-1'),
+        ('1-0-0', '1-0-0'),
+        ('0-1-0', '0-1-0'),
+        ('1-1-0', '1-1-0'),
+        ('1-0-1', '1-0-1'),
+    ]
+    intake_time = models.CharField(max_length=10, choices=intake_time_choices)
+    days = models.PositiveIntegerField()
+    prescription_added_date = models.DateTimeField(auto_now_add=True)
+    prescription_text = models.TextField(blank=True, null=True)
+    is_uploaded = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Prescription for {self.patient} by Dr. {self.doctor}"

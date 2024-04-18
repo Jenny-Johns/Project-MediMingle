@@ -24,11 +24,7 @@
 																<img src="{% static '/assets/img/icon-01.png' %}" class="img-fluid" alt="patient">
 															</div>
 														</div>
-														<div class="dash-widget-info">
-															<h6>Total Patient</h6>
-															<h3>{{pat_count}}</h3>
-															
-														</div>
+														
 													</div>
 												</div>
 												
@@ -41,11 +37,7 @@
 																<img src="{% static '/assets/img/icon-03.png' %}" class="img-fluid" alt="Patient">
 															</div>
 														</div>
-														<div class="dash-widget-info">
-															<h6>Appointments</h6>
-															<h3></h3>
-															
-														</div>
+														
 													</div>
 												</div>
 											</div>
@@ -70,51 +62,33 @@
 												<div class="card card-table mb-0">
 													<div class="card-body">
 														<div class="table-responsive">
-															<table class="table table-hover table-center mb-0">
-																<thead>
-																	<tr>
-																		<th>Patient</th>
-																		<th>Date</th>
-																		<th>Time</th>
-																		<th>Status</th>
-																		<th>Details</th>
-																		<th>Actions</th>
-																	</tr>
-																</thead>
-																<tbody>
-																	{% for appointment in appointments %}
-																	<tr>
-																		<td>{{ appointment.patient }}</td>
-																		<td>{{ appointment.appointment_datetime }}</td>
-    																	<td>{{ appointment.appointment_time }}</td>
-
-																		<td>
-																			{% if appointment.is_confirmed %}
-																				Confirmed
-																			{% else %}
-																				Pending
-																			{% endif %}
-																		</td>
-																		<td>
-																			<a href="{% url 'patient_details' appointment.patient.id %}" class="btn btn-info">View</a> <!-- Link to patient details -->
-																		</td>
-																		<td>
-																			{% if not appointment.is_confirmed %}
-																				<form action="{% url 'confirm_appointment' appointment.id %}" method="post">
-																					{% csrf_token %}
-																					<button type="submit" class="btn btn-success" name="action" value="approve">Approve</button>
-																					<button type="submit" class="btn btn-danger" name="action" value="reject">Reject</button>
-																				</form>
-																			{% else %}
-																				<a href="{% url 'reschedule_appointment' appointment.id %}" class="btn btn-primary">Reschedule</a>
-																			{% endif %}
-																		</td>
-																	</tr>
-																	{% endfor %}
-																</tbody>
-																
-																
-															</table>		
+															{% comment %} <table class="table table-hover table-center mb-0"> {% endcomment %}
+																<table class="table table-striped">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Patient</th>
+                                                                            <th>Date</th>
+                                                                            <th>Time</th>
+                                                                            <th>Status</th>
+                                                                            <th>Prescription</th>
+                                                                            <!-- Add more details if needed -->
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for appointment in confirmed_appointments %}
+                                                                        <tr>
+                                                                            <td>{{ appointment.patient }}</td>
+                                                                            <td>{{ appointment.appointment_time_slot.appointment_date }}</td>
+                                                                            <td>{{ appointment.appointment_time }}</td>
+                                                                            <td>Confirmed</td>
+                                                                            <td>
+																				<a href="{% url 'add_prescription' patient_id=appointment.patient.id appointment_id=appointment.id %}" class="btn btn-sm btn-success">Add Prescription</a>
+																				<a href="{% url 'view_prescription' patient_id=appointment.patient.id %}" class="btn btn-sm btn-primary">View Prescriptions</a>
+																			</td>
+                                                                        </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>	
 														</div>
 													</div>
 												</div>

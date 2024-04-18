@@ -1,0 +1,20 @@
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="medicine_name">Medicine Name:</label><br>
+        <input type="text" id="medicine_name" name="medicine_name" value="{{ prescription.medicine_name }}" required><br>
+    </div>
+    <div>
+        <label for="intake_time">Intake Time:</label><br>
+        <input type="text" id="intake_time" name="intake_time" value="{{ prescription.intake_time }}" required><br>
+    </div>
+    <div>
+        <label for="days">Days:</label><br>
+        <input type="text" id="days" name="days" value="{{ prescription.days }}" required><br>
+    </div>
+    <div>
+        <label for="prescription_text">Prescription Text:</label><br>
+        <textarea id="prescription_text" name="prescription_text" rows="4" cols="50" required>{{ prescription.prescription_text }}</textarea><br>
+    </div>
+    <button type="submit">Update</button>
+</form>

@@ -21,29 +21,27 @@
 									{% endfor %}
 								{% endif%}
 								<div class="card-body">
-									<h1>My Doctors</h1>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Doctor</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-                <!-- Add more details if needed -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for appointment in confirmed_appointments %}
-            <tr>
-                <td>{{ appointment.doctor }}</td>
-                <td>{{ appointment.appointment_time_slot.appointment_date }}</td>
-                <td>{{ appointment.appointment_time }}</td>
-                <td>Confirmed</td>
-                <!-- Add more details if needed -->
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+									<h1>History of Medical Data</h1>
+									<table class="table table-striped">
+										<thead>
+											<tr>
+												<th>Doctor</th>
+												<th>Reason for Consultation</th>
+												<th>Previous Medical Condition</th>
+												<th>Other Illness</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for data in medical_data %}
+											<tr>
+												<td>{{ data.doctor }}</td>
+												<td>{{ data.reason_for_consultation }}</td>
+												<td>{{ data.previous_medical_condition }}</td>
+												<td>{{ data.any_other_illness }}</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
 								</div>
 							</div>
 						</div>

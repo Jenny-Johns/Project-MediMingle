@@ -88,6 +88,22 @@ path('reschedule_appointment/<int:appointment_id>/', views.reschedule_appointmen
     path('delete_slot/<int:slot_id>/', views.delete_slot, name='delete_slot'),
     path('my_doctors/', views.my_doctors, name='my_doctors'),
     path('medical_data/', views.medical_data, name='medical_data'),
+    path('patients/<int:patient_id>/', views.patient_details, name='patient_details'),
+path('add_medical_data/', views.add_medical_data, name='add_medical_data'),
+
+path('add_medical_data/<int:appointment_id>/', views.add_medical_data, name='add_medical_data'),
+    path('view_medical_data/<int:appointment_id>/', views.view_medical_data, name='view_medical_data'),
+   path('view_medical_history/', views.view_medical_history, name='view_medical_history'),
+   
+path('my_patients/', views.my_patients, name='my_patients'),
+
+    # path('add_prescription/<int:appointment_id>/', views.add_prescription, name='add_prescription'),
+    # path('view_prescription/<int:appointment_id>/', views.view_prescription, name='view_prescription'),
+    # path('edit_prescription/<int:prescription_id>/', views.edit_prescription, name='edit_prescription'),
+    # path('add_prescription/<int:patient_id>/', views.add_prescription, name='add_prescription'),
+
+path('add_prescription/<int:patient_id>/<int:appointment_id>/', views.add_prescription, name='add_prescription'),
+    path('view_prescription/<int:patient_id>/', views.view_prescription, name='view_prescription'),
 
 
 ]

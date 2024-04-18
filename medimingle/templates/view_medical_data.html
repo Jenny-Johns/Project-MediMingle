@@ -129,104 +129,30 @@
 					</ul>
 				</nav>
 			</header>
-			<!-- /Header -->
-			
-			<!-- Breadcrumb -->
-			<div class="breadcrumb-bar">
-				<div class="container-fluid">
-					<div class="row align-items-center">
-						<div class="col-md-12 col-12">
-							<nav aria-label="breadcrumb" class="page-breadcrumb">
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
-									<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-								</ol>
-							</nav>
-							
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Breadcrumb -->
-			
-			<!-- Page Content -->
-			<div class="content">
-				<div class="container-fluid">
-
-					<div class="row">
-						
-						<!-- Profile Sidebar -->
-						<div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
-							<div class="profile-sidebar">
-								<div class="widget-profile pro-widget-content">
-									<div class="profile-info-widget">
-										<a href="#" class="booking-doc-img">
-											{% if patient_data.profile_image %}
-												<img src="{{ user.patient.profile_image.url }}" alt="User Image">
-											{% else %}
-												<img src="{{ user.patient.profile_image.url }}" alt="User Image">
-											{% endif %}
-										</a>
-										<div class="profile-det-info">
-											<h3>{{user.first_name}} {{user.last_name}}</h3>
-											<div class="patient-details">
-												<h5>{{ user.email }}</h5>
-												<h5 class="mb-0"><i class="fas fa-map-marker-alt"></i>{{ request.user.patient.address}}</h5>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="dashboard-widget">
-									<nav class="dashboard-menu">
-										<ul>
-											<li>
-												<a href="{% url 'patient_dashboard' %}">
-													<i class="fas fa-columns"></i>
-													<span>Dashboard</span>
-												</a>
-											</li>
-											<li>
-												<a href="{% url 'doctors' %}"  name"doctors" >
-													<i class="fas fa-columns"></i>
-													<span>View Doctors</span>
-												</a>
-											</li>
-											<li>
-												<a href="{% url 'view_medical_history' %}">
-													<i class="fas fa-user-cog"></i>
-													<span>Medical Data</span>
-												</a>
-											</li>
-											<li>
-												<a href="{% url 'my_doctors' %}" >
-													<i class="fas fa-columns"></i>
-													<span>My Doctors</span>
-												</a>
-											</li>
-											
-										    <li>
-												<a href="{% url 'patient_change_password' %}">
-													<i class="fas fa-lock"></i>
-													<span>Change Password</span>
-												</a>
-											</li>
-											
-											<li>
-												<a href="{% url 'profile_settings' %}">
-													<i class="fas fa-user-cog"></i>
-													<span>Profile Settings</span>
-												</a>
-											</li>
-											
-											<li>
-												<a href="{% url 'logout' %}">
-													<i class="fas fa-sign-out-alt"></i>
-													<span>Logout</span>
-												</a>
-											</li>
-										</ul>
-									</nav>
-								</div>
-
-							</div>
-						</div>
+            <body>
+                <div class="container">
+                    <h1 class="mt-5">View Medical Data</h1>
+                    <div class="table-responsive mt-4">
+                        <table class="table table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th>Reason for Consultation</th>
+                                    <th>Previous Medical Condition</th>
+                                    <th>Other Illness</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Dr.{{ medical_data.doctor }}</td>
+                                    <td>{{ medical_data.reason_for_consultation }}</td>
+                                    <td>{{ medical_data.previous_medical_condition }}</td>
+                                    <td>{{ medical_data.any_other_illness }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Prescription</title>
+</head>
+<body>
+    <h2>Add Prescription</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div id="prescription_fields">
+            <div class="prescription">
+                <label for="medicine_name">Medicine Name:</label><br>
+                <input type="text" name="medicine_name[]" required><br>
+                <label for="intake_time">Intake Time:</label><br>
+                <select name="intake_time[]" required>
+                    <option value="0-0-1">0-0-1</option>
+                    <option value="1-1-1">1-1-1</option>
+                    <option value="1-0-0">1-0-0</option>
+                    <option value="0-1-0">0-1-0</option>
+                    <option value="1-1-0">1-1-0</option>
+                    <option value="1-0-1">1-0-1</option>
+                </select><br>
+                <label for="days">Days:</label><br>
+                <input type="number" name="days[]" required><br>
+                <label for="prescription_text">Prescription Text:</label><br>
+                <textarea name="prescription_text[]" required></textarea><br>
+                <input type="checkbox" name="is_uploaded[]">
+                <label for="is_uploaded">Is Uploaded</label><br>
+            </div>
+        </div>
+        <button type="button" onclick="addPrescription()">Add Another Prescription</button><br><br>
+        <button type="submit">Add Prescriptions</button>
+    </form>
+
+    <script>
+        function addPrescription() {
+            var container = document.getElementById("prescription_fields");
+            var prescriptionDiv = document.createElement("div");
+            prescriptionDiv.className = "prescription";
+            prescriptionDiv.innerHTML = `
+                <label for="medicine_name">Medicine Name:</label><br>
+                <input type="text" name="medicine_name[]" required><br>
+                <label for="intake_time">Intake Time:</label><br>
+                <select name="intake_time[]" required>
+                    <option value="0-0-1">0-0-1</option>
+                    <option value="1-1-1">1-1-1</option>
+                    <option value="1-0-0">1-0-0</option>
+                    <option value="0-1-0">0-1-0</option>
+                    <option value="1-1-0">1-1-0</option>
+                    <option value="1-0-1">1-0-1</option>
+                </select><br>
+                <label for="days">Days:</label><br>
+                <input type="number" name="days[]" required><br>
+                <label for="prescription_text">Prescription Text:</label><br>
+                <textarea name="prescription_text[]" required></textarea><br>
+                <input type="checkbox" name="is_uploaded[]">
+                <label for="is_uploaded">Is Uploaded</label><br>
+            `;
+            container.appendChild(prescriptionDiv);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Prescriptions</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Optional: Add custom styles here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Prescriptions</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Medicine Name</th>
+                        <th>Intake Time</th>
+                        <th>Days</th>
+                        <th>Prescription Text</th>
+                        <th>Is Uploaded</th>
+                        <th>Added Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prescription in prescriptions %}
+                    <tr>
+                        <td>{{ prescription.medicine_name }}</td>
+                        <td>{{ prescription.intake_time }}</td>
+                        <td>{{ prescription.days }}</td>
+                        <td>{{ prescription.prescription_text }}</td>
+                        <td>{% if prescription.is_uploaded %} Yes {% else %} No {% endif %}</td>
+                        <td>{{ prescription.prescription_added_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- jQuery (Optional, required if you're using Bootstrap's JS features) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+</html>

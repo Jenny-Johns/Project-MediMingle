@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html> 
+<html lang="en">
+	
+<!-- doccure/patient-dashboard.html  30 Nov 2019 04:12:16 GMT -->
+<head>
+		<meta charset="utf-8">
+		<title>MediMingle</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+		
+		<!-- Favicons -->
+		<link href="{% static '/assets/img/favicon.png'%}" rel="icon">
+		
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/bootstrap.min.css'%}">
+		
+		<!-- Fontawesome CSS -->
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/fontawesome.min.css'%}">
+		<link rel="stylesheet" href="{% static '/assets/plugins/fontawesome/css/all.min.css'%}">
+		
+		<!-- Main CSS -->
+		<link rel="stylesheet" href="{% static '/assets/css/style.css'%}">
+		
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.min.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+	<style>
+		.success {
+			color: green;
+		}
+	</style>
+	</head>
+	<body>
+
+		<!-- Main Wrapper -->
+		<div class="main-wrapper">
+		
+			<!-- Header -->
+			<header class="header">
+				<nav class="navbar navbar-expand-lg header-nav">
+					<div class="navbar-header">
+						<a id="mobile_btn" href="javascript:void(0);">
+							<span class="bar-icon">
+								<span></span>
+								<span></span>
+								<span></span>
+							</span>
+						</a>
+						<a href="{% url 'homepage' %}" class="navbar-brand logo">
+							<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+						</a>
+						<span><a href="{% url 'homepage' %}" style="color: white;">Home</i></a></span>
+
+					</div>
+					<div class="main-menu-wrapper">
+						<div class="menu-header">
+							<a href="{% url 'homepage' %}" class="menu-logo">
+								<img src="{% static '/assets/img/logo.png'%}" class="img-fluid" alt="Logo">
+							</a>
+							<a id="menu_close" class="menu-close" href="javascript:void(0);">
+								<i class="fas fa-times"></i>
+							</a>
+						</div>
+						
+					</div>		 
+					<ul class="nav header-navbar-rht">
+						<li class="nav-item contact-item">
+							<div class="header-contact-img">
+								<i  style="color: white;" class="far fa-hospital"></i>							
+							</div>
+						</li>
+						<li class="nav-item dropdown noti-dropdown">
+							<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+								<i class="fas fa-bell" style="color: white;"></i> 
+								<span class="badge badge-pill" style="color: red;">{{ n_count }}</span>
+							</a>
+							<div class="dropdown-menu notifications">
+								<div class="topnav-dropdown-header">
+									<span class="notification-title">Notifications</span>
+								</div>
+								<div class="noti-content">
+									<ul class="notification-list">
+										{% for notification in notifications %}
+										<li class="notification-message">
+											<a href="#">
+												<div class="media">
+													<!-- Add any additional HTML elements or classes here -->
+													<div class="media-body">
+														<!-- Display the notification message -->
+														<p class="noti-details">{{ notification.message }}</p>
+														<p class="noti-details">{{ notification.timestamp}}</p>
+
+														<!-- You can add additional details such as timestamp if needed -->
+													</div>
+												</div>
+											</a>
+										</li>
+										{% endfor %}
+									</ul>
+								</div>
+								<div class="topnav-dropdown-footer">
+									<button id="clear-notifications" class="btn btn-alert clear-noti"> Clear All </button>
+								</div>
+							</div>
+						</li>
+							<div class="header-contact-detail">
+								<div class="header-contact-detail">
+									{% if user.is_authenticated %}
+										<p  style="color: white;" class="contact-header">Welcome | {{ user.first_name }}</p>
+										{% if user.user_type == 'doctor' %}
+											<p class="contact-info-header"><a href="{% url 'doctor_dashboard' %}"  style="color: white;" >Dashboard</a></p>
+										{% else %}
+										<p class="contact-info-header"><a href="{% url 'patient_dashboard' %}"  style="color: white;" >Dashboard</a></p>
+										{% endif %}
+										
+									{% else  %}
+				
+									{% endif %}
+								</div>
+							</div>
+						</li>
+						
+						<!-- User Menu -->
+						
+						<!-- /User Menu -->
+						
+					</ul>
+				</nav>
+			</header>
+    <style>
+        .invalid-input {
+            border-color: red;
+        }
+        .success-message {
+            color: green;
+        }
+        .form-error {
+            color: red;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            color: green;
+            font-size: 14px;
+        }
+        
+        .form-error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            color: green;
+            font-size: 14px;
+        }
+        
+        .form-error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        textarea.form-control {
+            resize: vertical; /* Allow vertical resizing */
+            width: calc(100% - 22px); /* Adjust width */
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="container-fluid">
+            
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                        
+                    <!-- Register Content -->
+                    <div class="account-content">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-md-7 col-lg-6 login-left">
+            
+
+                    {% if messages %}
+						{% for message in messages %}
+							<h5 style="color: #09e5ab;">{{message}}</h5>
+						{% endfor %}
+					{% endif%}
+    <h1>Add Medical Data</h1>
+    <form id="medical_data_form" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="reason_for_consultation">Reason for Consultation:</label>
+            <textarea class="form-control" id="reason_for_consultation" name="reason_for_consultation" rows="4" required></textarea>
+            <span id="reason_error" class="error-message"></span>
+        </div>
+        <div class="form-group">
+            <label for="previous_medical_condition">Previous Medical Condition:</label>
+            <textarea class="form-control" id="previous_medical_condition" name="previous_medical_condition" rows="4" required></textarea>
+            <span id="condition_error" class="error-message"></span>
+        </div>
+        <div class="form-group">
+            <label for="any_other_illness">Any Other Illness:</label>
+            <textarea class="form-control" id="any_other_illness" name="any_other_illness" rows="4" required></textarea>
+            <span id="illness_error" class="error-message"></span>
+        </div>
+        
+        <div id="success_message" class="success-message" style="display: none;">
+            Medical data added successfully.
+        </div>
+        <div id="form_error" class="form-error" style="display: none;">
+            Please fill out all fields correctly.
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    
+</div>
+</div>
+    <script>
+        document.getElementById('medical_data_form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const reasonInput = document.getElementById('reason_for_consultation');
+            const conditionInput = document.getElementById('previous_medical_condition');
+            const illnessInput = document.getElementById('any_other_illness');
+            
+            const reasonError = document.getElementById('reason_error');
+            const conditionError = document.getElementById('condition_error');
+            const illnessError = document.getElementById('illness_error');
+            
+            const pattern = /^[a-zA-Z\s]*$/;
+    
+            const isValidReason = validateInput(reasonInput, reasonError, pattern);
+            const isValidCondition = validateInput(conditionInput, conditionError, pattern);
+            const isValidIllness = validateInput(illnessInput, illnessError, pattern);
+    
+            if (isValidReason && isValidCondition && isValidIllness) {
+                document.getElementById('success_message').style.display = 'block';
+                document.getElementById('form_error').style.display = 'none';
+                this.submit();
+            } else {
+                document.getElementById('success_message').style.display = 'none';
+                document.getElementById('form_error').style.display = 'block';
+            }
+        });
+    
+        function validateInput(inputElement, errorElement, pattern) {
+            if (!pattern.test(inputElement.value)) {
+                inputElement.classList.add('invalid-input');
+                errorElement.textContent = 'Only alphabets and spaces are allowed.';
+                return false;
+            } else {
+                inputElement.classList.remove('invalid-input');
+                errorElement.textContent = '';
+                return true;
+            }
+        }
+    </script>
+</body>
+</html>
