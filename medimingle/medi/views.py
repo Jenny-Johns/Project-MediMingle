@@ -5,7 +5,7 @@ from django.contrib.auth.models import auth
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Doctor, Patient,MedicalData, tbl_user,Prescription, AppointmentTime,DoctorSpecialization,Qualification,Experience,Appointment,Notification,Billing,MedicalHistory
+from .models import Doctor, Patient,MedicalData,DoctorRating, tbl_user,Prescription, AppointmentTime,DoctorSpecialization,Qualification,Experience,Appointment,Notification,Billing,MedicalHistory
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User  
@@ -19,7 +19,7 @@ from datetime import datetime
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-
+from django.http import Http404
 # for pdf
 from django.http import FileResponse
 import io
@@ -96,7 +96,7 @@ from django.db.models import Q
 import secrets
 import string
 # Create your views here.
-
+from django.db.models import Avg
 from django.db.models import Q
 from django.shortcuts import render
 from .models import Doctor
@@ -639,7 +639,9 @@ def view_doctor_profile(request, doctor_id):
     specializations = doctor.doctorspecialization_set.all()
     qualifications = doctor.qualification_set.all()
     experiences = doctor.experience_set.all()
-    return render(request, 'doctor_profile.html', {'doctor': doctor, 'specializations': specializations, 'qualifications': qualifications, 'experiences': experiences})
+    best_rating = DoctorRating.objects.filter(doctor=doctor).aggregate(Avg('rating'))['rating__avg']
+
+    return render(request, 'doctor_profile.html', {'doctor': doctor, 'specializations': specializations, 'qualifications': qualifications, 'experiences': experiences,'best_rating':best_rating})
 
 
 
@@ -757,7 +759,8 @@ def delete_slot(request, slot_id):
     return redirect('view_slot')
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def view_slot(request):
     doctor = request.user.doctor
 
@@ -776,7 +779,8 @@ def view_slot(request):
     return render(request, 'view_slot.html', context)
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def edit_slot(request, slot_id):
     slot = get_object_or_404(AppointmentTime, id=slot_id)
     
@@ -788,6 +792,8 @@ def edit_slot(request, slot_id):
     
     return render(request, 'edit_slot.html', {'slot': slot})
 
+@never_cache
+@login_required(login_url='signin')
 def delete_slot(request, slot_id):
     slot = get_object_or_404(AppointmentTime, id=slot_id)
     
@@ -805,13 +811,15 @@ def booking(request, doctor_id):
     doctor = Doctor.objects.get(id=doctor_id)
 
     appoint_time_doctor = AppointmentTime.objects.filter(doctor=doctor, is_booked=False)
-    
+    best_rating = DoctorRating.objects.filter(doctor=doctor).aggregate(Avg('rating'))['rating__avg']
+
     unique_appoint_day = set(time_slot.day for time_slot in appoint_time_doctor)
     appoint_day = sorted(list(unique_appoint_day))  
     context = {
         'doctor': doctor,
         'appoint_time_doctor': appoint_time_doctor,
         'appoint_day': appoint_day,
+        'best_rating':best_rating,
     }
     return render(request, 'booking.html', context)
 
@@ -1034,7 +1042,8 @@ def add_doctor(request):
 
     return render(request, 'add_doctor.html')
 
-
+@never_cache
+@login_required(login_url='signin')
 def generate_random_password(length=12):
     # Define characters to use for generating password
     characters = string.ascii_letters + string.digits + string.punctuation
@@ -1043,7 +1052,8 @@ def generate_random_password(length=12):
     return random_password
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def send_welcome_email(email, password):
     subject = 'Welcome to MediMingle'
     message = f'''Dear Doctor,
@@ -1261,14 +1271,16 @@ def make_payment(request, billing_id):
         # Pass the order ID to the payment page
         return render(request, 'payment.html', {'order_id': razorpay_order['id']})
 
-
+@never_cache
+@login_required(login_url='signin')
 def generate_receipt(request, bill_id):
     bill = Billing.objects.get(id=bill_id)
 
     return render(request, 'receipt_template.html', {'bill': bill})
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def generate_receipt_pdf(request, bill_id):
     # Retrieve the bill object from the database
     bill = Billing.objects.get(id=bill_id)
@@ -1336,7 +1348,8 @@ def reschedule_appointment(request, appointment_id):
     
     return render(request, 'reschedule_appointment.html', {'appointment': appointment})
 
-
+@never_cache
+@login_required(login_url='signin')
 def send_reschedule_email(patient_email, appointment):
     subject = 'Appointment Rescheduled'
     message = f"Your appointment with {appointment.doctor.user.get_full_name()} has been rescheduled to {appointment.appointment_datetime} at {appointment.appointment_time}."
@@ -1354,17 +1367,22 @@ def doc_suggest2(request):
     return render(request,'doc_suggest2.html')
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def my_doctors(request):
     current_patient = request.user.patient
     confirmed_appointments = Appointment.objects.filter(patient=current_patient, is_confirmed=True)
     return render(request, 'my_doctors.html', {'confirmed_appointments': confirmed_appointments})
 
+@never_cache
+@login_required(login_url='signin')
 def my_patients(request):
     current_doctor = request.user.doctor
     confirmed_appointments = Appointment.objects.filter(doctor=current_doctor, is_confirmed=True)
     return render(request, 'my_patients.html', {'confirmed_appointments': confirmed_appointments})
 
+@never_cache
+@login_required(login_url='signin')
 def medical_data(request):
     if request.method == 'POST':
         weight = request.POST.get('weight')
@@ -1392,7 +1410,8 @@ def medical_data(request):
     return render(request, 'medical_data.html')
 
 
-
+@never_cache
+@login_required(login_url='signin')
 def patient_details(request, patient_id):
     # Retrieve the patient object based on the patient_id
     patient = get_object_or_404(Patient, pk=patient_id)
@@ -1403,6 +1422,8 @@ def patient_details(request, patient_id):
     return render(request, 'patient_details.html', {'patient': patient, 'medical_data': medical_data})
 
 
+@never_cache
+@login_required(login_url='signin')
 def add_medical_data(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     if request.method == 'POST':
@@ -1428,10 +1449,16 @@ def add_medical_data(request, appointment_id):
 
     return render(request, 'add_medical_data.html')
 
+
+@never_cache
+@login_required(login_url='signin')
 def view_medical_data(request, appointment_id):
     medical_data = MedicalData.objects.filter(appointment_id=appointment_id).first()
     return render(request, 'view_medical_data.html', {'medical_data': medical_data})
 
+
+@never_cache
+@login_required(login_url='signin')
 def view_medical_history(request):
     current_patient = request.user.patient
     medical_data = MedicalData.objects.filter(patient=current_patient)
@@ -1480,6 +1507,9 @@ def view_medical_history(request):
 from django.shortcuts import render, redirect
 from .models import Prescription, Patient, Appointment
 
+
+@never_cache
+@login_required(login_url='signin')
 def add_prescription(request, patient_id, appointment_id):
     if request.method == 'POST':
         patient = Patient.objects.get(pk=patient_id)
@@ -1502,6 +1532,7 @@ def add_prescription(request, patient_id, appointment_id):
                 prescription_text=prescription_texts[i],
                 is_uploaded=True  # Convert to bool
             )
+        messages.success(request, 'Prescription added successfully!')
 
         subject = 'New Prescription Added'
         message = f"Dear {patient.user.first_name},\n\nDr. {doctor} has added a new prescription for you.\n\nMedicine Name: {medicine_names}\nIntake Time: {intake_times}\nDays: {days_list}\nPrescription Text: {prescription_texts}\n\nSincerely,\nThe MediMingle Team"
@@ -1518,7 +1549,60 @@ def add_prescription(request, patient_id, appointment_id):
 from django.shortcuts import render
 from .models import Prescription, Patient
 
+
+@never_cache
+@login_required(login_url='signin')
 def view_prescription(request, patient_id):
     patient = Patient.objects.get(pk=patient_id)
     prescriptions = Prescription.objects.filter(patient=patient)
     return render(request, 'view_prescription.html', {'patient': patient, 'prescriptions': prescriptions})
+
+
+
+# def add_rating(request, doctor_id):
+#     try:
+#         doctor = Doctor.objects.get(pk=doctor_id)
+#     except Doctor.DoesNotExist:
+#         raise Http404("Doctor does not exist")
+    
+#     if request.method == 'POST':
+#         rating_value = int(request.POST.get('rating'))
+#         patient = request.user.patient
+#         DoctorRating.objects.create(doctor=doctor, patient=patient, rating=rating_value)
+#         return redirect('my_doctors')
+#     else:
+#         return render(request, 'add_rating.html', {'doctor': doctor})
+
+@never_cache
+@login_required(login_url='signin')
+def add_rating(request, doctor_id):
+    if request.method == 'POST':
+        try:
+            doctor = Doctor.objects.get(pk=doctor_id)
+        except Doctor.DoesNotExist:
+            # Redirect to my_doctors page with error message if doctor does not exist
+            return redirect('my_doctors')
+        
+        rating_value = int(request.POST.get('rating'))
+        patient = request.user.patient
+        DoctorRating.objects.create(doctor=doctor, patient=patient, rating=rating_value)
+        
+        # Send plain text email notification to the doctor
+        subject = f'New Rating Added'
+        message = f"Hello {doctor.user.first_name},\n\nA new rating of {rating_value} stars has been added by {patient.user.get_full_name()} for your services.\n\nBest regards,\nTeam MediMingle"
+        from_email = 'medimingle@gmail.com'  # Update with your email
+        to_email = [doctor.user.email]
+        send_mail(subject, message, from_email, to_email)
+        messages.success(request, 'Rating added successfully!')
+
+        # Redirect back to my_doctors page with success message
+        return redirect('my_doctors')
+    else:
+        # Handle GET request (display the add_rating form)
+        try:
+            doctor = Doctor.objects.get(pk=doctor_id)
+        except Doctor.DoesNotExist:
+            # Redirect to my_doctors page with error message if doctor does not exist
+            return redirect('my_doctors')
+        
+        return render(request, 'add_rating.html', {'doctor': doctor})

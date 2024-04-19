@@ -65,9 +65,9 @@
 															  </td>	
 															  <td>
 																{% if appointment.medical_data_added %}
-																<a href="{% url 'view_medical_data' appointment.id %}">View</a>
+																<a href="{% url 'view_medical_data' appointment.id %}" class="btn btn-sm bg-primary-light"><i class="far fa-eye"></i>View</a>
 																{% else %}
-																<a href="{% url 'add_medical_data' appointment.id %}">Add</a>
+																<a href="{% url 'add_medical_data' appointment.id %}" class="btn btn-sm bg-success-light"><i class="fas fa-check"></i>Add</a>
 																{% endif %}
 															</td>
 															

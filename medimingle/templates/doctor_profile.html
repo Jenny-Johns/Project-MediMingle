@@ -26,12 +26,8 @@
                             <p class="doc-speciality">{{ specialization.specialized_category }}</p>
                             {% endfor %}
                             <div class="rating">
-                                <i class="fas fa-star filled"></i>
-                                <i class="fas fa-star filled"></i>
-                                <i class="fas fa-star filled"></i>
-                                <i class="fas fa-star filled"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="d-inline-block average-rating">(35)</span>
+                                <p>Best Rating: {% if best_rating %}{{ best_rating }}{% else %}No ratings available{% endif %}</p>
+
                             </div>
                             <p><strong>Gender:</strong> {{ doctor.gender }}</p>
                             <p><strong>Description:</strong> {{ doctor.description }}</p>

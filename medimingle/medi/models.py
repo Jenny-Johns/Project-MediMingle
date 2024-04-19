@@ -219,3 +219,13 @@ class Prescription(models.Model):
 
     def __str__(self):
         return f"Prescription for {self.patient} by Dr. {self.doctor}"
+
+
+class DoctorRating(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=((1, '1 Star'), (2, '2 Stars'), (3, '3 Stars'), (4, '4 Stars'), (5, '5 Stars')))
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Rating of {self.doctor} by {self.patient}"

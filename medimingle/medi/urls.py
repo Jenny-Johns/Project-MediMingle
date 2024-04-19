@@ -105,5 +105,5 @@ path('my_patients/', views.my_patients, name='my_patients'),
 path('add_prescription/<int:patient_id>/<int:appointment_id>/', views.add_prescription, name='add_prescription'),
     path('view_prescription/<int:patient_id>/', views.view_prescription, name='view_prescription'),
 
-
+path('add_rating/<int:doctor_id>/', views.add_rating, name='add_rating'),
 ]

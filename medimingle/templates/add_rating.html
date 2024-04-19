@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Rating</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- RateYo CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css" />
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Add Rating for {{ doctor }}</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div id="rateYo"></div>
+            <input type="hidden" name="rating" id="rating_input">
+            <button type="submit" class="btn btn-primary mt-3">Submit Rating</button>
+        </form>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- RateYo JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+    <script>
+        $(function () {
+            $("#rateYo").rateYo({
+                rating: 0,
+                fullStar: true,
+                onSet: function (rating, rateYoInstance) {
+                    $("#rating_input").val(rating);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

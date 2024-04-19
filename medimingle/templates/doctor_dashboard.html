@@ -96,14 +96,14 @@
 																			{% endif %}
 																		</td>
 																		<td>
-																			<a href="{% url 'patient_details' appointment.patient.id %}" class="btn btn-info">View</a> <!-- Link to patient details -->
+																			<a href="{% url 'patient_details' appointment.patient.id %}" class="btn btn-sm bg-primary-light"><i class="far fa-eye"></i>View</a> <!-- Link to patient details -->
 																		</td>
 																		<td>
 																			{% if not appointment.is_confirmed %}
 																				<form action="{% url 'confirm_appointment' appointment.id %}" method="post">
 																					{% csrf_token %}
-																					<button type="submit" class="btn btn-success" name="action" value="approve">Approve</button>
-																					<button type="submit" class="btn btn-danger" name="action" value="reject">Reject</button>
+																					<button type="submit" class="btn btn-sm bg-success-light" name="action" value="approve"><i class="fas fa-check"></i>Approve</button>
+																					<button type="submit" class="btn btn-sm bg-danger-light" name="action" value="reject"><i class="fas fa-times"></i>Reject</button>
 																				</form>
 																			{% else %}
 																				<a href="{% url 'reschedule_appointment' appointment.id %}" class="btn btn-primary">Reschedule</a>

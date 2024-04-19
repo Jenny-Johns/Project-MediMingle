@@ -1,48 +1,254 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Prescriptions</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        /* Optional: Add custom styles here */
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Prescriptions</h2>
-        <div class="table-responsive">
-            <table class="table table-striped">
+{% load static %}
+{% include "includes/doc_header.html" %}
+						
+						<div class="col-md-7 col-lg-8 col-xl-9">
+
+							<div class="row">
+								<div class="col-md-12">
+									<div class="row">
+										<div class="col-sm-12">
+											{% if messages %}
+									<div class="messages">
+										{% for message in messages %}
+											<h4 class="{{ message.tags }}">{{ message }}</h4>
+										{% endfor %}
+									</div>
+								{% endif %}
+									<div class="card dash-card">
+										<div class="card-body">
+											<div class="row">
+												<div class="col-md-12 col-lg-4">
+													<div class="dash-widget dct-border-rht">
+														<div class="circle-bar circle-bar1">
+															<div class="circle-graph1" data-percent="75">
+																<img src="{% static '/assets/img/icon-01.png' %}" class="img-fluid" alt="patient">
+															</div>
+														</div>
+														
+													</div>
+												</div>
+												
+											
+												
+												<div class="col-md-12 col-lg-4">
+													<div class="dash-widget">
+														<div class="circle-bar circle-bar3">
+															<div class="circle-graph3" data-percent="50">
+																<img src="{% static '/assets/img/icon-03.png' %}" class="img-fluid" alt="Patient">
+															</div>
+														</div>
+														
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="col-md-12">
+        <h2>Added Prescriptions</h2>
+									<div class="appointment-tab">
+									
+										<!-- Appointment Tab -->
+										
+										<!-- /Appointment Tab -->
+										
+										<div class="tab-content">
+										
+											<!-- Upcoming Appointment Tab -->
+											<div class="tab-pane show active" id="upcoming-appointments">
+												<div class="card card-table mb-0">
+													<div class="card-body">
+														<div class="table-responsive">
+															{% comment %} <table class="table table-hover table-center mb-0"> {% endcomment %}
+																
+        <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Patient</th>
                         <th>Medicine Name</th>
                         <th>Intake Time</th>
                         <th>Days</th>
                         <th>Prescription Text</th>
-                        <th>Is Uploaded</th>
                         <th>Added Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for prescription in prescriptions %}
                     <tr>
+                        <td>{{ prescription.patient }}</td>
                         <td>{{ prescription.medicine_name }}</td>
                         <td>{{ prescription.intake_time }}</td>
                         <td>{{ prescription.days }}</td>
                         <td>{{ prescription.prescription_text }}</td>
-                        <td>{% if prescription.is_uploaded %} Yes {% else %} No {% endif %}</td>
                         <td>{{ prescription.prescription_added_date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- Bootstrap JS (Optional) -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- jQuery (Optional, required if you're using Bootstrap's JS features) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-</body>
+            </table>	
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- /Upcoming Appointment Tab -->
+									   
+											<!-- Today Appointment Tab -->
+											<div class="tab-pane" id="today-appointments">
+												<div class="card card-table mb-0">
+													<div class="card-body">
+														<div class="table-responsive">
+																	
+														</div>	
+													</div>	
+												</div>	
+											</div>
+											<!-- /Today Appointment Tab -->
+											
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+			</div>	
+			<!-- /Page Content -->
+   
+			<!-- Footer -->
+			<footer class="footer">
+				
+				<!-- Footer Top -->
+				<div class="footer-top">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-about">
+									<div class="footer-logo">
+										<img src="{% static '/assets/img/logo.png' %}" alt="logo">
+									</div>
+									<div class="footer-about-content">
+										<p>Making Healthcare Better Together. </p>
+										<div class="social-icon">
+											<ul>
+												
+											</ul>
+										</div>
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-menu">
+									
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-menu">
+									
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+							<div class="col-lg-3 col-md-6">
+							
+								<!-- Footer Widget -->
+								<div class="footer-widget footer-contact">
+									<h2 class="footer-title">Contact Us</h2>
+									<div class="footer-contact-info">
+										
+										<p>
+											<i class="fas fa-phone-alt"></i>
+											7306741729
+										</p>
+										<p class="mb-0">
+											<i class="fas fa-envelope"></i>
+											medimingle@gmail.com
+										</p>
+									</div>
+								</div>
+								<!-- /Footer Widget -->
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<!-- /Footer Top -->
+				
+				<!-- Footer Bottom -->
+                <div class="footer-bottom">
+					<div class="container-fluid">
+					
+						<!-- Copyright -->
+						
+								
+									<!-- Copyright Menu -->
+									<!-- /Copyright Menu -->
+									
+								</div>
+							</div>
+						</div>
+						<!-- /Copyright -->
+						
+					</div>
+				</div>
+				<!-- /Footer Bottom -->
+				
+			</footer>
+			<!-- /Footer -->
+		   
+		</div>
+		<!-- /Main Wrapper -->
+	  
+		<!-- jQuery -->
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				// Function to clear notifications
+				function clearNotifications() {
+					var notificationList = document.querySelector(".notification-list");
+					notificationList.innerHTML = ""; // Remove all notification items
+				}
+		
+				// Event listener for the "Clear Notifications" button
+				document.getElementById("clear-notifications").addEventListener("click", function() {
+					clearNotifications(); // Call the function to clear notifications
+				});
+			});
+		</script>
+		<script src="{% static '/assets/js/jquery.min.js' %}"></script>
+		
+		<!-- Bootstrap Core JS -->
+		<script src="{% static '/assets/js/popper.min.js' %}"></script>
+		<script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
+		
+		<!-- Sticky Sidebar JS -->
+        <script src="{% static '/assets/plugins/theia-sticky-sidebar/ResizeSensor.js' %}"></script>
+        <script src="{% static '/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js' %}"></script>
+		
+		<!-- Circle Progress JS -->
+		<script src="{% static '/assets/js/circle-progress.min.js' %}"></script>
+		
+		<!-- Custom JS -->
+		<script src="{% static '/assets/js/script.js' %}"></script>
+		
+	</body>
+
+<!-- doccure/doctor-dashboard.html  30 Nov 2019 04:12:09 GMT -->
 </html>
