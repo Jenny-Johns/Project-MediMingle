@@ -1,0 +1,184 @@
+{% load static %}
+{% include "includes/pat_header.html" %}
+<!-- /Profile Sidebar -->
+<style>
+    .error-message {
+        color: red;
+        font-size: 0.8rem;
+    }
+
+    .valid-input {
+        border-color: green !important;
+    }
+
+    .invalid-input {
+        border-color: red !important;
+    }
+</style>
+<div class="col-md-7 col-lg-8 col-xl-9">
+    <div class="card">
+        {% if prescriptions %}
+        <div class="card-body">
+            <h1>Prescriptions</h1>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Patient</th>
+                        <th>Medicine Name</th>
+                        <th>Intake Time</th>
+                        <th>Days</th>
+                        <th>Prescription Added Date</th>
+                        <th>Prescription Text</th>
+                        <th>Is Uploaded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prescription in prescriptions %}
+                    <tr>
+                        <td>{{ prescription.doctor }}</td>
+                        <td>{{ prescription.patient }}</td>
+                        <td>{{ prescription.medicine_name }}</td>
+                        <td>{{ prescription.intake_time }}</td>
+                        <td>{{ prescription.days }}</td>
+                        <td>{{ prescription.prescription_added_date }}</td>
+                        <td>{{ prescription.prescription_text }}</td>
+                        <td>{{ prescription.is_uploaded }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card-body">
+            <h1>No Prescriptions</h1>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+
+    <!-- Footer Top -->
+    <div class="footer-top">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+
+                    <!-- Footer Widget -->
+                    <div class="footer-widget footer-about">
+                        <div class="footer-logo">
+                            <img src="{% static '/assets/img/logo.png' %}" alt="logo">
+                        </div>
+                        <div class="footer-about-content">
+                            <p>Making Healthcare Better Together</p>
+                            <div class="social-icon">
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Footer Widget -->
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <!-- Footer Widget -->
+                    <div class="footer-widget footer-menu">
+
+                    </div>
+                    <!-- /Footer Widget -->
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <!-- Footer Widget -->
+                    <div class="footer-widget footer-menu">
+
+                    </div>
+                    <!-- /Footer Widget -->
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <!-- Footer Widget -->
+                    <div class="footer-widget footer-contact">
+                        <h2 class="footer-title">Contact Us</h2>
+                        <div class="footer-contact-info">
+
+                            <p>
+                                <i class="fas fa-phone-alt"></i>
+                                7606741729
+                            </p>
+                            <p class="mb-0">
+                                <i class="fas fa-envelope"></i>
+                                medimingle@gmail.com
+                            </p>
+                        </div>
+                    </div>
+                    <!-- /Footer Widget -->
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- /Footer Top -->
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+        <div class="container-fluid">
+
+            <!-- Copyright -->
+            <div class="copyright">
+                <div class="row">
+
+                    <div class="col-md-6 col-lg-6">
+
+                        <!-- Copyright Menu -->
+
+                        <!-- /Copyright Menu -->
+
+                    </div>
+                </div>
+            </div>
+            <!-- /Copyright -->
+
+        </div>
+    </div>
+    <!-- /Footer Bottom -->
+
+</footer>
+<!-- /Footer -->
+
+</div>
+<!-- /Main Wrapper -->
+
+<script src="{% static '/assets/js/jquery.min.js' %}"></script>
+
+<!-- Bootstrap Core JS -->
+<script src="{% static '/assets/js/popper.min.js' %}"></script>
+<script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
+
+<!-- Select2 JS -->
+<script src="{% static '/assets/plugins/select2/js/select2.min.js' %}"></script>
+
+<!-- Datetimepicker JS -->
+<script src="{% static '/assets/js/moment.min.js' %}"></script>
+<script src="{% static '/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+
+<!-- Sticky Sidebar JS -->
+<script src="{% static '/assets/plugins/theia-sticky-sidebar/ResizeSensor.js' %}"></script>
+<script src="{% static '/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js' %}"></script>
+
+<!-- Custom JS -->
+<script src="{% static '/assets/js/script.js' %}"></script>
+
+</body>
+
+</html>

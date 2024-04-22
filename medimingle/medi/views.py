@@ -1192,7 +1192,8 @@ def confirm_appointment(request, appointment_id):
                 doctor=appointment.doctor,
                 patient=appointment.patient,
                 appointment=appointment,
-                amount=appointment.doctor.consulting_fee, 
+                amount=appointment.doctor.consulting_fee,
+                is_bill_paid=False, 
             )
 
         elif action == 'reject':
@@ -1557,6 +1558,11 @@ def view_prescription(request, patient_id):
     prescriptions = Prescription.objects.filter(patient=patient)
     return render(request, 'view_prescription.html', {'patient': patient, 'prescriptions': prescriptions})
 
+def view_prescriptions(request, doctor_id):
+    current_patient = request.user.patient
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    prescriptions = Prescription.objects.filter(patient=current_patient, doctor=doctor)
+    return render(request, 'view_prescriptions.html', {'prescriptions': prescriptions})
 
 
 # def add_rating(request, doctor_id):

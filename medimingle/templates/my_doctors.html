@@ -29,6 +29,7 @@
                 <th>Date</th>
                 <th>Time</th>
                 <th>Status</th>
+				<th>Prescriptions</th>
 				<th>Rating</th>
             </tr>
         </thead>
@@ -39,6 +40,9 @@
                 <td>{{ appointment.appointment_time_slot.appointment_date }}</td>
                 <td>{{ appointment.appointment_time }}</td>
                 <td>Confirmed</td>
+				<td>
+					<a href="{% url 'view_prescriptions' doctor_id=appointment.doctor.id %}" class="btn btn-primary">View Prescriptions</a>
+				</td>
 				<td>
 					<a href="{% url 'add_rating' doctor_id=appointment.doctor.id %}" class="btn btn-primary">Add Rating</a>
 				</td>
