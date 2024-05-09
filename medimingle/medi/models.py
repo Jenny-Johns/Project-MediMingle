@@ -36,12 +36,9 @@ class Doctor(models.Model):
         return self.user.first_name
     
 
-
 class DoctorSpecialization(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
-    specialized_category  = models.CharField(max_length=50, null=True)
-    
-    
+    specialized_category  = models.CharField(max_length=50, null=True)   
     def __str__(self):
         return self.specialized_category
 
@@ -51,7 +48,6 @@ class Qualification(models.Model):
     qualification_degree = models.CharField(max_length=50, null=True)
     years_of_completion = models.DateField(null=True)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-
     def __str__(self):
         return self.institution_name
 
@@ -61,11 +57,8 @@ class Experience(models.Model):
     worked_to = models.DateField(null=True)
     designation = models.CharField(max_length=50, null=True)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-
     def __str__(self):
         return self.hospital_name
-
-
 
 class Patient(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
@@ -79,13 +72,8 @@ class Patient(models.Model):
     date_of_birth = models.DateField(null=True)
     address=models.TextField(null=True)
     pin=models.CharField(max_length=6,null=True)
-
     def __str__(self):
         return self.user.first_name
-
-
-
-
 
 class MedicalHistory(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
@@ -94,48 +82,8 @@ class MedicalHistory(models.Model):
     reason_for_consultation = models.TextField()
     previous_medical_condition = models.TextField()
     diabetic_patient = models.CharField(max_length=3, choices=(('Yes', 'Yes'), ('No', 'No')))
-
     def __str__(self):
         return f'Medical history of {self.patient.user.first_name}'
-
-
-
-# class Prescription(models.Model):
-#     name =  models.CharField(max_length=50, null=True)
-#     quantity  = models.CharField(max_length=50, null=True)
-#     days = models.CharField(max_length=50, null=True)
-#     morning = models.CharField(max_length=10, null=True)
-#     afternoon = models.CharField(max_length=10, null=True)
-#     evening = models.CharField(max_length=10, null=True)
-#     night = models.CharField(max_length=10, null=True)
-#     doctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING, null=True)
-#     patient = models.ForeignKey(Patient, on_delete=models.DO_NOTHING, null=True)
-#     uploaded_date = models.DateTimeField(default=datetime.now, blank=True)
-    
-
-
-
-
-# class AppointmentTime(models.Model):
-#     day = models.CharField(max_length=50, null=True)
-#     from_to = models.CharField(max_length=50, null=True) # Time
-#     appointment_date = models.DateField(null=True)
-#     month = models.CharField(max_length=50, null=True)
-#     date = models.CharField(max_length=50, null=True)
-#     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
-#     def __str__(self):
-#         return self.day
-
-# class Appointment(models.Model):
-#     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-#     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-#     appointment_datetime = models.DateField(null=True)
-#     appointment_time = models.CharField(max_length=20,null=True)
-#     is_confirmed = models.BooleanField(default=False)
-#     def __str__(self):
-#         return self.appointment_datetime
-    
-
 
 class AppointmentTime(models.Model):
     day = models.CharField(max_length=50, null=True)
@@ -147,7 +95,6 @@ class AppointmentTime(models.Model):
     is_booked=models.BooleanField(default=False)
     def __str__(self):
         return self.date
-
 
 class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
@@ -168,9 +115,6 @@ class Notification(models.Model):
     def __str__(self):
         return self.timestamp
     
-
-
-
 class Billing(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
@@ -178,10 +122,8 @@ class Billing(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField(auto_now_add=True)
     is_bill_paid = models.BooleanField(default=False)
-
     def __str__(self):
         return f"Billing for {self.doctor} by {self.patient}"
-
 
 class MedicalData(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
@@ -190,13 +132,8 @@ class MedicalData(models.Model):
     reason_for_consultation = models.TextField()
     previous_medical_condition = models.TextField()
     any_other_illness = models.TextField()
-
     def __str__(self):
         return f'Medical data for {self.patient.user.first_name}'
-    
-
-from django.db import models
-from .models import Doctor, Patient, Appointment
 
 class Prescription(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
@@ -216,16 +153,14 @@ class Prescription(models.Model):
     prescription_added_date = models.DateTimeField(auto_now_add=True)
     prescription_text = models.TextField(blank=True, null=True)
     is_uploaded = models.BooleanField(default=False)
-
     def __str__(self):
         return f"Prescription for {self.patient} by Dr. {self.doctor}"
-
 
 class DoctorRating(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     rating = models.IntegerField(choices=((1, '1 Star'), (2, '2 Stars'), (3, '3 Stars'), (4, '4 Stars'), (5, '5 Stars')))
     date_added = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return f"Rating of {self.doctor} by {self.patient}"
+    

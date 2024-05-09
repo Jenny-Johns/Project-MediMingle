@@ -1,4 +1,4 @@
-# Test 1: Login test
+# # Test 1: Login test
 
 from django.test import LiveServerTestCase
 from selenium import webdriver
@@ -23,7 +23,7 @@ class LoginformTest(LiveServerTestCase):
         assert 'Admin Dashboard' in driver.page_source
 
 
-# Test 2: Viewing doctor profile
+# # Test 2: Viewing doctor profile
 
 
 
@@ -37,7 +37,7 @@ class ViewDoctorTest(LiveServerTestCase):
 
     def setUp(self):
         self.username = 'jennyjohnson00137@gmail.com'
-        self.password = 'joshu@123'
+        self.password = 'justin@123'
 
         self.driver = webdriver.Chrome()
 
@@ -82,7 +82,7 @@ class ViewDoctorTest(LiveServerTestCase):
 
 
 
-# Test 3: Booking appointment
+# # Test 3: Booking appointment
 
 from django.test import LiveServerTestCase
 from selenium import webdriver
@@ -95,7 +95,7 @@ class DoctorBookingTest(LiveServerTestCase):
 
     def setUp(self):
         self.username = 'jennyjohnson00137@gmail.com'
-        self.password = 'joshu@123'
+        self.password = 'justin@123'
 
         self.driver = webdriver.Chrome()
 
@@ -148,7 +148,7 @@ class DoctorBookingTest(LiveServerTestCase):
 
 
 
-# Test 4: Doctor approving appointment
+# # Test 4: Doctor approving appointment
 
 from django.test import LiveServerTestCase
 from selenium import webdriver
@@ -160,8 +160,8 @@ from selenium.webdriver.support.ui import Select
 class DoctorApprovalTest(LiveServerTestCase):
 
     def setUp(self):
-        self.username = 'jeevaragnp2024b@mca.ajce.in'
-        self.password = 'jeeva@123'
+        self.username = 'alfiyaps2024a@mca.ajce.in'
+        self.password = 'adhil@123'
 
         self.driver = webdriver.Chrome()
 
@@ -200,7 +200,7 @@ class DoctorApprovalTest(LiveServerTestCase):
 
 
 
-# Test 5: Doctor adding slot
+# # Test 5: Doctor adding slot
 
 from django.test import LiveServerTestCase
 from selenium import webdriver
@@ -212,8 +212,8 @@ from selenium.webdriver.support.ui import Select
 class DoctorAddSlotTest(LiveServerTestCase):
 
     def setUp(self):
-        self.username = 'jennyjohnson2024b@mca.ajce.in'
-        self.password = 'jenny@123'
+        self.username = 'aleenaannshaji2024a@mca.ajce.in'
+        self.password = 'albin@123'
 
         self.driver = webdriver.Chrome()
 
@@ -247,7 +247,7 @@ class DoctorAddSlotTest(LiveServerTestCase):
         # Step 6: Fill and submit the form
         date_input = self.driver.find_element(By.ID, 'date')
         date_input.clear()  
-        date_input.send_keys('06-04-2024')  
+        date_input.send_keys('06-05-2024')  
 
         # Select checkboxes by their IDs
         checkboxes = ['slot1', 'slot2', 'slot3']  

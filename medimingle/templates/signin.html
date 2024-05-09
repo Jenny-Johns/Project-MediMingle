@@ -112,7 +112,10 @@
 												<label class="focus-label">Email</label>
 											</div>
 											<div class="form-group form-focus">
-												<input name="password" type="password" class="form-control floating">
+												<div class="password-container">
+													<input id="passwordInput" name="password" type="password" class="form-control floating">
+													<span toggle="#passwordInput" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+												</div>
 												<label class="focus-label">Password</label>
 											</div>
 											<div class="text-right">
@@ -253,7 +256,33 @@
 		   
 		</div>
 		<!-- /Main Wrapper -->
-	  
+		<style>
+			.password-container {
+				position: relative;
+			}
+		
+			.password-container .toggle-password {
+				position: absolute;
+				top: 50%;
+				right: 10px;
+				transform: translateY(-50%);
+				cursor: pointer;
+			}
+		</style>
+		
+		<script>
+			// JavaScript for toggling password visibility
+			document.addEventListener('DOMContentLoaded', function () {
+				const togglePassword = document.querySelector('.toggle-password');
+				const passwordInput = document.querySelector('#passwordInput');
+		
+				togglePassword.addEventListener('click', function () {
+					const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+					passwordInput.setAttribute('type', type);
+					this.classList.toggle('fa-eye-slash');
+				});
+			});
+		</script>
 		<!-- jQuery -->
 		<script src="{% static '/assets/js/jquery.min.js'%}"></script>
 		

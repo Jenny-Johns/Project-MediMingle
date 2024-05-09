@@ -117,10 +117,8 @@ def index(request):
             else:
                 context = {'no_record_message': 'No records found.', 'search_performed': True}
         else:
-            # If the search query is empty, don't perform the search and don't show the message
             context = {'search_performed': False}
     else:
-        # For GET requests, simply render the template without any context
         context = {'search_performed': False}
 
     return render(request, 'index.html', context)
@@ -140,31 +138,22 @@ def register(request):
             phone_number=request.POST['phone_number']
             password=request.POST['password']
             user_type=request.POST['user_type']
-            
-            # Create tbl_user instance
-            user = tbl_user.objects.create_user(username=username, first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, user_type=user_type)
+            user = tbl_user.objects.create_user(username=username, first_name=first_name, last_name=last_name,
+                                                 email=email, phone_number=phone_number, user_type=user_type)
             user.set_password(password)
             user.save()
-            
-            # Check if the user is registering as a doctor
             if user_type == 'doctor':
-                # Create Doctor instance
                 doctor = Doctor.objects.create(user=user)
             else:
                 patient=Patient.objects.create(user=user)
-
-            # user=tbl_user(username=username,first_name=first_name,last_name=last_name,email=email,phone_number=phone_number,user_type=user_type)
-            # user.set_password(password)
-            # user.user_type = user_type
-            # user.phone_number = phone_number
-            # user.save();
             current_site = get_current_site(request)
-            activation_link = f"{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{account_activation_token.make_token(user)}/"
+            activation_link = f"{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/
+            {account_activation_token.make_token(user)}/"
             print(activation_link)
 
-            # Send activation email
             subject = 'Activate Your Medimingle Account'
-            message = f'Hi {user.first_name},\n\nClick the link below to activate your account:\n\n{activation_link}\n\nBest regards,\nThe Medimingle Team'
+            message = f'Hi {user.first_name},\n\nClick the link below to activate your account:\n\n
+            {activation_link}\n\nBest regards,\nThe Medimingle Team'
             send_mail(subject, message, 'medimingle@gmail.com', [user.email])
             messages.success(request, "You have registered successfully. Verify your email and login.")
             return redirect('signin')
@@ -691,38 +680,28 @@ from django.db.models import Q
 @login_required(login_url='signin')
 def schedule_timings(request):
     doctor = get_object_or_404(Doctor, user=request.user)
-    
     if request.method == 'POST':
         date_str = request.POST.get('date')
         selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        
         if selected_date <= now().date():
             messages.error(request, "Please select a future date.")
-            return redirect('schedule_timings')  # Redirect back to the same page
-        
-        max_date = now().date() + timedelta(days=7)  # Max date (today + 7 days)
+            return redirect('schedule_timings')  
+        max_date = now().date() + timedelta(days=7)  
         if selected_date > max_date:
             messages.error(request, "Please select a date within the next week.")
-            return redirect('schedule_timings')  # Redirect back to the same page
-        
+            return redirect('schedule_timings')  
         slots_selected = request.POST.getlist('slots')
-        
         if len(slots_selected) < 1 or len(slots_selected) > 10:
             messages.error(request, "Please select slots.")
-            return redirect('schedule_timings')  # Redirect back to the same page
-        
-        # Check if slots already exist for the selected date and doctor
+            return redirect('schedule_timings')  
         existing_slots = AppointmentTime.objects.filter(
             doctor=doctor,
             appointment_date=selected_date,
             from_to__in=slots_selected
         )
-        
         if existing_slots.exists():
             messages.error(request, "Slots already exist for the selected date.")
-            return redirect('schedule_timings')  # Redirect back to the same page
-        
-        # Create new slots
+            return redirect('schedule_timings')  
         for slot_time in slots_selected:
             appointment_time = AppointmentTime.objects.create(
                 day=selected_date.strftime("%A"),
@@ -733,19 +712,15 @@ def schedule_timings(request):
                 doctor=doctor
             )
             appointment_time.save()
-        
         messages.success(request, 'Slots added successfully.')
-        return redirect('schedule_timings')  # Redirect back to the same page
+        return redirect('schedule_timings')  
     doctor_slots = AppointmentTime.objects.filter(doctor=doctor, is_booked=False).order_by('appointment_date', 'from_to')
-
-    # Group slots by appointment date
     grouped_slots = {}
     for slot in doctor_slots:
         appointment_date = slot.appointment_date.strftime("%d %b %Y")
         if appointment_date not in grouped_slots:
             grouped_slots[appointment_date] = []
         grouped_slots[appointment_date].append(slot)
-
     context = {'grouped_slots': grouped_slots}
     return render(request, 'schedule_timings.html', context)
 
@@ -1088,41 +1063,27 @@ def send_welcome_email(email, password):
 def confirm_booking(request, doctor_id):
     if request.method == 'POST':
         selected_slot = request.POST.get('from_to')
-
-        print("Selected slot:", selected_slot)  # Add this line for debugging
-
-
-        print("Selected slot:", selected_slot)  # Add this line for debugging
+        print("Selected slot:", selected_slot) 
+        print("Selected slot:", selected_slot)  
         date_and_time_range = selected_slot.split('-')
-        print("Split result:", date_and_time_range)  # Add this line for debugging
-        if len(date_and_time_range) >= 4:  # Ensure there are at least four parts
-            slot_date = '-'.join(date_and_time_range[:3]).strip()  # Extracting the date part
-            slot_time = '-'.join(date_and_time_range[3:]).strip()  # Extracting the time range part
+        print("Split result:", date_and_time_range) 
+        if len(date_and_time_range) >= 4:  
+            slot_date = '-'.join(date_and_time_range[:3]).strip()  
+            slot_time = '-'.join(date_and_time_range[3:]).strip()  
             patient_id = request.user.patient.id
-            print("Slot date:", slot_date)  # Add this line for debugging
-            print("Slot time:", slot_time)  # Add this line for debugging
-
-
-
-
-
+            print("Slot date:", slot_date)  
+            print("Slot time:", slot_time)  
         doctor = Doctor.objects.get(id=doctor_id)
         doctor_name = doctor.user.get_full_name()
         fee=doctor.consulting_fee
         appointment_time_slot = AppointmentTime.objects.get(doctor=doctor, from_to=slot_time,appointment_date=slot_date)
-
-
-        # Create Appointment instance
         appointment = Appointment.objects.create(
             doctor=doctor,
             patient_id=patient_id,
             appointment_time_slot=appointment_time_slot,
             appointment_datetime=slot_date,
             appointment_time=slot_time,
-            is_confirmed=False  # Set as unconfirmed initially
-        )
-
-        # Construct email message
+            is_confirmed=False  )
         subject = 'New Appointment Booking'
         email_message = (
             f"Dear {doctor_name},\n\n"
@@ -1130,22 +1091,16 @@ def confirm_booking(request, doctor_id):
             f"Date: {slot_date}\n"
             f"Time: {slot_time}\n"
             f"Patient: {request.user.get_full_name()}\n\n"
-            "Thank you.\n"
-        )
-
-        # Send email to the doctor
+            "Thank you.\n")
         from_email = 'medimingle@gmail.com'  # Replace with your email address
         to_email = doctor.user.email
         send_mail(subject, email_message, from_email, [to_email])
         messages.success(request, "An email has been sent to the corresponding doctor. Please wait for their response.")
-
-
         appointment_time_slot.is_booked = True
         appointment_time_slot.save()
         Notification.objects.create(
             doctor=doctor,
-            message=f"A new appointment has been booked for {slot_date} at {slot_time} by {request.user.get_full_name()}"
-        )
+            message=f"A new appointment has been booked for {slot_date} at {slot_time} by {request.user.get_full_name()}")
 
 
         context = {
@@ -1166,17 +1121,13 @@ def confirm_booking(request, doctor_id):
 @login_required(login_url='signin')
 def confirm_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
-    
     if appointment.doctor != request.user.doctor:
         return redirect('doctor_dashboard')  # Redirect if not authorized
-
     if request.method == 'POST':
         action = request.POST.get('action')
-
         if action == 'approve':
             appointment.is_confirmed = True
             appointment.save()
-
             subject = 'Appointment Confirmation'
             message = f'Your appointment with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been confirmed.'
             from_email = 'medimingle@gmail.com'  # Your email address
@@ -1185,33 +1136,24 @@ def confirm_appointment(request, appointment_id):
             messages.success(request, "Your appointment has been confirmed.")
             Notification.objects.create(
                 patient=appointment.patient,
-                message=message
-            )
-
+                message=message )
             Billing.objects.create(
-                doctor=appointment.doctor,
-                patient=appointment.patient,
-                appointment=appointment,
-                amount=appointment.doctor.consulting_fee,
-                is_bill_paid=False, 
-            )
-
+                doctor=appointment.doctor,patient=appointment.patient,appointment=appointment,
+                amount=appointment.doctor.consulting_fee,is_bill_paid=False,  )
         elif action == 'reject':
             appointment.delete()
             subject = 'Cancellation'
-            message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been rejected by the doctor due to some reasons.'
-            from_email = 'medimingle@gmail.com'  # Your email address
+            message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} 
+            has been rejected by the doctor due to some reasons.'
+            from_email = 'medimingle@gmail.com'  
             to_email = appointment.patient.user.email
             send_mail(subject, message, from_email, [to_email])
             Notification.objects.create(
                 patient=appointment.patient,
-                message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been rejected by the doctor due to some reasons.'
-            )
-         
-        
-        return redirect('doctor_dashboard')  # Redirect to doctor dashboard after action
-    else:
+                message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} 
+                has been rejected by the doctor due to some reasons.')
         return redirect('doctor_dashboard')
+       
 
 
 @never_cache
@@ -1310,43 +1252,30 @@ from datetime import datetime, timedelta
 def reschedule_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     doctor = appointment.doctor
-    
     if request.method == 'POST':
         new_date_str = request.POST.get('new_date')
         new_time = request.POST.get('new_time')
-        
-        # Convert new_date_str to a datetime object
         new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
-        
-        # Check if the new date is within 7 days from today
         today = datetime.now().date()
         max_date = today + timedelta(days=7)
         if new_date > max_date:
             messages.error(request, 'You can only select a date within 7 days from today.')
             return redirect('reschedule_appointment', appointment_id=appointment_id)
-        
     
-        # Check if the selected date and time combination already exists
         existing_slot = Appointment.objects.filter(
             Q(doctor=appointment.doctor) &
             Q(appointment_datetime=new_date_str) &
             Q(appointment_time=new_time)
-        ).exclude(id=appointment_id).exists()  # Exclude the current appointment
-        
+        ).exclude(id=appointment_id).exists()  
         if existing_slot:
             messages.error(request, 'This slot is already booked.')
             return redirect('reschedule_appointment', appointment_id=appointment_id)
-        
         appointment.appointment_datetime = new_date_str
         appointment.appointment_time = new_time
         appointment.save()
-        
-        # Send email notification to the patient
         send_reschedule_email(appointment.patient.user.email, appointment)
         messages.success(request, 'Appointment rescheduled successfully.')
-        # Redirect back to doctor dashboard or any other desired page
-        return redirect('doctor_dashboard')  # Replace 'doctor_dashboard' with your actual URL name
-    
+        return redirect('doctor_dashboard')  
     return render(request, 'reschedule_appointment.html', {'appointment': appointment})
 
 @never_cache
@@ -1586,29 +1515,20 @@ def add_rating(request, doctor_id):
         try:
             doctor = Doctor.objects.get(pk=doctor_id)
         except Doctor.DoesNotExist:
-            # Redirect to my_doctors page with error message if doctor does not exist
             return redirect('my_doctors')
-        
         rating_value = int(request.POST.get('rating'))
         patient = request.user.patient
         DoctorRating.objects.create(doctor=doctor, patient=patient, rating=rating_value)
-        
-        # Send plain text email notification to the doctor
         subject = f'New Rating Added'
         message = f"Hello {doctor.user.first_name},\n\nA new rating of {rating_value} stars has been added by {patient.user.get_full_name()} for your services.\n\nBest regards,\nTeam MediMingle"
-        from_email = 'medimingle@gmail.com'  # Update with your email
+        from_email = 'medimingle@gmail.com'  
         to_email = [doctor.user.email]
         send_mail(subject, message, from_email, to_email)
         messages.success(request, 'Rating added successfully!')
-
-        # Redirect back to my_doctors page with success message
         return redirect('my_doctors')
     else:
-        # Handle GET request (display the add_rating form)
         try:
             doctor = Doctor.objects.get(pk=doctor_id)
         except Doctor.DoesNotExist:
-            # Redirect to my_doctors page with error message if doctor does not exist
             return redirect('my_doctors')
-        
         return render(request, 'add_rating.html', {'doctor': doctor})
