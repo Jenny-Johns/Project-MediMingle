@@ -93,6 +93,9 @@
 																				Confirmed
 																			{% else %}
 																				Pending
+																				{% if appointment.is_complete %}
+																				Completed
+																				{% endif %}
 																			{% endif %}
 																		</td>
 																		<td>
@@ -105,8 +108,15 @@
 																					<button type="submit" class="btn btn-sm bg-success-light" name="action" value="approve"><i class="fas fa-check"></i>Approve</button>
 																					<button type="submit" class="btn btn-sm bg-danger-light" name="action" value="reject"><i class="fas fa-times"></i>Reject</button>
 																				</form>
-																			{% else %}
-																				<a href="{% url 'reschedule_appointment' appointment.id %}" class="btn btn-primary">Reschedule</a>
+																				{% else %}
+																					<a href="{% url 'reschedule_appointment' appointment.id %}" class="btn btn-warning">Reschedule</a>
+																					{% if not appointment.is_complete %}
+																						<!-- Button for completing appointment -->
+																						<a href="{% url 'complete_appointment' appointment.id %}" class="btn btn-primary">Complete</a>
+																					{% else %}
+																						<!-- Button for indicating that appointment is done -->
+																						<button class="btn btn-success" disabled>Done</button>
+																					{% endif %}
 																			{% endif %}
 																		</td>
 																	</tr>

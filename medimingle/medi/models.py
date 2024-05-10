@@ -62,11 +62,12 @@ class Experience(models.Model):
 
 class Patient(models.Model):
     user = models.OneToOneField(tbl_user, on_delete=models.CASCADE)
-    profile_image = models.ImageField(upload_to='doctor/',default='patient8.jpg')
     city  = models.CharField(max_length=100, null=True,blank=True)
     state  = models.CharField(max_length=100, null=True)
     country  = models.CharField(max_length=100, null=True)
     gender  = models.CharField(max_length=50, null=True)
+    profile_image = models.ImageField(upload_to='doctor/',default='default.png')
+
     blood_group  = models.CharField(max_length=50, null=True)
     date_joined = models.DateTimeField(default=datetime.now, blank=True)
     date_of_birth = models.DateField(null=True)
@@ -99,10 +100,12 @@ class AppointmentTime(models.Model):
 class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    appointment_time_slot = models.ForeignKey(AppointmentTime, on_delete=models.CASCADE,null=True)
+    appointment_time_slot = models.ForeignKey(AppointmentTime,on_delete=models.DO_NOTHING,null=True)
     appointment_datetime=models.CharField(max_length=50, null=True)
     appointment_time=models.CharField(max_length=50, null=True)
     is_confirmed = models.BooleanField(default=False)
+    is_complete = models.BooleanField(default=False)
+
     medical_data_added = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.doctor} - {self.appointment_time_slot.appointment_date}"

@@ -147,13 +147,11 @@ def register(request):
             else:
                 patient=Patient.objects.create(user=user)
             current_site = get_current_site(request)
-            activation_link = f"{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/
-            {account_activation_token.make_token(user)}/"
+            activation_link = f"{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{account_activation_token.make_token(user)}/"
             print(activation_link)
 
             subject = 'Activate Your Medimingle Account'
-            message = f'Hi {user.first_name},\n\nClick the link below to activate your account:\n\n
-            {activation_link}\n\nBest regards,\nThe Medimingle Team'
+            message = f'Hi {user.first_name},\n\nClick the link below to activate your account:\n\n{activation_link}\n\nBest regards,\nThe Medimingle Team'
             send_mail(subject, message, 'medimingle@gmail.com', [user.email])
             messages.success(request, "You have registered successfully. Verify your email and login.")
             return redirect('signin')
@@ -284,6 +282,11 @@ def doctor_dashboard(request):
     return render(request, 'doctor_dashboard.html', context)
 
 
+def complete_appointment(request, appointment_id):
+    appointment = Appointment.objects.get(pk=appointment_id)
+    appointment.is_complete = True  
+    appointment.save()
+    return redirect('doctor_dashboard')
 @never_cache   
 @login_required(login_url='signin')
 def homepage(request):
@@ -1143,15 +1146,13 @@ def confirm_appointment(request, appointment_id):
         elif action == 'reject':
             appointment.delete()
             subject = 'Cancellation'
-            message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} 
-            has been rejected by the doctor due to some reasons.'
+            message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been rejected by the doctor due to some reasons.'
             from_email = 'medimingle@gmail.com'  
             to_email = appointment.patient.user.email
             send_mail(subject, message, from_email, [to_email])
             Notification.objects.create(
                 patient=appointment.patient,
-                message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} 
-                has been rejected by the doctor due to some reasons.')
+                message = f'Your appointment request with Dr. {appointment.doctor} on {appointment.appointment_datetime} has been rejected by the doctor due to some reasons.')
         return redirect('doctor_dashboard')
        
 

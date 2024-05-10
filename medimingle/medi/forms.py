@@ -95,6 +95,7 @@ class UserProfileUpdateForm(forms.ModelForm):
     pin = forms.CharField(label='PIN', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'PIN'}))
     gender = forms.ChoiceField(label='Gender', choices=GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     profile_image = forms.ImageField(label='Profile Image', widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+
     blood_group = forms.ChoiceField(label='Blood Group', choices=BLOOD_GROUP_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     address = forms.CharField(label='Address', widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Address'}))
     date_of_birth = forms.DateField(label='DOB', widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'DOB'}))
@@ -182,7 +183,7 @@ class QualificationForm(forms.ModelForm):
         widgets = {
             'institution_name': forms.TextInput(attrs={'class': 'form-control'}),
             'qualification_degree': forms.TextInput(attrs={'class': 'form-control'}),
-            'years_of_completion': forms.TextInput(attrs={'class': 'form-control'}),
+            'years_of_completion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
 class ExperienceForm(forms.ModelForm):

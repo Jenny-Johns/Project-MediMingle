@@ -50,7 +50,7 @@ urlpatterns = [
     path('activate/<str:uidb64>/<str:token>/', activate_account, name='account_activation'),
     path('update_consulting_fee/<int:user_id>/', views.update_consulting_fee, name='update_consulting_fee'),
 path('reschedule_appointment/<int:appointment_id>/', views.reschedule_appointment, name='reschedule_appointment'),
-
+path('complete_appointment/<int:appointment_id>/', views.complete_appointment, name='complete_appointment'),
     path('success',views.success,name='success'),
    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
    path('block_user/<int:user_id>/', views.block_user, name='block_user'),
